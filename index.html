@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Orhun Ege Eker — Space Portfolio</title>
+<title>Orhun Ege Eker — Space</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{ --bg:#05060a; --text:#f6f7fb; --muted:#cbd5e1; }
@@ -12,7 +12,7 @@
   canvas#scene{position:fixed;inset:0;width:100%;height:100%;display:block}
 
   .hud{position:fixed;top:12px;left:12px;right:12px;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(8,10,18,.45);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px);border-radius:16px}
-  .brand{font-weight:800;letter-spacing:.4px;font-size:16px}
+  .brand{font-weight:800;letter-spacing:.4px;font-size:16px;text-decoration:none;color:var(--text)}
   .nav{display:flex;gap:16px}
   .nav a{color:var(--text);text-decoration:none;opacity:.9;font-size:14px}
 
@@ -24,7 +24,6 @@
   .planet-card__meta{display:flex;justify-content:space-between;align-items:center;padding:8px 10px}
   .title{font-weight:700}
   .badge{position:absolute;left:8px;top:8px;background:rgba(64,191,255,.12);border:1px solid rgba(64,191,255,.4);backdrop-filter:blur(6px);font-size:11px;padding:6px 8px;border-radius:999px;color:#cfefff}
-  /* inline enter hint pill, GÖRSELİN ORTASINDA */
   .enter-pill{
     position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);
@@ -42,7 +41,6 @@
   .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
   .btn.primary{background:#1e5eff;border-color:#2b66ff}
 
-  /* start */
   .start{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 600px at 50% -20%, rgba(120,170,255,.08), rgba(5,6,10,.95))}
   .start.hide{animation:fade .6s both}@keyframes fade{to{opacity:0;visibility:hidden}}
   .start-card{padding:28px 32px;border:1px solid rgba(255,255,255,.12);background:rgba(10,12,20,.72);backdrop-filter:blur(8px);border-radius:16px;display:flex;flex-direction:column;gap:12px;align-items:center}
@@ -51,8 +49,12 @@
 </head>
 <body>
   <div class="hud">
-    <div class="brand">ORHUN EGE EKER</div>
-    <div class="nav"><a href="index.html">WORK</a><a href="about.html">ABOUT</a><a href="contact.html">CONTACT</a></div>
+    <a class="brand" href="space.html">SPACE</a>
+    <div class="nav">
+      <a href="projects.html">PROJECTS</a>
+      <a href="about.html">ABOUT</a>
+      <a href="contact.html">CONTACT</a>
+    </div>
   </div>
 
   <div class="help" id="helpBox">Loading controls…</div>
@@ -78,7 +80,9 @@
   <!-- Start -->
   <div class="start" id="start">
     <div class="start-card">
-      <h1>Portfolio — Space Tour</h1>
+      <h1>Orhun Ege Eker – Portfolio</h1>
+      <p>If you choose the basic way</p>
+      <button onclick="location.href='projects.html'" class="btn">Basic Portfolio</button>
       <p><span class="kbd">W/S</span> move · mouse turn · near planet <span class="kbd">E</span> enter</p>
       <button id="btnStart" class="btn primary">Start</button>
     </div>
@@ -151,7 +155,6 @@
     }));
     m.rotation.z = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(12));
     if(app.ring){
-      /* HALKALAR KÜÇÜLTÜLDÜ */
       const ring=new THREE.Mesh(
         new THREE.RingGeometry(r*1.05,r*1.18,56),
         new THREE.MeshBasicMaterial({color:col.clone().offsetHSL(.08,0,0).getHex(),transparent:true,opacity:.12,side:THREE.DoubleSide})
@@ -171,7 +174,6 @@
     m.position.set(x,y,z); m.userData.project=p; scene.add(m); planets.push(m);
     const el=document.createElement('div'); el.className='planet-card';
     const cover=p.cover?`background-image:url('${p.cover}')`:`background-image:none`;
-    /* TAG SAĞ ALTTAN KALDIRILDI, PILL GÖRSELİN İÇİNE ALINDI */
     el.innerHTML=`<div class="planet-card__media" style="${cover}">
       <div class="badge">${p.tag||''}</div>
       <div class="enter-pill">Press <b>E</b> to Enter</div>
@@ -256,7 +258,7 @@
         el.style.opacity=a; el.style.transform=`translate(-50%,-100%) scale(${0.92+a*0.1})`;
       } else { el.style.opacity=0; }
       const d=ship.position.distanceTo(obj.position); if(d<dmin){dmin=d; best=obj;}
-      if(pill) pill.style.opacity=0; // default gizle
+      if(pill) pill.style.opacity=0;
     }
     const TH=28; nearest=(best&&dmin<TH)?best:null;
     const qv=document.getElementById('quickview');
@@ -284,10 +286,9 @@
   function spinPlanets(dt){ for(const pl of planets){ pl.rotation.y += (pl.userData.spin||0.03)*dt; } }
 
   /* ---------- Uydu(lar) & Çarpışma ---------- */
-  const satellites=[], debrisPool=[]; // {mesh, vel, life}
+  const satellites=[], debrisPool=[];
   function makeSatellite(x,y,z){
     const group=new THREE.Group();
-    // basit gövde (placeholder) — sonra GLB ile değiştiririz
     const body=new THREE.Mesh(new THREE.BoxGeometry(1.2,0.8,0.8), new THREE.MeshStandardMaterial({color:0xd0d6e5,metalness:.4,roughness:.6}));
     const panelMat=new THREE.MeshStandardMaterial({color:0x6aa7ff,emissive:0x0e1a44,emissiveIntensity:.4,roughness:.4});
     const panelL=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.15,0.6), panelMat);
@@ -296,10 +297,10 @@
     group.add(body,panelL,panelR);
     group.position.set(x,y,z);
     group.userData.spin = THREE.MathUtils.randFloat(0.3,0.8);
+    group.scale.set(3,3,3); // 3x büyütme
     scene.add(group);
     satellites.push(group);
   }
-  // birkaç uyduyu rastgele yerleştir (gezegenlerden biraz uzakta)
   for(let i=0;i<5;i++){
     const a=Math.random()*Math.PI*2, r=THREE.MathUtils.randFloat(50,120);
     makeSatellite(Math.cos(a)*r, THREE.MathUtils.randFloatSpread(12), Math.sin(a)*r);
@@ -315,16 +316,13 @@
     }
   }
   function updateSatellites(dt){
-    // döndür
     for(const s of satellites){ s.rotation.y += s.userData.spin*dt; }
-    // gemi çarpışma
     for(let i=satellites.length-1;i>=0;i--){
       const s=satellites[i];
       if(ship.position.distanceTo(s.position) < 3.0){
         spawnDebris(s.position); scene.remove(s); satellites.splice(i,1);
       }
     }
-    // debris güncelle
     for(let i=debrisPool.length-1;i>=0;i--){
       const d=debrisPool[i]; d.life-=dt;
       d.mesh.position.addScaledVector(d.vel,dt); d.vel.multiplyScalar(0.985); d.mesh.rotation.x+=dt*2; d.mesh.rotation.y+=dt*2.4;

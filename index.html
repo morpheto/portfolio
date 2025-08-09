@@ -10,7 +10,8 @@
   :root{ --bg:#05060a; --text:#f6f7fb; --muted:#cbd5e1; }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
   canvas#scene{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
 
   .hud{
@@ -30,6 +31,7 @@
     padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.06);backdrop-filter:blur(6px)
   }
 
+  /* Overlay kartlar + hint */
   .overlay{position:fixed;inset:0;pointer-events:none;z-index:12}
   .planet-card{
     position:absolute;transform:translate(-50%,-100%);width:260px;max-width:40vw;
@@ -47,7 +49,14 @@
     border:1px solid rgba(64,191,255,.4);backdrop-filter:blur(6px);
     font-size:11px;padding:6px 8px;border-radius:999px;color:#cfefff
   }
+  .hint{
+    position:absolute;transform:translate(-50%,-120%);padding:6px 10px;border-radius:999px;
+    border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.10);
+    color:#dff2ff;font-size:12px;letter-spacing:.2px;pointer-events:none;
+    box-shadow:0 0 16px rgba(64,191,255,.25);z-index:25;display:none
+  }
 
+  /* Quick View modal */
   .popup{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
   .popup.show{display:flex}
   .popup-card{width:min(880px,92vw);border:1px solid rgba(120,198,255,.28);border-radius:18px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
@@ -80,12 +89,12 @@
 
   <div class="help">
     <b>Controls</b><br/>
-    W / ↑ : Forward &nbsp;·&nbsp; S / ↓ : Reverse<br/>
-    A : Turn Left &nbsp;·&nbsp; D : Turn Right<br/>
-    Click planet: Quick View · E: Open (near) · Q / Esc: Close
+    W / S : Forward / Reverse &nbsp;·&nbsp; A / D : Turn Left / Right<br/>
+    Space : Up &nbsp;·&nbsp; Shift : Down &nbsp;·&nbsp; E : Quick View (near)
   </div>
 
   <div class="overlay" id="overlay"></div>
+  <div class="hint" id="hint">Press <b>E</b> to View</div>
 
   <div class="popup" id="quickview">
     <div class="popup-card" role="dialog" aria-modal="true" aria-labelledby="qvTitle">
@@ -106,12 +115,12 @@
 
   <canvas id="scene" tabindex="0" aria-label="3D project map"></canvas>
 
-  <!-- NON-MODULE builds (yerelde file:// ile de çalışır) -->
+  <!-- Yerelde de çalışan NON-MODULE build -->
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script src="https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 
   <script>
-    // ------------- Renderer / Scene / Camera -------------
+    /* ================== Core Setup ================== */
     const canvas = document.getElementById('scene');
     const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
     const DPR = Math.min(2, window.devicePixelRatio || 1);
@@ -121,41 +130,115 @@
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x05060a, 0.008);
+    scene.fog = new THREE.FogExp2(0x05060a, 0.006); // uzay sisi
 
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 2000);
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 4000);
 
-    // ------------- Lights -------------
-    const hemi = new THREE.HemisphereLight(0x89b4ff, 0x05060a, 0.5);
+    /* ================== Lights ================== */
+    const hemi = new THREE.HemisphereLight(0x89b4ff, 0x05060a, 0.45);
     scene.add(hemi);
-    const key = new THREE.DirectionalLight(0xffffff, 1.0);
-    key.position.set(80, 140, 60);
+    const key = new THREE.DirectionalLight(0xffffff, 0.9);
+    key.position.set(160, 220, 120);
     key.castShadow = true;
     key.shadow.mapSize.set(2048,2048);
-    Object.assign(key.shadow.camera, { near:10, far:800, left:-200, right:200, top:200, bottom:-200 });
+    Object.assign(key.shadow.camera, { near:10, far:1200, left:-400, right:400, top:400, bottom:-400 });
     scene.add(key);
-    const rim = new THREE.DirectionalLight(0x4cc9ff, 0.6);
-    rim.position.set(-120, 80, -60);
+    const rim = new THREE.DirectionalLight(0x6cb8ff, 0.6);
+    rim.position.set(-220, 160, -120);
     scene.add(rim);
 
-    // ------------- Starfield -------------
+    /* ================== Starfield ================== */
     (function addStars(){
       const g = new THREE.BufferGeometry();
-      const N = 4000, pos = new Float32Array(N*3);
+      const N = 6000, pos = new Float32Array(N*3);
       for(let i=0;i<N;i++){
-        const r = 600 + Math.random()*800;
+        const r = 900 + Math.random()*1400;
         const theta = Math.random()*Math.PI*2;
-        const phi = Math.acos(THREE.MathUtils.randFloatSpread(2));
-        pos[i*3+0] = r*Math.sin(phi)*Math.cos(theta);
-        pos[i*3+1] = r*Math.cos(phi)*0.6;
-        pos[i*3+2] = r*Math.sin(phi)*Math.sin(theta);
+        const u = Math.random()*2 - 1; // cos(phi)
+        const s = Math.sqrt(1-u*u);
+        pos[i*3+0] = r*s*Math.cos(theta);
+        pos[i*3+1] = r*u*0.7; // hafif yassı
+        pos[i*3+2] = r*s*Math.sin(theta);
       }
       g.setAttribute('position', new THREE.BufferAttribute(pos,3));
-      const m = new THREE.PointsMaterial({ size:1.2, sizeAttenuation:true, color:0xbcd5ff, transparent:true, opacity:0.9 });
+      const m = new THREE.PointsMaterial({ size:1.2, sizeAttenuation:true, color:0xcfe0ff, transparent:true, opacity:0.9 });
       scene.add(new THREE.Points(g,m));
     })();
 
-    // ------------- Project data -------------
+    /* ================== Nebula / Galaxy Sprites ================== */
+    function makeRadialTexture(stops){
+      const cvs = document.createElement('canvas'); cvs.width = cvs.height = 512;
+      const ctx = cvs.getContext('2d');
+      const g = ctx.createRadialGradient(256,256,10, 256,256,256);
+      stops.forEach(s => g.addColorStop(s[0], s[1]));
+      ctx.fillStyle = g; ctx.fillRect(0,0,512,512);
+      const tex = new THREE.CanvasTexture(cvs);
+      tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+      tex.needsUpdate = true; return tex;
+    }
+    function addNebula(pos, scale, palette){
+      const tex = makeRadialTexture(palette);
+      const mat = new THREE.SpriteMaterial({ map:tex, depthWrite:false, transparent:true, opacity:0.8, blending:THREE.AdditiveBlending });
+      const spr = new THREE.Sprite(mat);
+      spr.position.copy(pos); spr.scale.setScalar(scale);
+      scene.add(spr); return spr;
+    }
+    // mor-mavi nebula seti
+    addNebula(new THREE.Vector3(-350, 120, -500), 800, [
+      [0.00,'rgba( 80, 20,140,1)'], [0.25,'rgba(120, 40,190,.75)'],
+      [0.55,'rgba( 40,120,255,.45)'], [1.00,'rgba(  0,  0,  0,0)']
+    ]);
+    addNebula(new THREE.Vector3( 520,-80, -760), 900, [
+      [0.00,'rgba( 30, 60,180,1)'], [0.25,'rgba( 60,140,255,.75)'],
+      [0.60,'rgba(170,110,255,.35)'], [1.00,'rgba(  0,  0,  0,0)']
+    ]);
+    addNebula(new THREE.Vector3( 120, 260,  680), 700, [
+      [0.00,'rgba(120, 40,200,1)'], [0.25,'rgba(190, 90,255,.75)'],
+      [0.60,'rgba( 60,160,255,.35)'], [1.00,'rgba(  0,  0,  0,0)']
+    ]);
+
+    /* ================== Black Hole (far) ================== */
+    (function addBlackHole(){
+      const group = new THREE.Group(); group.position.set(-900, 120, -1400);
+      // core
+      const core = new THREE.Mesh(new THREE.SphereGeometry(40, 48, 32),
+        new THREE.MeshBasicMaterial({ color:0x000000 }));
+      group.add(core);
+      // accretion disk (ring with gradient)
+      function ringTexture(){
+        const c = document.createElement('canvas'); c.width = c.height = 512;
+        const x = c.getContext('2d');
+        const g = x.createRadialGradient(256,256,120, 256,256,256);
+        g.addColorStop(0.00,'rgba(  0,  0,  0,0)');
+        g.addColorStop(0.35,'rgba( 80,140,255,.85)');
+        g.addColorStop(0.60,'rgba(170, 80,255,.60)');
+        g.addColorStop(1.00,'rgba(  0,  0,  0,0)');
+        x.fillStyle = g; x.fillRect(0,0,512,512);
+        return new THREE.CanvasTexture(c);
+      }
+      const disk = new THREE.Mesh(
+        new THREE.RingGeometry(90, 220, 128),
+        new THREE.MeshBasicMaterial({ map:ringTexture(), color:0xffffff, side:THREE.DoubleSide, transparent:true, blending:THREE.AdditiveBlending, depthWrite:false })
+      );
+      disk.rotation.x = -Math.PI/2; group.add(disk);
+      // particle ring
+      const pg = new THREE.BufferGeometry(); const n=1200, arr=new Float32Array(n*3);
+      for(let i=0;i<n;i++){
+        const r = THREE.MathUtils.randFloat(110, 220);
+        const a = Math.random()*Math.PI*2;
+        arr[i*3+0]= r*Math.cos(a);
+        arr[i*3+1]= THREE.MathUtils.randFloatSpread(6);
+        arr[i*3+2]= r*Math.sin(a);
+      }
+      pg.setAttribute('position', new THREE.BufferAttribute(arr,3));
+      const pm = new THREE.PointsMaterial({ size:3.0, color:0xaed3ff, transparent:true, opacity:0.9, blending:THREE.AdditiveBlending, depthWrite:false });
+      const ringPts = new THREE.Points(pg, pm); group.add(ringPts);
+      group.userData.spin = ()=>{ disk.rotation.z += 0.0015; ringPts.rotation.y += 0.001; };
+      scene.add(group);
+      scene.userData.blackHole = group;
+    })();
+
+    /* ================== Projects ================== */
     const PROJECTS = [
       { id:'p1', title:'Audio Reactive + Hand Tracked Visualizer', tag:'TouchDesigner', cover:'media/covers/p1.jpg' },
       { id:'p2', title:'Odin Pendant Animation',                   tag:'3D Works',      cover:'media/covers/p2.jpg' },
@@ -168,29 +251,25 @@
       { id:'p9', title:'AI Visualizer from Image',                 tag:'AI Visuals',    cover:'media/covers/p9.jpg' }
     ];
 
-    // ------------- Planets -------------
-    const ring = [
-      [-90,-30], [-30,-70], [50,-40],
-      [-80, 30], [  0, 45], [60,  55],
-      [-40, 90], [ 20, 85], [80,  95]
-    ];
+    /* ================== Planets (randomized) ================== */
     const planets = [];
     const overlay = document.getElementById('overlay');
-
-    function makePlanet(size=10, tint=0x88b5ff){
-      const geo = new THREE.SphereGeometry(size, 36, 24);
+    function makePlanet(radius, tintH, tintS, tintL){
+      const geo = new THREE.SphereGeometry(radius, 48, 32);
+      const color = new THREE.Color().setHSL(tintH, tintS, tintL);
       const mat = new THREE.MeshStandardMaterial({
-        color:tint, roughness:0.9, metalness:0.1, emissive:0x0a0f1c, emissiveIntensity:0.15
+        color: color, roughness: 0.85, metalness: 0.15,
+        emissive: color.clone().multiplyScalar(0.25), emissiveIntensity: 0.2
       });
       const m = new THREE.Mesh(geo, mat);
       m.castShadow = true; m.receiveShadow = true;
-      const ringG = new THREE.RingGeometry(size*1.15, size*1.45, 64);
-      const ringM = new THREE.MeshBasicMaterial({ color:0x66d1ff, transparent:true, opacity:0.12, side:THREE.DoubleSide });
+      // aura
+      const ringG = new THREE.RingGeometry(radius*1.15, radius*1.45, 64);
+      const ringM = new THREE.MeshBasicMaterial({ color: color.clone().offsetHSL(0.08,0,0).getHex(), transparent:true, opacity:0.14, side:THREE.DoubleSide });
       const aura = new THREE.Mesh(ringG, ringM); aura.rotation.x = -Math.PI/2;
       m.add(aura); m.userData.aura = aura;
       return m;
     }
-
     function makeCard(p){
       const el = document.createElement('div');
       el.className = 'planet-card';
@@ -204,57 +283,47 @@
       overlay.appendChild(el); return el;
     }
 
-    const cards = [];
+    // dağıtım (daha geniş, farklı yükseklikler)
+    const POS = [];
+    for(let i=0;i<PROJECTS.length;i++){
+      const ringR = THREE.MathUtils.randFloat(60, 140);
+      const theta = (i/PROJECTS.length)*Math.PI*2 + Math.random()*0.6;
+      const x = Math.cos(theta)*ringR + THREE.MathUtils.randFloatSpread(25);
+      const z = Math.sin(theta)*ringR + THREE.MathUtils.randFloatSpread(25);
+      const y = THREE.MathUtils.randFloatSpread(18); // -9..+9
+      POS.push([x,y,z]);
+    }
+    // karıştır
+    for(let i=POS.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [POS[i],POS[j]]=[POS[j],POS[i]]; }
+
+    const cardsRef = [];
     PROJECTS.forEach((proj, i)=>{
-      const [x,z] = ring[i];
-      const radius = 9 + Math.random()*4;
-      const tint = new THREE.Color().setHSL(THREE.MathUtils.randFloat(0.55,0.68), 0.45, THREE.MathUtils.randFloat(0.55,0.7));
-      const planet = makePlanet(radius, tint.getHex());
-      planet.position.set(x, THREE.MathUtils.randFloat(-3,3), z);
+      const radius = THREE.MathUtils.randFloat(8, 16);
+      const hue = THREE.MathUtils.randFloat(0.55, 0.72);
+      const sat = THREE.MathUtils.randFloat(0.35, 0.55);
+      const lig = THREE.MathUtils.randFloat(0.45, 0.65);
+      const planet = makePlanet(radius, hue, sat, lig);
+      const [x,y,z] = POS[i];
+      planet.position.set(x,y,z);
       planet.userData.project = proj;
       scene.add(planet);
       planets.push(planet);
-      cards.push({ el: makeCard(proj), obj: planet, size: radius });
+      const el = makeCard(proj);
+      cardsRef.push({ el, obj: planet });
     });
 
-    // ------------- Spaceship (GLB + fallback) -------------
-    const ship = new THREE.Group();
-    scene.add(ship);
-
-    function addFallbackShip(){
+    /* ================== Spaceship (fallback capsule) ================== */
+    const ship = new THREE.Group(); scene.add(ship);
+    (function addFallbackShip(){
       const hull = new THREE.Mesh(
         new THREE.CapsuleGeometry(0.8, 3.2, 6, 12),
         new THREE.MeshStandardMaterial({ color:0x9aa7ff, roughness:0.6, metalness:0.2, emissive:0x10163a, emissiveIntensity:0.2 })
       );
-      hull.rotation.z = Math.PI/2;
-      ship.add(hull);
-    }
-
-    try{
-      const loader = new THREE.GLTFLoader();
-      loader.load(
-        "media/models/spaceship.glb",
-        (gltf)=>{
-          const model = gltf.scene;
-          model.traverse(o=>{
-            if(o.isMesh){ o.castShadow = o.receiveShadow = true; }
-          });
-          // Yön: ileri +X olacak şekilde çevir (glTF genelde -Z ileri gelir)
-          model.rotation.y = Math.PI/2;
-          model.scale.set(1.2,1.2,1.2);
-          ship.add(model);
-        },
-        undefined,
-        (err)=>{ console.warn("GLB load error, using fallback:", err); addFallbackShip(); }
-      );
-    }catch(e){
-      console.warn("GLTFLoader not available, using fallback.", e);
-      addFallbackShip();
-    }
-
+      hull.rotation.z = Math.PI/2; ship.add(hull);
+    })();
     ship.position.set(0, 0, 0);
 
-    // ------------- Camera (behind -X, above +Y) -------------
+    /* ================== Camera (behind -X, above +Y) ================== */
     const camOffsetLocal  = new THREE.Vector3(-16.0, 7.5, 0);
     const lookAheadLocal  = new THREE.Vector3(  6.0, 1.8, 0);
     const camPos = new THREE.Vector3(), lookAt = new THREE.Vector3();
@@ -269,40 +338,55 @@
       camera.lookAt(lookAt);
     }
 
-    // ------------- Controls -------------
+    /* ================== Controls (6-DoF-ish) ================== */
     const keys = new Set();
     window.addEventListener('keydown', (e)=>{ keys.add(e.key.toLowerCase()); handleHotkeys(e); });
     window.addEventListener('keyup',   (e)=>{ keys.delete(e.key.toLowerCase()); });
 
-    let vel = 0, yawVel = 0;
+    let vel = 0, yawVel = 0, vY = 0;
     function updateShip(dt, t){
       const w = keys.has('w') || keys.has('arrowup');
       const s = keys.has('s') || keys.has('arrowdown');
       const a = keys.has('a') || keys.has('arrowleft');
       const d = keys.has('d') || keys.has('arrowright');
+      const space = keys.has(' ');
+      const shift = keys.has('shift');
 
-      const ACC_F = 3.4, ACC_B = 2.0;
+      // ileri-geri
+      const ACC_F = 3.2, ACC_B = 2.0;
       const MAX_F = 6.0, MAX_B = -2.4;
       if (w) vel = Math.min(MAX_F, vel + ACC_F*dt);
       if (s) vel = Math.max(MAX_B, vel - ACC_B*dt);
       if (!w && !s) vel *= Math.pow(0.988, dt*60);
 
-      const TURN = 0.95;
+      // yaw dönüş
+      const TURN = 0.92;
       if (a) yawVel += TURN*dt;
       if (d) yawVel -= TURN*dt;
       yawVel = THREE.MathUtils.clamp(yawVel, -0.02, 0.02);
       ship.rotation.y += yawVel;
       yawVel *= Math.pow(0.92, dt*60);
 
+      // dikey hız (space/shift)
+      const ACC_Y = 8.0, MAX_Y = 6.0;
+      if(space) vY = Math.min(MAX_Y, vY + ACC_Y*dt);
+      if(shift) vY = Math.max(-MAX_Y, vY - ACC_Y*dt);
+      if(!space && !shift) vY *= Math.pow(0.92, dt*60);
+
+      // hareket vektörleri
       const fwd = new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion);
       ship.position.addScaledVector(fwd, vel * dt * 3.0);
+      ship.position.y += vY * dt;
 
-      ship.position.y = Math.sin(t*0.9)*0.2;
+      // y ekseni yumuşak aralık (opsiyonel clamp)
+      ship.position.y = THREE.MathUtils.clamp(ship.position.y, -25, 25);
+
+      // hafif sway
       ship.rotation.z = Math.sin(t*0.7 + ship.position.x*0.01)*0.01;
       ship.rotation.x = Math.cos(t*0.8 + ship.position.z*0.01)*0.008;
     }
 
-    // ------------- Raycast / Hover / Click -------------
+    /* ================== Raycast / Hover ================== */
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     let hovered = null;
@@ -319,38 +403,24 @@
       const hit = hits[0]?.object || null;
       if(hovered !== hit){
         if(hovered){
-          hovered.material.emissiveIntensity = 0.15;
-          hovered.userData.aura.material.opacity = 0.12;
+          hovered.material.emissiveIntensity = 0.2;
+          hovered.userData.aura.material.opacity = 0.14;
         }
         hovered = hit;
         if(hovered){
-          hovered.material.emissiveIntensity = 0.35;
-          hovered.userData.aura.material.opacity = 0.22;
+          hovered.material.emissiveIntensity = 0.38;
+          hovered.userData.aura.material.opacity = 0.24;
         }
       }
     }
 
-    function onClick(){
-      raycaster.setFromCamera(mouse, camera);
-      const hits = raycaster.intersectObjects(planets, false);
-      if(hits.length){ qvOpenFor(hits[0].object); }
-    }
-    renderer.domElement.addEventListener('click', onClick);
-
-    // ------------- Overlay kartlar -------------
+    /* ================== Overlay Cards ================== */
     const tmpV = new THREE.Vector3();
     function clamp1(v, min, max){ return Math.max(min, Math.min(max, v)); }
-
     const cardsRef = [];
-    function buildCardsRef(){
-      cardsRef.length = 0;
-      const children = overlay.children;
-      for(let i=0;i<children.length;i++){ cardsRef.push({ el: children[i], obj: planets[i] }); }
-    }
-    // kartları oluştur
-    PROJECTS.forEach(()=>{}); // (zaten oluşturduk)
-    // DOM eklendi; eşle
-    setTimeout(buildCardsRef, 0);
+    setTimeout(()=>{ // overlay çocukları dolsun
+      [...overlay.children].forEach((el, idx)=> cardsRef.push({ el, obj: planets[idx] }));
+    });
 
     function updateCards(){
       const W = window.innerWidth, H = window.innerHeight;
@@ -364,14 +434,14 @@
           x = clamp1(x, 18, W-18); y = clamp1(y, 80, H-96);
           el.style.left = x+'px'; el.style.top = y+'px';
           const dist = camera.position.distanceTo(obj.position);
-          const alpha = THREE.MathUtils.clamp(1 - (dist-60)/200, 0, 1);
+          const alpha = THREE.MathUtils.clamp(1 - (dist-60)/220, 0, 1);
           el.style.opacity = alpha;
           el.style.transform = `translate(-50%,-100%) scale(${0.9 + alpha*0.12})`;
         } else el.style.opacity = 0;
       }
     }
 
-    // ------------- Quick View -------------
+    /* ================== Quick View + Hint ================== */
     const qv = document.getElementById('quickview');
     const qvTitle = document.getElementById('qvTitle');
     const qvTag   = document.getElementById('qvTag');
@@ -379,6 +449,7 @@
     const qvClose = document.getElementById('qvClose');
     const qvEnter = document.getElementById('qvEnter');
     const qvExit  = document.getElementById('qvExit');
+    const hintEl  = document.getElementById('hint');
 
     function qvOpenFor(planet){
       const p = planet.userData.project;
@@ -388,28 +459,45 @@
       qv.classList.add('show');
     }
     function qvCloseFn(){ qv.classList.remove('show'); }
+
     qvClose.addEventListener('click', qvCloseFn);
     qvExit .addEventListener('click', qvCloseFn);
     qvEnter.addEventListener('click', ()=>{ qv.classList.add('pulse'); setTimeout(()=> qv.classList.remove('pulse'), 220); });
     window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') qvCloseFn(); });
 
     let nearest = null;
-    function checkProximity(){
+    function checkProximityAndHint(){
       let best=null, dmin=Infinity;
       for(const pl of planets){
         const d = ship.position.distanceTo(pl.position);
         if(d<dmin){ dmin=d; best=pl; }
       }
-      nearest = (best && dmin<30) ? best : null;
-      if(!nearest) qvCloseFn();
+      const TH = 28; // eşik
+      nearest = (best && dmin<TH) ? best : null;
+      if(nearest){
+        // hint yerleştir (ekran uzayında)
+        const W = window.innerWidth, H = window.innerHeight;
+        tmpV.copy(nearest.position); tmpV.y += 12; tmpV.project(camera);
+        if(tmpV.z<1 && tmpV.z>-1){
+          let x = (tmpV.x*0.5+0.5)*W, y = (-tmpV.y*0.5+0.5)*H;
+          x = clamp1(x, 18, W-18); y = clamp1(y, 60, H-80);
+          hintEl.style.left = x+'px'; hintEl.style.top = y+'px';
+          hintEl.style.display = 'block';
+        } else { hintEl.style.display = 'none'; }
+      } else { hintEl.style.display = 'none'; qvCloseFn(); }
     }
+
     function handleHotkeys(e){
       const k = e.key.toLowerCase();
       if(k==='e' && nearest && !qv.classList.contains('show')) qvOpenFor(nearest);
       if(k==='q') qvCloseFn();
     }
 
-    // ------------- Resize & Loop -------------
+    renderer.domElement.addEventListener('click', ()=>{
+      if(nearest && !qv.classList.contains('show')) qvOpenFor(nearest);
+    });
+
+    /* ================== Resize & Loop ================== */
     function onResize(){
       renderer.setSize(window.innerWidth, window.innerHeight);
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -420,13 +508,17 @@
     const clock = new THREE.Clock();
     function loop(){
       const dt = Math.min(0.033, clock.getDelta());
-      const t  = clock.elapsedTime;
+      const t  = clock.getElapsedTime();
 
+      // animasyonlar
       updateShip(dt, t);
       updateCamera(dt);
       hoverPlanets();
       updateCards();
-      checkProximity();
+      checkProximityAndHint();
+
+      // uzak kara delik spin
+      if(scene.userData.blackHole?.userData.spin) scene.userData.blackHole.userData.spin();
 
       renderer.render(scene, camera);
       requestAnimationFrame(loop);

@@ -17,8 +17,8 @@
   .nav a:after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:#2b2d33;transform:scaleX(0);transform-origin:left;transition:transform .25s}
   .nav a:hover{opacity:1}.nav a:hover:after{transform:scaleX(1)}
   .help{position:fixed;right:12px;bottom:12px;z-index:20;color:var(--muted);font-size:12px;line-height:1.5;padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.06);backdrop-filter:blur(6px)}
-  .overlay{position:fixed;inset:0;pointer-events:none;z-index:12}
-  .planet-card{position:absolute;transform:translate(-50%,-100%);width:240px;max-width:40vw;border-radius:12px;overflow:hidden;border:1px solid rgba(120,198,255,.28);background:linear-gradient(180deg, rgba(20,24,40,.85), rgba(10,12,20,.9));box-shadow:0 10px 26px rgba(0,0,0,.45);transition:opacity .15s ease, transform .15s ease;opacity:.0}
+  .overlay{position:fixed;inset:0;z-index:12;pointer-events:none}     /* container: click alma */
+  .planet-card{position:absolute;transform:translate(-50%,-100%);width:240px;max-width:40vw;border-radius:12px;overflow:hidden;border:1px solid rgba(120,198,255,.28);background:linear-gradient(180deg, rgba(20,24,40,.85), rgba(10,12,20,.9));box-shadow:0 10px 26px rgba(0,0,0,.45);transition:opacity .15s ease, transform .15s ease;opacity:.0; pointer-events:auto}  /* kartlar tıklanabilir */
   .planet-card__media{height:120px;background:#0f1430;background-image:radial-gradient(1200px 300px at 50% -200px, rgba(120,198,255,.35), rgba(120,198,255,0)), radial-gradient(600px 180px at 50% -80px, rgba(170,110,255,.22), rgba(170,110,255,0)); background-size:cover;background-position:center}
   .planet-card__meta{display:flex;justify-content:space-between;align-items:center;padding:8px 10px}
   .title{font-weight:700}.tag{font-size:12px;color:#e5eaf3;opacity:.85}
@@ -129,7 +129,7 @@
   }
   for(let i=POS.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [POS[i],POS[j]]=[POS[j],POS[i]];}
 
-  // 1) planets FIRST
+  // planets
   PROJECTS.forEach((p,i)=>{
     const r=THREE.MathUtils.randFloat(9,16);
     const col=new THREE.Color().setHSL(THREE.MathUtils.randFloat(.55,.72),.45,.58).getHex();
@@ -137,13 +137,16 @@
     m.userData.project=p; scene.add(m); planets.push(m);
   });
 
-  // 2) cards AFTER — single definition of cardsRef
+  // overlay cards
   function addCard(p){const el=document.createElement('div'); el.className='planet-card';
     const cover=p.cover?`background-image:url('${p.cover}')`:`background-image:none`;
     el.innerHTML=`<div class="planet-card__media" style="${cover}"></div>
     <div class="badge">${p.tag||''}</div><div class="planet-card__meta"><div class="title">${p.title}</div><div class="tag">${p.tag||''}</div></div>`;
     overlay.appendChild(el); return el;}
-  PROJECTS.forEach((p,i)=>{ cardsRef.push({el:addCard(p), obj:planets[i]}); });
+  PROJECTS.forEach((p,i)=>{ const item={el:addCard(p), obj:planets[i]}; 
+    item.el.addEventListener('click',()=>{ if(nearest===item.obj) qvOpenFor(item.obj); }); // kart tıklaması
+    cardsRef.push(item);
+  });
 
   /* ---------- Ship & camera ---------- */
   const ship=new THREE.Group(); scene.add(ship);
@@ -167,28 +170,34 @@
   /* ---------- Input ---------- */
   const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
   helpBox.innerHTML = isTouch
-    ? '<b>Mobile</b> — Left joystick: move/strafe · Right drag: aim · Up/Down buttons · Tap near planet: Quick View'
-    : '<b>Desktop</b> — Mouse‑aim + <b>W/S</b> forward/back, <b>A/D</b> strafe · <b>E</b> (near) Quick View · <b>Q</b> Close';
+    ? '<b>Mobile</b> — Left joystick: move/turn (A/D karşılığı) · Right drag: aim · Up/Down buttons · Tap near planet: Quick View'
+    : '<b>Desktop</b> — Mouse‑aim + <b>W/S</b> forward/back, <b>A/D</b> turn left/right · <b>E</b> (near) Quick View · <b>Q</b> Close';
 
-  const keyState={KeyW:false,KeyA:false,KeyS:false,KeyD:false,ArrowUp:false,ArrowDown:false,ArrowLeft:false,ArrowRight:false,KeyQ:false,KeyE:false};
-  function setKey(e,down){const c=e.code; if(c in keyState){keyState[c]=down; if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(c)) e.preventDefault();}
-    if(down&&c==='KeyE'&&nearest&&!qv.classList.contains('show')) qvOpenFor(nearest); if(down&&c==='KeyQ') qvCloseFn();}
-  if(!isTouch){ addEventListener('keydown',e=>setKey(e,true),{passive:false}); addEventListener('keyup',e=>setKey(e,false),{passive:false});
-    addEventListener('mousedown',()=>{ if(document.activeElement&&document.activeElement!==document.body) document.activeElement.blur(); canvas.focus&&canvas.focus(); },{once:true}); }
+  const keyState={KeyW:false,KeyA:false,KeyS:false,KeyD:false,KeyQ:false,KeyE:false};
+  function setKey(e,down){const c=e.code; if(c in keyState){keyState[c]=down;}
+    if(down&&c==='KeyE'&&nearest&&!qv.classList.contains('show')) qvOpenFor(nearest);
+    if(down&&c==='KeyQ') qvCloseFn();}
+  if(!isTouch){ addEventListener('keydown',e=>setKey(e,true)); addEventListener('keyup',e=>setKey(e,false)); }
 
-  // mouse aim
-  let mouseDown=false,lastX=0,lastY=0,yaw=0,pitch=0,yawVel=0,pitchVel=0;
-  if(!isTouch){ renderer.domElement.addEventListener('mousedown',e=>{mouseDown=true;lastX=e.clientX;lastY=e.clientY;});
-    addEventListener('mouseup',()=>{mouseDown=false;}); addEventListener('mousemove',e=>{ if(!mouseDown)return; const dx=e.clientX-lastX,dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY; yawVel-=dx*0.0012; pitchVel-=dy*0.0012; }); }
+  // mouse aim — TIKLAMAYA GEREK YOK
+  let lastX=null,lastY=null,yaw=0,pitch=0,yawVel=0,pitchVel=0;
+  if(!isTouch){
+    addEventListener('mousemove',e=>{
+      if(lastX===null){ lastX=e.clientX; lastY=e.clientY; return; }
+      const dx=e.clientX-lastX, dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY;
+      yawVel   -= dx*0.0011;
+      pitchVel -= dy*0.0011;
+    });
+  }
 
-  // mobile joystick + aim
-  let joyLX=0,joyLY=0,aimDX=0,aimDY=0,upHeld=false,downHeld=false;
+  // mobile joystick (soldaki yön: ileri/geri + YAW dönüş); sağ sürükleme: ince nişan
+  let joyX=0, joyY=0, aimDX=0, aimDY=0, upHeld=false, downHeld=false;
   if(isTouch){ const joy=document.getElementById('joyL'), knob=joy.querySelector('.knob'); const rj=()=>joy.getBoundingClientRect();
-    function onJoy(e){e.preventDefault(); const r=rj(),t=e.touches[0]; let dx=t.clientX-(r.left+r.width/2), dy=t.clientY-(r.top+r.height/2); const max=r.width*.45,len=Math.hypot(dx,dy); if(len>max){dx*=max/len;dy*=max/len;} knob.style.transform=`translate(${dx}px,${dy}px)`; joyLX=dx/max; joyLY=-dy/max;}
-    function endJoy(e){e.preventDefault(); knob.style.transform='translate(-50%,-50%)'; joyLX=joyLY=0;}
+    function onJoy(e){e.preventDefault(); const r=rj(),t=e.touches[0]; let dx=t.clientX-(r.left+r.width/2), dy=t.clientY-(r.top+r.height/2); const max=r.width*.45,len=Math.hypot(dx,dy); if(len>max){dx*=max/len;dy*=max/len;} knob.style.transform=`translate(${dx}px,${dy}px)`; joyX=dx/max; joyY=-dy/max;}
+    function endJoy(e){e.preventDefault(); knob.style.transform='translate(-50%,-50%)'; joyX=joyY=0;}
     joy.addEventListener('touchstart',onJoy,{passive:false}); joy.addEventListener('touchmove',onJoy,{passive:false}); joy.addEventListener('touchend',endJoy,{passive:false});
     const aimZ=document.getElementById('aimZone'); let ax=0,ay=0,act=false; function aStart(e){e.preventDefault();act=true;const t=e.touches[0];ax=t.clientX;ay=t.clientY;}
-    function aMove(e){e.preventDefault(); if(!act)return; const t=e.touches[0]; const dx=t.clientX-ax, dy=t.clientY-ay; ax=t.clientX; ay=t.clientY; aimDX-=dx*0.0025; aimDY-=dy*0.0025;}
+    function aMove(e){e.preventDefault(); if(!act)return; const t=e.touches[0]; const dx=t.clientX-ax, dy=t.clientY-ay; ax=t.clientX; ay=t.clientY; aimDX-=dx*0.0023; aimDY-=dy*0.0023;}
     function aEnd(e){e.preventDefault();act=false;}
     aimZ.addEventListener('touchstart',aStart,{passive:false}); aimZ.addEventListener('touchmove',aMove,{passive:false}); aimZ.addEventListener('touchend',aEnd,{passive:false});
     document.getElementById('btnUp').addEventListener('touchstart',e=>{e.preventDefault();upHeld=true;},{passive:false});
@@ -197,41 +206,47 @@
     document.getElementById('btnDown').addEventListener('touchend',e=>{e.preventDefault();downHeld=false;},{passive:false});
   }
 
-  /* ---------- Movement ---------- */
-  let velF=0,velS=0,vY=0;
+  /* ---------- Movement (daha hızlı) ---------- */
+  let velF=0, vY=0, turnVel=0;   // turnVel = yaw için
   function updateShip(dt){
-    if(!isTouch){ yaw+=yawVel; pitch+=pitchVel; yawVel*=Math.pow(.9,dt*60); pitchVel*=Math.pow(.9,dt*60); }
-    else{ yaw+=aimDX; pitch+=aimDY; aimDX*=Math.pow(.92,dt*60); aimDY*=Math.pow(.92,dt*60); }
+    // mouse / touch nişan
+    if(!isTouch){ yaw += yawVel; pitch += pitchVel; yawVel*=Math.pow(.9,dt*60); pitchVel*=Math.pow(.9,dt*60); }
+    else{ yaw += aimDX; pitch += aimDY; aimDX*=Math.pow(.92,dt*60); aimDY*=Math.pow(.92,dt*60); }
     pitch=THREE.MathUtils.clamp(pitch,-Math.PI/3,Math.PI/3);
-    ship.rotation.set(pitch,yaw,ship.rotation.z);
 
-    let fwd=0,strafe=0,updn=0;
+    // girişler
+    let fwd=0, turn=0, updn=0;
     if(!isTouch){
-      if(keyState.KeyW||keyState.ArrowUp) fwd+=1;
-      if(keyState.KeyS||keyState.ArrowDown) fwd-=1;
-      if(keyState.KeyD||keyState.ArrowRight) strafe+=1;
-      if(keyState.KeyA||keyState.ArrowLeft)  strafe-=1;
-    }else{
-      fwd=joyLY; strafe=joyLX; if(upHeld) updn+=1; if(downHeld) updn-=1;
+      if(keyState.KeyW) fwd+=1;
+      if(keyState.KeyS) fwd-=1;
+      if(keyState.KeyD) turn -= 1;   // sağa dön
+      if(keyState.KeyA) turn += 1;   // sola dön
+    } else {
+      fwd = joyY;  turn = -joyX;     // soldaki joystick: ileri/geri + dönüş
+      if(upHeld) updn += 1; if(downHeld) updn -= 1;
     }
 
-    const ACC=22.0, DAMP=0.90, MAX=18.0;
-    velF=THREE.MathUtils.clamp(velF+fwd*ACC*dt,-MAX,MAX);
-    velS=THREE.MathUtils.clamp(velS+strafe*ACC*dt,-MAX,MAX);
-    vY  =THREE.MathUtils.clamp(vY+updn*ACC*dt,-MAX*0.6,MAX*0.6);
-    velF*=Math.pow(DAMP,dt*60); velS*=Math.pow(DAMP,dt*60); vY*=Math.pow(0.92,dt*60);
+    // hız/ivme
+    const ACC=36.0, DAMP=0.92, MAX=26.0; // ↑ hızlı
+    velF   = THREE.MathUtils.clamp(velF   + fwd * ACC * dt, -MAX, MAX);
+    turnVel= THREE.MathUtils.clamp(turnVel+ turn* 2.4 * dt, -1.8, 1.8);  // dönüş hızı
+    vY     = THREE.MathUtils.clamp(vY     + updn* ACC * dt, -MAX*0.6, MAX*0.6);
+    velF   *= Math.pow(DAMP,dt*60);
+    turnVel*= Math.pow(0.85,dt*60);
+    vY     *= Math.pow(0.92,dt*60);
 
-    const fwdV=new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion);
-    const rightV=new THREE.Vector3(0,0,1).applyQuaternion(ship.quaternion);
+    // yön güncelle (yaw)
+    yaw += turnVel;
 
-    ship.position.addScaledVector(fwdV,velF*dt);
-    ship.position.addScaledVector(rightV,velS*dt);
-    if(isTouch){ ship.position.y += vY*dt; }
-    ship.position.y += Math.sin(pitch)*velF*.75*dt;
-    ship.position.y  = THREE.MathUtils.clamp(ship.position.y, -60, 60);
+    // gemi rotasyonu
+    ship.rotation.set(pitch, yaw, THREE.MathUtils.damp(ship.rotation.z, -turnVel*0.8, 10, dt)); // roll sadece görsel
 
-    const targetRoll=-velS*.035;
-    ship.rotation.z += (targetRoll - ship.rotation.z) * (1-Math.pow(.06,dt*60));
+    // hareket
+    const forward=new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion);
+    ship.position.addScaledVector(forward, velF*dt);
+    if(isTouch) ship.position.y += vY*dt;
+    ship.position.y += Math.sin(pitch)*velF*.85*dt;   // doğal tırmanış
+    ship.position.y  = THREE.MathUtils.clamp(ship.position.y, -70, 70);
   }
 
   /* ---------- Overlay & hint ---------- */
@@ -254,7 +269,8 @@
     if(nearest){
       tmpV.copy(nearest.position); tmpV.y+=12; tmpV.project(camera);
       if(tmpV.z<1&&tmpV.z>-1){ let x=(tmpV.x*.5+.5)*W, y=(-tmpV.y*.5+.5)*H; x=clamp1(x,18,W-18); y=clamp1(y,60,H-80);
-        hintEl.textContent = (isTouch?'Tap to View':'Press E to View'); hintEl.style.left=x+'px'; hintEl.style.top=y+'px'; hintEl.style.display='block';
+        hintEl.textContent = (isTouch?'Tap card or E':'Press E or click card');
+        hintEl.style.left=x+'px'; hintEl.style.top=y+'px'; hintEl.style.display='block';
       } else hintEl.style.display='none';
     } else hintEl.style.display='none';
   }
@@ -266,7 +282,7 @@
   function qvOpenFor(planet){const p=planet.userData.project; qvTitle.textContent=p.title; qvTag.textContent=p.tag||''; qvMedia.style.backgroundImage=`url('${p.cover||''}')`; qv.classList.add('show');}
   function qvCloseFn(){ qv.classList.remove('show'); }
   qvClose.addEventListener('click', qvCloseFn); qvExit.addEventListener('click', qvCloseFn);
-  renderer.domElement.addEventListener('click', ()=>{ if(nearest && !qv.classList.contains('show')) qvOpenFor(nearest); });
+  // NOT: canvas click ile açma kaldırıldı
 
   /* ---------- Resize + loop ---------- */
   addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();});

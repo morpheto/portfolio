@@ -88,7 +88,6 @@
 
   <canvas id="scene"></canvas>
 
-  <!-- Three.js (non-module, yerelde çalışır) -->
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script>
   /* ================= Core ================= */
@@ -104,9 +103,9 @@
   const key = new THREE.DirectionalLight(0xffffff,.9); key.position.set(160,220,120); scene.add(key);
   const rim = new THREE.DirectionalLight(0x6cb8ff,.6); rim.position.set(-220,160,-120); scene.add(rim);
 
-  /* ============ Glowing stars ============ */
-  (function stars(){
-    const count=1800;
+  /* ============ Glowing stars (instanced spheres) ============ */
+  (function addGlowingStars(){
+    const count=2000;
     const geom=new THREE.SphereGeometry(0.55,8,8);
     const mat =new THREE.MeshBasicMaterial({color:0xbed9ff});
     const inst=new THREE.InstancedMesh(geom,mat,count);
@@ -260,127 +259,178 @@
   camera.position.copy(ship.position).add(camOffsetLocal);
   camera.lookAt(ship.position.clone().add(lookAheadLocal));
 
-  /* ============== Input (Desktop: mouse-aim + WASD) ============== */
+  /* ====== Input detection ====== */
   const isTouch = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
-  const keys=new Set();
-  if(!isTouch){
-    addEventListener('keydown',e=>{keys.add(e.key.toLowerCase()); if(e.key==='e'&&nearest&&!qv.classList.contains('show')) qvOpenFor(nearest); if(e.key==='q') qvCloseFn();});
-    addEventListener('keyup',e=>{keys.delete(e.key.toLowerCase());});
+
+  /* ====== Desktop keyboard state (code bazlı) ====== */
+  const keyState = { KeyW:false, KeyA:false, KeyS:false, KeyD:false, ArrowUp:false, ArrowDown:false, ArrowLeft:false, ArrowRight:false, KeyQ:false, KeyE:false, Space:false, ShiftLeft:false, ShiftRight:false };
+
+  function setKey(e, down){
+    const code = e.code;
+    if (code in keyState){
+      keyState[code] = down;
+      if (['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(code)) e.preventDefault();
+    }
+    if (down && code === 'KeyE' && nearest && !qv.classList.contains('show')) qvOpenFor(nearest);
+    if (down && code === 'KeyQ') qvCloseFn();
   }
-  let velF=0, velStrafe=0, vY=0, yaw=0, pitch=0, yawVel=0, pitchVel=0, pitchTarget=0;
-  // mouse aim
-  let mouseDown=false, lastX=0, lastY=0;
-  if(!isTouch){
-    renderer.domElement.addEventListener('mousedown',e=>{mouseDown=true; lastX=e.clientX; lastY=e.clientY;});
-    addEventListener('mouseup',()=>{mouseDown=false;});
-    addEventListener('mousemove',e=>{
-      if(!mouseDown) return;
-      const dx=(e.clientX-lastX), dy=(e.clientY-lastY); lastX=e.clientX; lastY=e.clientY;
-      yawVel   -= dx*0.0008;               // sola sürükle → +yaw
-      pitchVel -= dy*0.0008;               // yukarı sürükle → -pitch
+
+  if (!isTouch) {
+    window.addEventListener('keydown', (e)=> setKey(e, true), {passive:false});
+    window.addEventListener('keyup',   (e)=> setKey(e, false), {passive:false});
+    window.addEventListener('mousedown', ()=>{
+      if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
+      canvas.focus && canvas.focus();
+    }, {once:true});
+  }
+
+  /* ====== Mouse aim (desktop) ====== */
+  let mouseDown=false, lastX=0, lastY=0, yaw=0, pitch=0, yawVel=0, pitchVel=0;
+  if (!isTouch) {
+    renderer.domElement.addEventListener('mousedown', (e)=>{ mouseDown=true; lastX=e.clientX; lastY=e.clientY; });
+    window.addEventListener('mouseup', ()=>{ mouseDown=false; });
+    window.addEventListener('mousemove', (e)=>{
+      if (!mouseDown) return;
+      const dx = e.clientX - lastX, dy = e.clientY - lastY;
+      lastX = e.clientX; lastY = e.clientY;
+      yawVel   -= dx * 0.0008;
+      pitchVel -= dy * 0.0008;
     });
   }
 
-  /* ============== Input (Mobile: joystick + drag aim) ============== */
+  /* ====== Mobile touch controls (joystick + drag aim + up/down) ====== */
   let joyLX=0, joyLY=0, aimDX=0, aimDY=0, upHeld=false, downHeld=false;
-  if(isTouch){
-    const joy = document.getElementById('joyL'); const knob=joy.querySelector('.knob');
-    const rectJoy=()=>joy.getBoundingClientRect();
+  if (isTouch) {
+    const joy = document.getElementById('joyL');
+    const knob = joy?.querySelector('.knob');
+    const rectJoy = ()=> joy.getBoundingClientRect();
+
     function onJoy(e){
-      const r=rectJoy(); const t=e.touches[0]; const cx=r.left+r.width/2, cy=r.top+r.height/2;
-      let dx=t.clientX-cx, dy=t.clientY-cy; const max=r.width*0.45; const len=Math.hypot(dx,dy);
-      if(len>max){ dx*=max/len; dy*=max/len; }
-      knob.style.transform=`translate(${dx}px,${dy}px)`;
-      joyLX =  dx/max;   // -1..1 (x)
-      joyLY = -dy/max;   // -1..1 (y, yukarı pozitif)
+      e.preventDefault();
+      const r = rectJoy(); const t = e.touches[0];
+      const cx = r.left + r.width/2, cy = r.top + r.height/2;
+      let dx = t.clientX - cx, dy = t.clientY - cy;
+      const max = r.width * 0.45; const len = Math.hypot(dx,dy);
+      if (len > max){ dx *= max/len; dy *= max/len; }
+      if (knob) knob.style.transform = `translate(${dx}px,${dy}px)`;
+      joyLX =  dx / max;   // -1..1
+      joyLY = -dy / max;   // -1..1 (up positive)
     }
-    function endJoy(){ knob.style.transform='translate(-50%,-50%)'; joyLX=joyLY=0; }
-    joy.addEventListener('touchstart',onJoy,{passive:false});
-    joy.addEventListener('touchmove', onJoy,{passive:false});
-    joy.addEventListener('touchend',  endJoy);
-    // aim zone
-    const aimZ=document.getElementById('aimZone'); let lastAX=0,lastAY=0,aimActive=false;
-    function aimStart(e){ aimActive=true; const t=e.touches[0]; lastAX=t.clientX; lastAY=t.clientY; }
-    function aimMove(e){
-      if(!aimActive) return; const t=e.touches[0];
+    function endJoy(e){ e && e.preventDefault(); if (knob) knob.style.transform='translate(-50%,-50%)'; joyLX = joyLY = 0; }
+
+    joy.addEventListener('touchstart', onJoy, {passive:false});
+    joy.addEventListener('touchmove',  onJoy, {passive:false});
+    joy.addEventListener('touchend',   endJoy, {passive:false});
+
+    // aim area
+    const aimZ = document.getElementById('aimZone');
+    let lastAX=0, lastAY=0, aimActive=false;
+    function aimStart(e){ e.preventDefault(); aimActive=true; const t=e.touches[0]; lastAX=t.clientX; lastAY=t.clientY; }
+    function aimMove(e){ e.preventDefault(); if(!aimActive) return; const t=e.touches[0];
       const dx=t.clientX-lastAX, dy=t.clientY-lastAY; lastAX=t.clientX; lastAY=t.clientY;
       aimDX -= dx*0.002; aimDY -= dy*0.002;
     }
-    function aimEnd(){ aimActive=false; }
+    function aimEnd(e){ e && e.preventDefault(); aimActive=false; }
     aimZ.addEventListener('touchstart',aimStart,{passive:false});
-    aimZ.addEventListener('touchmove', aimMove,{passive:false});
-    aimZ.addEventListener('touchend',  aimEnd);
+    aimZ.addEventListener('touchmove', aimMove, {passive:false});
+    aimZ.addEventListener('touchend',  aimEnd,   {passive:false});
+
     // up/down
-    document.getElementById('btnUp').addEventListener('touchstart',()=>{upHeld=true;});
-    document.getElementById('btnUp').addEventListener('touchend',()=>{upHeld=false;});
-    document.getElementById('btnDown').addEventListener('touchstart',()=>{downHeld=true;});
-    document.getElementById('btnDown').addEventListener('touchend',()=>{downHeld=false;});
+    const upBtn = document.getElementById('btnUp');
+    const dnBtn = document.getElementById('btnDown');
+    upBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); upHeld=true; }, {passive:false});
+    upBtn.addEventListener('touchend',   (e)=>{ e.preventDefault(); upHeld=false;}, {passive:false});
+    dnBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); downHeld=true;}, {passive:false});
+    dnBtn.addEventListener('touchend',   (e)=>{ e.preventDefault(); downHeld=false;}, {passive:false});
   }
 
-  /* ============== Movement update (common) ============== */
-  function updateShip(dt,t){
-    // aim (desktop: mouse; mobile: drag)
-    if(!isTouch){ yaw   += yawVel; pitch += pitchVel; yawVel*=Math.pow(0.9, dt*60); pitchVel*=Math.pow(0.9, dt*60); }
-    else{ yaw += aimDX; pitch += aimDY; aimDX*=Math.pow(0.92, dt*60); aimDY*=Math.pow(0.92, dt*60); }
-    // clamp pitch
+  /* ====== Movement (ortak) ====== */
+  let velF=0, velStrafe=0, vY=0;
+  function updateShip(dt, t){
+    // AIM
+    if (!isTouch){
+      yaw   += yawVel; pitch += pitchVel;
+      yawVel   *= Math.pow(0.9, dt*60);
+      pitchVel *= Math.pow(0.9, dt*60);
+    } else {
+      yaw   += aimDX;  pitch += aimDY;
+      aimDX *= Math.pow(0.92, dt*60);
+      aimDY *= Math.pow(0.92, dt*60);
+    }
     pitch = THREE.MathUtils.clamp(pitch, -Math.PI/3, Math.PI/3);
     ship.rotation.set(pitch, yaw, ship.rotation.z);
 
-    // keyboard/mobil forward/strafe/updown intents
+    // INPUT: Desktop = WASD, Mobile = joystick
     let fwd=0, strafe=0, updn=0;
-    if(!isTouch){
-      if(keys.has('w')) fwd+=1; if(keys.has('s')) fwd-=1;
-      if(keys.has('a')) strafe-=1; if(keys.has('d')) strafe+=1;
-      if(keys.has('e')){} // E quickview için
-      if(keys.has('q')){} // close için
-      // vertical için ayrı tuş yok; pitch yukarı bakarken W zaten yükseltir (uçak gibi)
+    if (!isTouch){
+      if (keyState.KeyW || keyState.ArrowUp)    fwd += 1;
+      if (keyState.KeyS || keyState.ArrowDown)  fwd -= 1;
+      if (keyState.KeyD || keyState.ArrowRight) strafe += 1;
+      if (keyState.KeyA || keyState.ArrowLeft)  strafe -= 1;
+      // küçük yardımcı: Space/Shift ile ince dikey
+      if (keyState.Space)      updn += 0.7;
+      if (keyState.ShiftLeft || keyState.ShiftRight) updn -= 0.7;
     }else{
       fwd = joyLY; strafe = joyLX;
-      if(upHeld) updn += 1; if(downHeld) updn -= 1;
+      if (upHeld) updn += 1;
+      if (downHeld) updn -= 1;
     }
 
-    // hızlar
-    const ACC=8.0, DEC=0.9, MAXS=8.0;
-    velF     += (fwd    *ACC*dt);    velF     *= Math.pow(DEC, dt*60);
-    velStrafe+= (strafe *ACC*dt);    velStrafe*= Math.pow(DEC, dt*60);
-    vY       += (updn   *ACC*dt);    vY       *= Math.pow(0.92, dt*60);
+    const ACC=10.0, DAMP=0.88, MAX=9.0;
+    velF      = THREE.MathUtils.clamp( velF      + fwd   * ACC * dt, -MAX, MAX );
+    velStrafe = THREE.MathUtils.clamp( velStrafe + strafe* ACC * dt, -MAX, MAX );
+    vY        = THREE.MathUtils.clamp( vY        + updn  * ACC * dt, -MAX*0.7, MAX*0.7 );
+    velF      *= Math.pow(DAMP, dt*60);
+    velStrafe *= Math.pow(DAMP, dt*60);
+    vY        *= Math.pow(0.92, dt*60);
 
-    velF      = THREE.MathUtils.clamp(velF, -MAXS, MAXS);
-    velStrafe = THREE.MathUtils.clamp(velStrafe, -MAXS, MAXS);
-    vY        = THREE.MathUtils.clamp(vY, -MAXS*0.7, MAXS*0.7);
-
-    // hareket eksenleri (gemi uzayı)
     const forward = new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion);
-    const right   = new THREE.Vector3(0,0,1).applyQuaternion(ship.quaternion); // z-ekseni sağ/sol
+    const right   = new THREE.Vector3(0,0,1).applyQuaternion(ship.quaternion);
     const upv     = new THREE.Vector3(0,1,0);
 
-    ship.position.addScaledVector(forward, velF*dt);
-    ship.position.addScaledVector(right,   velStrafe*dt);
-    ship.position.addScaledVector(upv,     vY*dt);
+    ship.position.addScaledVector(forward, velF * dt);
+    ship.position.addScaledVector(right,   velStrafe * dt);
+    ship.position.addScaledVector(upv,     vY * dt);
 
-    // pitch gesture ile dikey yükselme etkisi (desktop): ileri hız + pitch yukarı → yukarı hareket
-    if(!isTouch){
-      const climb = Math.sin(pitch) * velF * 0.6;
-      ship.position.y += climb * dt;
+    // pitch’e bağlı doğal tırmanış (desktop)
+    if (!isTouch){
+      ship.position.y += Math.sin(pitch) * velF * 0.6 * dt;
     }
     ship.position.y = THREE.MathUtils.clamp(ship.position.y, -40, 40);
 
-    // görsel roll (strafe/dönüşte eğilme)
+    // strafe görsel roll
     const targetRoll = -velStrafe*0.03;
     ship.rotation.z += (targetRoll - ship.rotation.z) * (1 - Math.pow(0.05, dt*60));
-
-    // burun kaldırma/indirme için kamera offsetini etkiler (updateCamera içinde)
   }
 
   /* ============== Overlay Cards & Hint ============== */
   function clamp1(v,min,max){return Math.max(min,Math.min(max,v));}
-  const cardsRefSync=()=>{ if(cardsRef.length) return; // zaten var
-    PROJECTS.forEach((p,i)=>{ const el=document.createElement('div'); el.className='planet-card';
-      el.innerHTML=`<div class="planet-card__media" style="background-image:url('${p.cover||''}')"></div>
-      <div class="badge">${p.tag||''}</div><div class="planet-card__meta"><div class="title">${p.title}</div><div class="tag">${p.tag||''}</div></div>`;
-      overlay.appendChild(el); cardsRef.push({el,obj:planets[i]}); });
-  };
-  cardsRefSync();
+  const cardsRef=[]; PROJECTS.forEach((p,i)=>{ const el=document.createElement('div'); el.className='planet-card';
+    el.innerHTML=`<div class="planet-card__media" style="background-image:url('${p.cover||''}')"></div>
+    <div class="badge">${p.tag||''}</div><div class="planet-card__meta"><div class="title">${p.title}</div><div class="tag">${p.tag||''}</div></div>`;
+    overlay.appendChild(el); cardsRef.push({el}); });
+
+  const planets=[]; // planet meshes eklenecek
+  // konumlar
+  const POS=[], RMIN=60, RMAX=150;
+  for(let i=0;i<PROJECTS.length;i++){
+    const R=THREE.MathUtils.randFloat(RMIN,RMAX), th=(i/PROJECTS.length)*Math.PI*2 + Math.random()*0.7;
+    POS.push([Math.cos(th)*R + THREE.MathUtils.randFloatSpread(30), THREE.MathUtils.randFloatSpread(22), Math.sin(th)*R + THREE.MathUtils.randFloatSpread(30)]);
+  }
+  for(let i=POS.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [POS[i],POS[j]]=[POS[j],POS[i]];}
+
+  function buildPlanets(){
+    PROJECTS.forEach((proj,i)=>{
+      const radius=THREE.MathUtils.randFloat(8,18);
+      const color=new THREE.Color().setHSL(THREE.MathUtils.randFloat(0.55,0.72),THREE.MathUtils.randFloat(0.35,0.55),THREE.MathUtils.randFloat(0.45,0.65)).getHex();
+      const type=(Math.random()<0.4)?'crater':(Math.random()<0.5?'nebula':'plain');
+      const m=makePlanet(radius,type,color);
+      const [x,y,z]=POS[i]; m.position.set(x,y,z);
+      m.userData.project=PROJECTS[i]; scene.add(m); planets.push(m);
+      cardsRef[i].obj = m;
+    });
+  }
+  buildPlanets();
 
   let nearest=null;
   function updateCardsAndHint(){
@@ -421,8 +471,7 @@
   // click open (near)
   renderer.domElement.addEventListener('click',()=>{ if(nearest && !qv.classList.contains('show')) qvOpenFor(nearest); });
 
-  /* ============== Resize + Loop ============== */
-  addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();});
+  /* ============== Loop ============== */
   const clock=new THREE.Clock();
   function loop(){
     const dt=Math.min(0.033, clock.getDelta()), t=clock.getElapsedTime();
@@ -432,6 +481,7 @@
     renderer.render(scene,camera); requestAnimationFrame(loop);
   }
   loop();
+
   </script>
 </body>
 </html>

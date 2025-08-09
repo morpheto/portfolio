@@ -44,7 +44,7 @@
     .glare{pointer-events:none;position:absolute;inset:-1px;border-radius:inherit;overflow:hidden}
     .glare::before{content:"";position:absolute;left:var(--gx,50%);top:var(--gy,50%);width:90%;height:90%;
       background:radial-gradient( circle at center, rgba(255,255,255,.20), rgba(255,255,255,.06) 45%, rgba(255,255,255,0) 60%);
-      transform:translate(-50%,-50%) rotate(var(--grot,0deg)); filter:blur(16px); opacity:.9; transition:opacity .32s ease}
+      transform:translate(-50%, -50%) rotate(var(--grot,0deg)); filter:blur(16px); opacity:.9; transition:opacity .32s ease}
     .meta{display:flex;align-items:center;justify-content:space-between;padding:12px 14px}
     .title{font-weight:600}
     .tag{font-size:12px;color:#c8cdd8}
@@ -97,17 +97,9 @@
       animation: trailFade .5s ease-out forwards;
       box-shadow: 0 0 14px rgba(255,255,255,.65);
     }
-    @keyframes trailFade {
-      to { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-    }
-    @media (hover: none) {
-      body.custom-cursor { cursor: auto; }
-      .cursor-dot { display:none !important; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      body.custom-cursor { cursor: auto; }
-      .cursor-dot, .cursor-trail { display:none !important; }
-    }
+    @keyframes trailFade { to { transform: translate(-50%, -50%) scale(0); opacity: 0; } }
+    @media (hover: none) { body.custom-cursor { cursor: auto; } .cursor-dot { display:none !important; } }
+    @media (prefers-reduced-motion: reduce) { body.custom-cursor { cursor: auto; } .cursor-dot, .cursor-trail { display:none !important; } }
 
     /* Hover pulse + micro shake on project covers */
     @keyframes pulseGlow { from { filter: brightness(1) saturate(1); } to { filter: brightness(1.15) saturate(1.06); } }
@@ -116,12 +108,8 @@
       50%{ transform: translateZ(30px) scale(1.04) translate(.7px,-.7px); }
       100%{transform: translateZ(30px) scale(1.04) translate(-.7px,.7px); }
     }
-    .card:hover .media img{
-      animation: pulseGlow 1.2s ease-in-out infinite alternate, microShake .18s linear infinite;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .card:hover .media img{ animation: none !important; }
-    }
+    .card:hover .media img{ animation: pulseGlow 1.2s ease-in-out infinite alternate, microShake .18s linear infinite; }
+    @media (prefers-reduced-motion: reduce) { .card:hover .media img{ animation: none !important; } }
   
     /* Clickable cursor state */
     a, button, [role="button"], .card { cursor: pointer; }
@@ -139,9 +127,10 @@
   <header>
     <div class="container">
       <nav>
-        <a class="brand" href="/">ORHUN EGE EKER</a>
+        <!-- KÖK (/) YOK: repo alt yolunda 404 olmasın -->
+        <a class="brand" href="space.html">ORHUN EGE EKER</a>
         <div class="navlinks">
-          <a href="/">SPACE</a>
+          <a href="space.html">SPACE</a>
           <a href="projects.html">PROJECTS</a>
           <a href="about.html">ABOUT</a>
           <a href="contact.html">CONTACT</a>
@@ -272,7 +261,6 @@
       p9:{ title:'AI Visualizer from Image', tag:'Concept · AI', cover:'media/p9_cover.jpg', desc:'Transforming a provided image into AI-augmented motion and visual textures.', video:'media/p9_demo.mp4', gifs:['media/p9_g1.gif'], images:['media/p9_img1.jpg','media/p9_img2.jpg'] }
     };
 
-    // Detail routing
     const listEl = document.getElementById('list');
     const detailEl = document.getElementById('detail');
     function showList(){ detailEl.style.display='none'; listEl.style.display='block'; }
@@ -316,7 +304,6 @@
     });
     document.getElementById('backLink').addEventListener('click', (e)=>{ e.preventDefault(); navigateTo(null); });
 
-    // Tilt + Glare (only on hover devices)
     if (window.matchMedia('(hover: hover)').matches) {
       const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
       const maxTilt = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tilt')) || 6;
@@ -351,7 +338,6 @@
       });
     }
   
-    // ---- Custom Cursor + Particle Trail ----
     (function(){
       const isHoverable = window.matchMedia('(hover: hover)').matches;
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -402,13 +388,12 @@
       }
 
       window.addEventListener('pointermove', moveDot, {passive:true});
-      window.addEventListener('pointerdown', e=>{ dot.style.transform = 'translate(-50%, -50%) scale(0.85)'; });
-      window.addEventListener('pointerup', e=>{ dot.style.transform = 'translate(-50%, -50%) scale(1)'; });
-      window.addEventListener('blur', ()=>{ dot.style.display='none'; });
+      window.addEventListener('pointerdown', ()=>{ dot.style.transform = 'translate(-50%, -50%) scale(0.85)'; });
+      window.addEventListener('pointerup',   ()=>{ dot.style.transform = 'translate(-50%, -50%) scale(1)'; });
+      window.addEventListener('blur',  ()=>{ dot.style.display='none'; });
       window.addEventListener('focus', ()=>{ dot.style.display='block'; });
     })();
 
-    // Cursor state on clickable elements
     (function(){
       const isHoverable = window.matchMedia('(hover: hover)').matches;
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -425,7 +410,6 @@
       document.addEventListener('pointerout',  e => updateState(e.relatedTarget), {passive:true});
     })();
 
-    // Routing init
     const initial = new URL(window.location.href).searchParams.get('p');
     if(initial){ renderDetail(initial); }
   </script>

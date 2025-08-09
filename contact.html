@@ -2,29 +2,146 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Contact - Orhun Ege Eker</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact — Orhun Ege Eker</title>
+  <meta name="description" content="Contact Orhun Ege Eker — Multidisciplinary Designer" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0c0c0e; --panel:#121215; --text:#f6f7fb; --muted:#aeb4c0; --border:#1f2126;
+      --radius:20px; --radius-sm:14px; --shadow:0 14px 40px rgba(0,0,0,.45);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1180px;margin:0 auto;padding:0 20px}
+
+    header{position:sticky;top:0;z-index:50;background:rgba(12,12,14,.6);backdrop-filter:saturate(160%) blur(10px);border-bottom:1px solid var(--border)}
+    nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-weight:800;letter-spacing:.4px; font-size:16px}
+    .navlinks{display:flex;gap:20px;font-size:14px}
+    .navlinks a{opacity:.85;position:relative}
+    .navlinks a:after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:#2b2d33;transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
+    .navlinks a:hover{opacity:1}
+    .navlinks a:hover:after{transform:scaleX(1)}
+
+    main{padding:56px 0 24px}
+    h1{font-size:clamp(30px,4.2vw,44px);margin:0 0 12px;line-height:1.1}
+    p.lead{color:var(--text);max-width:820px;margin:0 0 22px}
+
+    .panel{border:1px solid var(--border);background:var(--panel);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+    form{display:grid;gap:18px;margin-top:12px;max-width:680px}
+    input,textarea{background:#0f1013;color:var(--text);border:1px solid var(--border);border-radius:14px;padding:14px 16px;font:inherit}
+    textarea{min-height:140px;resize:vertical}
+    input:focus,textarea:focus{outline:none;border-color:#2b2d33}
+    button{justify-self:start;background:#15161a;border:1px solid #2a2c32;color:#eaeef7;padding:12px 16px;border-radius:14px;cursor:pointer}
+    button:hover{background:#1b1d22}
+
+    footer{border-top:1px solid var(--border);margin-top:44px}
+    footer .inner{padding:22px 0;color:#cbd5e1;font-size:14px;text-align:center}
+
+    /* Custom cursor (same as index) */
+    body.custom-cursor { cursor: none; }
+    .cursor-dot {
+      position: fixed; left:0; top:0; width:20px; height:20px; border-radius:50%;
+      pointer-events: none; transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.18);
+      box-shadow: 0 0 18px rgba(255,255,255,0.75), 0 0 48px rgba(255,255,255,0.35);
+      mix-blend-mode: screen; backdrop-filter: blur(2px);
+      z-index: 1000;
+    }
+    .cursor-trail {
+      position: fixed; left:0; top:0; width:8px; height:8px; border-radius:50%;
+      pointer-events: none; transform: translate(-50%, -50%) scale(1);
+      background: rgba(255,255,255,0.2);
+      z-index: 999; opacity:.9; will-change: transform, opacity;
+      animation: trailFade .5s ease-out forwards;
+      box-shadow: 0 0 14px rgba(255,255,255,.65);
+    }
+    @keyframes trailFade { to { transform: translate(-50%, -50%) scale(0); opacity: 0; } }
+
+    a, button, [role="button"]{cursor:pointer}
+    body.cursor-pointer .cursor-dot{
+      width:26px;height:26px;background:rgba(255,255,255,0.12);
+      box-shadow:0 0 24px rgba(255,255,255,0.9), 0 0 60px rgba(255,255,255,0.45);
+      outline:2px solid rgba(255,255,255,0.6); outline-offset:2px;
+    }
+
+    @media (hover: none) { body.custom-cursor{cursor:auto} .cursor-dot{display:none!important} }
+    @media (prefers-reduced-motion: reduce){ body.custom-cursor{cursor:auto} .cursor-dot,.cursor-trail{display:none!important} }
+  </style>
 </head>
 <body>
-  <header class="header">
-    <div class="container" style="max-width:1180px">
-      <div class="brand" style="font-weight:800;letter-spacing:.4px;font-size:16px;">Orhun Ege Eker</div>
-      <nav class="navlinks" style="display:flex;gap:20px;font-size:14px">
-        <a href="index.html">WORK</a>
-        <a href="about.html">ABOUT</a>
-        <a href="contact.html">CONTACT</a>
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+
+  <header>
+    <div class="container">
+      <nav>
+        <a class="brand" href="index.html">ORHUN EGE EKER</a>
+        <div class="navlinks">
+          <a href="index.html">WORK</a>
+          <a href="about.html">ABOUT</a>
+          <a href="contact.html">CONTACT</a>
+        </div>
       </nav>
     </div>
   </header>
 
-  <main>
-    <section class="contact-section">
-      <div class="container" style="max-width:1180px">
-        <h1>Contact</h1>
-        <p>You can reach me directly at <a href="mailto:hello@orhunege.space">hello@orhunege.space</a> for collaborations, commissions, or any inquiries about my work.</p>
-      </div>
+  <main class="container">
+    <h1>Contact</h1>
+    <p class="lead">If you have a project in mind or any questions about my work, feel free to get in touch.</p>
+
+    <section class="panel">
+      <form action="mailto:hello@orhunege.space" method="post" enctype="text/plain">
+        <input type="text" name="name" placeholder="Your Name / Company" required>
+        <input type="email" name="email" placeholder="Your Email" required>
+        <textarea name="message" placeholder="Your Message" required></textarea>
+        <button type="submit">Send via Email</button>
+      </form>
+      <p style="margin-top:14px;color:#cbd5e1;font-size:14px">
+        Or email directly: <a href="mailto:hello@orhunege.space">hello@orhunege.space</a>
+      </p>
     </section>
   </main>
+
+  <footer>
+    <div class="container inner">© <span id="y"></span> Orhun Ege Eker</div>
+  </footer>
+
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    (function(){
+      const hover = window.matchMedia('(hover: hover)').matches;
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(!hover || reduced) return;
+      document.body.classList.add('custom-cursor');
+      const dot = document.getElementById('cursorDot');
+      let x=0,y=0,rafId=null; const live=new Set(); const max=60;
+
+      function move(e){
+        x=e.clientX; y=e.clientY;
+        if(!rafId){ rafId=requestAnimationFrame(()=>{ dot.style.left=x+'px'; dot.style.top=y+'px'; rafId=null; }); }
+        spawn(x,y);
+      }
+      function spawn(px,py){
+        if(live.size>=max){ const d=live.values().next().value; if(d){live.delete(d); d.remove();} }
+        const p=document.createElement('div'); p.className='cursor-trail';
+        const s=6+Math.random()*6; p.style.width=s+'px'; p.style.height=s+'px';
+        p.style.left=px+'px'; p.style.top=py+'px';
+        p.style.boxShadow='0 0 '+(10+Math.random()*12)+'px rgba(255,255,255,.7)';
+        document.body.appendChild(p); live.add(p);
+        p.addEventListener('animationend',()=>{live.delete(p); p.remove();},{once:true});
+      }
+      document.addEventListener('pointermove', move, {passive:true});
+      document.addEventListener('pointerover', e => document.body.classList.toggle('cursor-pointer', !!e.target.closest('a,button,[role="button"]')), {passive:true});
+      document.addEventListener('pointerout',  ()=> document.body.classList.remove('cursor-pointer'), {passive:true});
+      window.addEventListener('pointerdown', ()=>{ dot.style.transform='translate(-50%, -50%) scale(0.85)'; });
+      window.addEventListener('pointerup',   ()=>{ dot.style.transform='translate(-50%, -50%) scale(1)'; });
+    })();
+  </script>
 </body>
 </html>

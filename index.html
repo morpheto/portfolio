@@ -12,6 +12,7 @@
   html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
   canvas#scene{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
+  /* HUD */
   .hud{
     position:fixed;top:12px;left:12px;right:12px;z-index:10;
     display:flex;align-items:center;justify-content:space-between;
@@ -27,8 +28,7 @@
     position:fixed;right:12px;bottom:12px;z-index:10;color:var(--muted);font-size:12px;line-height:1.5;
     padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.06);backdrop-filter:blur(6px)
   }
-
-  /* Ada üstü küçük kartlar */
+  /* Ada üstü kartlar */
   .overlay{position:fixed;inset:0;pointer-events:none;z-index:9}
   .island-card{
     position:absolute; transform:translate(-50%,-100%); width:260px; max-width:40vw;
@@ -45,34 +45,20 @@
     border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(6px);
     font-size:11px;padding:6px 8px;border-radius:999px;color:#f7f8fc
   }
-
-  /* Yakınlık pop-up (büyük) */
-  .popup{
-    position:fixed;inset:0;z-index:12;display:none;align-items:center;justify-content:center;
-    background:rgba(0,0,0,.45);backdrop-filter:blur(4px)
-  }
+  /* Yakınlık pop-up */
+  .popup{position:fixed;inset:0;z-index:12;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
   .popup.show{display:flex}
-  .popup-card{
-    width:min(820px,92vw); border:1px solid rgba(255,255,255,.18); border-radius:18px;
-    background:#0f1116; box-shadow:0 20px 60px rgba(0,0,0,.55); overflow:hidden
-  }
+  .popup-card{width:min(820px,92vw); border:1px solid rgba(255,255,255,.18); border-radius:18px; background:#0f1116; box-shadow:0 20px 60px rgba(0,0,0,.55); overflow:hidden}
   .popup-media{height:min(52vh,460px); background:#151823; background-size:cover; background-position:center}
   .popup-body{padding:14px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px}
   .popup-title{font-weight:800; font-size:18px}
   .popup-tag{font-size:12px; color:#cfd6e3}
   .popup-actions{display:flex; gap:10px}
-  .btn{
-    padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,.16);
-    background:#171a22; color:#fff; font-size:14px; text-decoration:none
-  }
+  .btn{padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,.16); background:#171a22; color:#fff; font-size:14px; text-decoration:none}
   .btn:hover{background:#1c212b}
   .btn.primary{background:#1e5eff;border-color:#2b66ff}
   .btn.primary:hover{background:#2a6bff}
-  .popup-close{
-    position:absolute; top:14px; right:14px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06);
-    border-radius:10px; padding:6px 10px; cursor:pointer
-  }
-
+  .popup-close{position:absolute; top:14px; right:14px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); border-radius:10px; padding:6px 10px; cursor:pointer}
   @media (max-width:640px){
     .brand{font-size:14px} .nav a{font-size:13px} .hud{padding:8px 10px}
     .island-card{width:200px} .island-card__media{height:110px}
@@ -98,7 +84,6 @@
 
   <div class="overlay" id="overlay"></div>
 
-  <!-- Yakınlık pop-up -->
   <div class="popup" id="popup">
     <div class="popup-card">
       <div class="popup-close" id="popupClose">✕</div>
@@ -120,7 +105,7 @@
 
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script>
-    // ------- Renderer / Scene / Camera -------
+    /* ---------- Setup ---------- */
     const canvas = document.getElementById('scene');
     const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
     const DPR = Math.min(2, window.devicePixelRatio || 1);
@@ -133,11 +118,9 @@
     scene.fog = new THREE.Fog(0x0a0d13, 60, 260);
 
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 800);
-    camera.position.set(0, 12, 18);
 
-    // ------- Lights -------
-    const hemi = new THREE.HemisphereLight(0xbad7ff, 0x0a0d13, 0.6);
-    scene.add(hemi);
+    /* ---------- Lights ---------- */
+    scene.add(new THREE.HemisphereLight(0xbad7ff, 0x0a0d13, 0.6));
     const sun = new THREE.DirectionalLight(0xffffff, 0.85);
     sun.position.set(80, 120, 40);
     sun.castShadow = true;
@@ -145,7 +128,7 @@
     Object.assign(sun.shadow.camera, { near:10, far:300, left:-120, right:120, top:120, bottom:-120 });
     scene.add(sun);
 
-    // ------- Water -------
+    /* ---------- Water ---------- */
     const waterGeo = new THREE.PlaneGeometry(2000, 2000, 300, 300);
     const waterMat = new THREE.MeshStandardMaterial({ color:0x0b2030, roughness:0.88, metalness:0.02, transparent:true, opacity:0.98 });
     const water = new THREE.Mesh(waterGeo, waterMat);
@@ -160,11 +143,10 @@
         const w = Math.sin(x*0.06 + t*0.7)*0.45 + Math.cos(y*0.08 - t*0.5)*0.35 + Math.sin((x+y)*0.02 + t*0.9)*0.18;
         pos.array[ix+2] = basePos[ix+2] + w;
       }
-      pos.needsUpdate = true;
-      waterGeo.computeVertexNormals();
+      pos.needsUpdate = true; waterGeo.computeVertexNormals();
     }
 
-    // ------- Projects / Islands -------
+    /* ---------- Projects / Islands ---------- */
     const PROJECTS = [
       { id:'p1', title:'Audio Reactive + Hand Tracked Visualizer', tag:'TouchDesigner', cover:'media/covers/p1.jpg' },
       { id:'p2', title:'Odin Pendant Animation',                   tag:'3D Works',      cover:'media/covers/p2.jpg' },
@@ -182,8 +164,7 @@
       [-30, 68], [ 22, 62], [62,  70]
     ];
     const islands = [];
-    const islandBase = new THREE.Color(0x3f5a44);
-    const islandHi   = new THREE.Color(0x9fe38a);
+    const islandBase = new THREE.Color(0x3f5a44), islandHi = new THREE.Color(0x9fe38a);
 
     function makeIsland(R=10, H=4.4, segs=22){
       const geo = new THREE.CylinderGeometry(R*0.72, R, H, segs, 2, false);
@@ -214,8 +195,7 @@
         <div class="island-card__meta">
           <div class="title">${p.title}</div>
           <div class="tag">${p.tag || ''}</div>
-        </div>
-      `;
+        </div>`;
       overlay.appendChild(el);
       return el;
     }
@@ -224,54 +204,51 @@
     PROJECTS.forEach((proj, i)=>{
       const [x,z] = ring[i];
       const isle = makeIsland( 9.5 + Math.random()*3.5, 4.4 + Math.random()*1.2, 24 );
-      // adaları alçak tut: y=1.2 (kart taşmasını engeller)
       isle.position.set(x, 1.2, z);
       isle.userData.project = proj;
       scene.add(isle);
       islands.push(isle);
 
-      const rg = new THREE.RingGeometry( (isle.geometry.parameters.radiusTop||8)*0.92, (isle.geometry.parameters.radiusBottom||10)*1.32, 64 );
+      const rg = new THREE.RingGeometry((isle.geometry.parameters.radiusTop||8)*0.92,(isle.geometry.parameters.radiusBottom||10)*1.32,64);
       const rm = new THREE.MeshBasicMaterial({ color:0xb6e6ff, transparent:true, opacity:0.10, side:THREE.DoubleSide });
       const ringMesh = new THREE.Mesh(rg, rm);
-      ringMesh.rotation.x = -Math.PI/2;
-      ringMesh.position.set(x, 0.1, z);
-      scene.add(ringMesh);
-      isle.userData.ring = ringMesh;
+      ringMesh.rotation.x = -Math.PI/2; ringMesh.position.set(x, 0.1, z);
+      scene.add(ringMesh); isle.userData.ring = ringMesh;
 
       cards.push({ el: makeOverlayCard(proj), obj: isle });
     });
 
-    // ------- Ship (procedural) -------
+    /* ---------- Ship (procedural) ----------
+       ÖN yönü = +X (yelken +X tarafında), bu yüzden ileri vektörü (1,0,0) */
     const ship = new THREE.Group();
-    const hull = new THREE.Mesh(
-      new THREE.CapsuleGeometry(0.8, 3.2, 6, 12),
-      new THREE.MeshStandardMaterial({ color:0x6b4f3b, roughness:0.8 })
-    );
-    hull.rotation.z = Math.PI/2; hull.castShadow = true; hull.receiveShadow = true;
-    ship.add(hull);
+    const hull = new THREE.Mesh(new THREE.CapsuleGeometry(0.8, 3.2, 6, 12), new THREE.MeshStandardMaterial({ color:0x6b4f3b, roughness:0.8 }));
+    hull.rotation.z = Math.PI/2; hull.castShadow = hull.receiveShadow = true; ship.add(hull);
     const deck = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.2, 0.9), new THREE.MeshStandardMaterial({ color:0x7b5a40, roughness:0.85 }));
     deck.position.set(0, 0.55, 0); ship.add(deck);
     const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.2, 8), new THREE.MeshStandardMaterial({ color:0xdad7cd, roughness:0.6 }));
     mast.position.set(0.1, 1.4, 0); ship.add(mast);
     const sail = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.4, 6, 6), new THREE.MeshStandardMaterial({ color:0xffffff, roughness:0.7, side:THREE.DoubleSide }));
     sail.position.set(0.7, 1.4, 0); sail.rotation.y = Math.PI/2.2; ship.add(sail);
-    ship.position.set(-78, 1.02, -48);
+    ship.position.set(-15, 1.02, -20); // sahnenin ortalarına
     scene.add(ship);
 
-    // ------- Camera chase (tam arkadan POV) -------
-    const camTarget = new THREE.Vector3();
+    /* ---------- Camera: tam arka POV (yelkenin zıttı) ----------
+       Kamera ofseti: geminin quaternion'una göre döndürülür */
+    const camOffsetLocal = new THREE.Vector3(0, 7.2, -12.8); // (x,y,z) => arka & yukarı
+    const lookAheadLocal = new THREE.Vector3(4.0, 1.6, 0);   // ön tarafa bak
+    const camPos = new THREE.Vector3(), lookAt = new THREE.Vector3();
+
     function updateCamera(dt){
-      // geminin ileri vektörü
-      const fwd = new THREE.Vector3(Math.sin(ship.rotation.y), 0, Math.cos(ship.rotation.y));
-      const camHeight = 7.2, camDist = 12.8, lookAhead = 4.0;
-      const desired = ship.position.clone().addScaledVector(fwd, -camDist).add(new THREE.Vector3(0, camHeight, 0));
-      camera.position.lerp(desired, 1 - Math.pow(0.002, dt*60));
-      const lookAt = ship.position.clone().addScaledVector(fwd, lookAhead).add(new THREE.Vector3(0,1.6,0));
-      camTarget.lerp(lookAt, 1 - Math.pow(0.002, dt*60));
-      camera.lookAt(camTarget);
+      const off = camOffsetLocal.clone().applyQuaternion(ship.quaternion);
+      camPos.copy(ship.position).add(off);
+      camera.position.lerp(camPos, 1 - Math.pow(0.002, dt*60));
+
+      const la = lookAheadLocal.clone().applyQuaternion(ship.quaternion);
+      lookAt.copy(ship.position).add(la);
+      camera.lookAt(lookAt);
     }
 
-    // ------- Controls (daha yavaş dönüş) -------
+    /* ---------- Controls (W/S ileri‑geri, A/D dönüş) ---------- */
     const keys = new Set();
     window.addEventListener('keydown', (e)=>{ keys.add(e.key.toLowerCase()); if(e.key==='e') openNearest(); });
     window.addEventListener('keyup',   (e)=>{ keys.delete(e.key.toLowerCase()); });
@@ -283,48 +260,49 @@
       const a = keys.has('a') || keys.has('arrowleft');
       const d = keys.has('d') || keys.has('arrowright');
 
+      // hızlar: ileri hızlı, geri sınırlı
       const ACC_F = 3.0, ACC_B = 1.8;
       const MAX_F = 4.2, MAX_B = -1.5;
       if (w) vel = Math.min(MAX_F, vel + ACC_F*dt);
       if (s) vel = Math.max(MAX_B, vel - ACC_B*dt);
-      if (!w && !s) vel *= Math.pow(0.988, dt*60);
+      if (!w && !s) vel *= Math.pow(0.988, dt*60); // sürtünme
 
-      const TURN = 0.85; // daha yavaş
+      // dönüş (yavaş ve sönümlü)
+      const TURN = 0.85;
       if (a) yawVel += TURN*dt;
       if (d) yawVel -= TURN*dt;
       yawVel = THREE.MathUtils.clamp(yawVel, -0.018, 0.018);
       ship.rotation.y += yawVel;
       yawVel *= Math.pow(0.92, dt*60);
 
-      const dir = new THREE.Vector3(Math.sin(ship.rotation.y), 0, Math.cos(ship.rotation.y));
-      ship.position.addScaledVector(dir, vel * dt * 2.1);
+      // ileri/geri hareket: geminin ÖN ekseni +X olduğu için local (1,0,0)
+      const fwd = new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion);
+      ship.position.addScaledVector(fwd, vel * dt * 2.1);
 
+      // dalga üstü
       ship.position.y = 1.02 + Math.sin(t*1.9)*0.12;
       ship.rotation.z = Math.sin(t*1.2 + ship.position.x*0.03)*0.02;
       ship.rotation.x = Math.cos(t*1.0 + ship.position.z*0.03)*0.015;
     }
 
-    // ------- Raycast / Click -------
+    /* ---------- Raycast / Hover / Click ---------- */
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     let hovered = null;
     function onPointerMove(e){
       const rect = renderer.domElement.getBoundingClientRect();
-      mouse.x = ( (e.clientX - rect.left) / rect.width ) * 2 - 1;
-      mouse.y = - ( (e.clientY - rect.top) / rect.height ) * 2 + 1;
+      mouse.x = ((e.clientX - rect.left)/rect.width)*2 - 1;
+      mouse.y = -((e.clientY - rect.top)/rect.height)*2 + 1;
     }
     function onClick(){
       raycaster.setFromCamera(mouse, camera);
       const hits = raycaster.intersectObjects(islands, false);
-      if(hits.length){
-        const pid = hits[0].object.userData.project.id;
-        window.location.href = `index.html?p=${pid}`;
-      }
+      if(hits.length){ window.location.href = `index.html?p=${hits[0].object.userData.project.id}`; }
     }
     renderer.domElement.addEventListener('pointermove', onPointerMove, {passive:true});
     renderer.domElement.addEventListener('click', onClick);
 
-    // ------- Resize -------
+    /* ---------- Resize ---------- */
     function onResize(){
       renderer.setSize(window.innerWidth, window.innerHeight);
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -332,35 +310,32 @@
     }
     window.addEventListener('resize', onResize);
 
-    // ------- Overlay kartlar (clamp'lı) -------
+    /* ---------- Kart projeksiyonu (clamp) ---------- */
     const tmpV = new THREE.Vector3();
     function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
 
     const cards = [];
-    // (kartlar yukarıda push edildi)
+    // kartlar islands yaratılırken eklendi (cards.push)
 
     function updateCards(){
       const W = window.innerWidth, H = window.innerHeight;
       for(const {el, obj} of cards){
-        tmpV.copy(obj.position); tmpV.y += 3.6; // daha düşük ofset
+        tmpV.copy(obj.position); tmpV.y += 3.6;
         tmpV.project(camera);
         let x = (tmpV.x *  0.5 + 0.5) * W;
         let y = (-tmpV.y * 0.5 + 0.5) * H;
-
         const onScreen = tmpV.z < 1 && tmpV.z > -1;
         if(onScreen){
-          const padX = 18, padYTop = 80, padYBot = 96; // üst/alt güvenlik
+          const padX = 18, padYTop = 80, padYBot = 96;
           x = clamp(x, padX, W - padX);
           y = clamp(y, padYTop, H - padYBot);
-
           el.style.left = x + 'px';
           el.style.top  = y + 'px';
-
           const dist = camera.position.distanceTo(obj.position);
           const alpha = THREE.MathUtils.clamp(1 - (dist-22)/90, 0, 1);
           el.style.opacity = (hovered===obj ? 1 : alpha*0.95);
           el.style.transform = `translate(-50%,-100%) scale(${0.9 + alpha*0.15})`;
-        }else{
+        } else {
           el.style.opacity = 0;
         }
       }
@@ -377,7 +352,7 @@
       }
     }
 
-    // ------- Yakınlık pop-up -------
+    /* ---------- Yakınlık pop-up ---------- */
     const popup = document.getElementById('popup');
     const popupTitle = document.getElementById('popupTitle');
     const popupTag   = document.getElementById('popupTag');
@@ -387,18 +362,16 @@
     const popupLater = document.getElementById('popupLater');
 
     let nearObj = null, nearPID = null;
-
     function checkProximity(){
       let best = null, dmin = Infinity;
       for(const isle of islands){
         const d = ship.position.distanceTo(isle.position);
         if(d < dmin){ dmin = d; best = isle; }
       }
-      const THRESH = 14; // yaklaşma eşiği
+      const THRESH = 14;
       if(best && dmin < THRESH){
         if(nearObj !== best){
-          nearObj = best;
-          nearPID = best.userData.project.id;
+          nearObj = best; nearPID = best.userData.project.id;
           popupTitle.textContent = best.userData.project.title;
           popupTag.textContent = best.userData.project.tag || '';
           popupMedia.style.backgroundImage = `url('${best.userData.project.cover || ''}')`;
@@ -414,8 +387,16 @@
     popupLater.addEventListener('click', (e)=>{ e.preventDefault(); popup.classList.remove('show'); });
     window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') popup.classList.remove('show'); });
 
-    // ------- Loop -------
+    /* ---------- Init cards ---------- */
+    const overlayEl = document.getElementById('overlay');
+    PROJECTS.forEach(p => cards.push({ el: makeOverlayCard(p), obj: islands.find(i=>i.userData.project.id===p.id) }));
+
+    /* ---------- Loop ---------- */
     const clock = new THREE.Clock();
+    // Başlangıç kamera konumu doğru POV’da
+    camera.position.copy(ship.position).add(camOffsetLocal);
+    camera.lookAt(ship.position.clone().add(new THREE.Vector3(4,1.6,0)));
+
     function loop(){
       const dt = Math.min(0.033, clock.getDelta());
       const t  = clock.elapsedTime;

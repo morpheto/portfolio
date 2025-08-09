@@ -3,20 +3,21 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Orhun Ege Eker — 3D Islands</title>
+<title>Orhun Ege Eker — Space Portfolio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
-  :root{ --bg:#0b0e14; --text:#f6f7fb; --muted:#cbd5e1; --border:#20242c; }
+  :root{ --bg:#05060a; --text:#f6f7fb; --muted:#cbd5e1; }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
   canvas#scene{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
 
+  /* HUD */
   .hud{
-    position:fixed;top:12px;left:12px;right:12px;z-index:10;
+    position:fixed;top:12px;left:12px;right:12px;z-index:20;
     display:flex;align-items:center;justify-content:space-between;
-    padding:10px 14px;background:rgba(12,12,14,.55);backdrop-filter:blur(8px) saturate(140%);
+    padding:10px 14px;background:rgba(8,10,18,.45);backdrop-filter:blur(8px) saturate(140%);
     border:1px solid rgba(255,255,255,.12);border-radius:16px
   }
   .brand{font-weight:800;letter-spacing:.4px;font-size:16px}
@@ -26,44 +27,47 @@
   .nav a:hover{opacity:1}.nav a:hover:after{transform:scaleX(1)}
 
   .help{
-    position:fixed;right:12px;bottom:12px;z-index:10;color:var(--muted);font-size:12px;line-height:1.5;
+    position:fixed;right:12px;bottom:12px;z-index:20;color:var(--muted);font-size:12px;line-height:1.5;
     padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.06);backdrop-filter:blur(6px)
   }
 
-  .overlay{position:fixed;inset:0;pointer-events:none;z-index:9}
-  .island-card{
-    position:absolute; transform:translate(-50%,-100%); width:260px; max-width:40vw;
-    border-radius:14px; overflow:hidden; border:1px solid rgba(255,255,255,.18);
-    background:#0f1116; box-shadow:0 10px 26px rgba(0,0,0,.45);
-    transition:opacity .18s ease, transform .18s ease; opacity:.0;
+  /* Hologram overlay kartları */
+  .overlay{position:fixed;inset:0;pointer-events:none;z-index:12}
+  .planet-card{
+    position:absolute;transform:translate(-50%,-100%);width:260px;max-width:40vw;
+    border-radius:14px;overflow:hidden;border:1px solid rgba(120,198,255,.28);
+    background:linear-gradient(180deg, rgba(20,24,40,.85), rgba(10,12,20,.9));
+    box-shadow:0 10px 26px rgba(0,0,0,.45), 0 0 22px rgba(64,191,255,.18);
+    transition:opacity .18s ease, transform .18s ease;opacity:.0;
   }
-  .island-card__media{height:140px;background:#1a1e27; background-size:cover; background-position:center}
-  .island-card__meta{display:flex;justify-content:space-between;align-items:center;padding:8px 10px}
+  .planet-card__media{height:140px;background:#0f1430;background-size:cover;background-position:center}
+  .planet-card__meta{display:flex;justify-content:space-between;align-items:center;padding:8px 10px}
   .title{font-weight:700}
   .tag{font-size:12px;color:#e5eaf3;opacity:.85}
   .badge{
-    position:absolute;left:8px;top:8px;background:rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(6px);
-    font-size:11px;padding:6px 8px;border-radius:999px;color:#f7f8fc
+    position:absolute;left:8px;top:8px;background:rgba(64,191,255,.12);
+    border:1px solid rgba(64,191,255,.4);backdrop-filter:blur(6px);
+    font-size:11px;padding:6px 8px;border-radius:999px;color:#cfefff
   }
 
-  .popup{position:fixed;inset:0;z-index:12;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
+  /* Quick View modal */
+  .popup{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
   .popup.show{display:flex}
-  .popup-card{width:min(820px,92vw); border:1px solid rgba(255,255,255,.18); border-radius:18px; background:#0f1116; box-shadow:0 20px 60px rgba(0,0,0,.55); overflow:hidden}
-  .popup-media{height:min(52vh,460px); background:#151823; background-size:cover; background-position:center}
-  .popup-body{padding:14px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px}
-  .popup-title{font-weight:800; font-size:18px}
-  .popup-tag{font-size:12px; color:#cfd6e3}
-  .popup-actions{display:flex; gap:10px}
-  .btn{padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,.16); background:#171a22; color:#fff; font-size:14px; text-decoration:none; cursor:pointer}
-  .btn:hover{background:#1c212b}
+  .popup-card{width:min(880px,92vw);border:1px solid rgba(120,198,255,.28);border-radius:18px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
+  .popup-media{height:min(56vh,500px);background:#0e1433;background-size:cover;background-position:center}
+  .popup-body{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .popup-title{font-weight:800;font-size:18px}
+  .popup-tag{font-size:12px;color:#cfd6e3}
+  .popup-actions{display:flex;gap:10px}
+  .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;text-decoration:none;cursor:pointer}
+  .btn:hover{background:#13203a}
   .btn.primary{background:#1e5eff;border-color:#2b66ff}
   .btn.primary:hover{background:#2a6bff}
-  .popup-close{position:absolute; top:14px; right:14px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); border-radius:10px; padding:6px 10px; cursor:pointer}
+  .popup-close{position:absolute;top:14px;right:14px;border:1px solid rgba(120,198,255,.3);background:rgba(64,191,255,.08);border-radius:10px;padding:6px 10px;cursor:pointer}
 
   @media (max-width:640px){
     .brand{font-size:14px} .nav a{font-size:13px} .hud{padding:8px 10px}
-    .island-card{width:200px} .island-card__media{height:110px}
+    .planet-card{width:200px} .planet-card__media{height:110px}
   }
 </style>
 </head>
@@ -81,11 +85,13 @@
     <b>Controls</b><br/>
     W / ↑ : Forward &nbsp;·&nbsp; S / ↓ : Reverse<br/>
     A : Turn Left &nbsp;·&nbsp; D : Turn Right<br/>
-    Click island: Quick View · E: Open (near) · Q / Esc: Close
+    Click planet: Quick View · E: Open (near) · Q / Esc: Close
   </div>
 
+  <!-- Hologram kartlar -->
   <div class="overlay" id="overlay"></div>
 
+  <!-- Quick View modal -->
   <div class="popup" id="quickview">
     <div class="popup-card" role="dialog" aria-modal="true" aria-labelledby="qvTitle">
       <button class="popup-close" id="qvClose" aria-label="Close">✕</button>
@@ -105,8 +111,12 @@
 
   <canvas id="scene" tabindex="0" aria-label="3D project map"></canvas>
 
-  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-  <script>
+  <!-- Three.js (ESM) -->
+  <script type="module">
+    import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
+    import { GLTFLoader } from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
+
+    /* ---------- Renderer / Scene / Camera ---------- */
     const canvas = document.getElementById('scene');
     const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
     const DPR = Math.min(2, window.devicePixelRatio || 1);
@@ -116,33 +126,43 @@
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x0a0d13, 60, 260);
+    scene.fog = new THREE.FogExp2(0x05060a, 0.008); // hafif uzay sisi
 
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 800);
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 2000);
 
-    scene.add(new THREE.HemisphereLight(0xbad7ff, 0x0a0d13, 0.7));
-    const sun = new THREE.DirectionalLight(0xffffff, 0.9);
-    sun.position.set(80, 120, 40);
-    sun.castShadow = true;
-    sun.shadow.mapSize.set(2048,2048);
-    Object.assign(sun.shadow.camera, { near:10, far:300, left:-120, right:120, top:120, bottom:-120 });
-    scene.add(sun);
+    /* ---------- Lights (uzay: hafif mavi/soğuk) ---------- */
+    const hemi = new THREE.HemisphereLight(0x89b4ff, 0x05060a, 0.5);
+    scene.add(hemi);
+    const key = new THREE.DirectionalLight(0xffffff, 1.0);
+    key.position.set(80, 140, 60);
+    key.castShadow = true;
+    key.shadow.mapSize.set(2048,2048);
+    Object.assign(key.shadow.camera, { near:10, far:800, left:-200, right:200, top:200, bottom:-200 });
+    scene.add(key);
+    const rim = new THREE.DirectionalLight(0x4cc9ff, 0.6);
+    rim.position.set(-120, 80, -60);
+    scene.add(rim);
 
-    const waterGeo = new THREE.PlaneGeometry(2000, 2000, 200, 200);
-    const waterMat = new THREE.MeshStandardMaterial({ color:0x0b2030, roughness:0.88, metalness:0.02 });
-    const water = new THREE.Mesh(waterGeo, waterMat);
-    water.rotation.x = -Math.PI/2; water.receiveShadow = true; scene.add(water);
-    const basePos = waterGeo.attributes.position.array.slice();
-    function animateWaves(t){
-      const pos = waterGeo.attributes.position;
-      for(let i=0;i<pos.count;i++){
-        const ix=i*3, x=basePos[ix], y=basePos[ix+1];
-        const w = Math.sin(x*0.06 + t*0.7)*0.45 + Math.cos(y*0.08 - t*0.5)*0.35 + Math.sin((x+y)*0.02 + t*0.9)*0.18;
-        pos.array[ix+2] = basePos[ix+2] + w;
+    /* ---------- Starfield (GPU ucuz) ---------- */
+    const stars = (() => {
+      const g = new THREE.BufferGeometry();
+      const N = 4000;
+      const pos = new Float32Array(N*3);
+      for(let i=0;i<N;i++){
+        const r = 600 + Math.random()*800;
+        const theta = Math.random()*Math.PI*2;
+        const phi = Math.acos(THREE.MathUtils.randFloatSpread(2));
+        pos[i*3+0] = r*Math.sin(phi)*Math.cos(theta);
+        pos[i*3+1] = r*Math.cos(phi)*0.6;     // hafif yassı
+        pos[i*3+2] = r*Math.sin(phi)*Math.sin(theta);
       }
-      pos.needsUpdate = true; waterGeo.computeVertexNormals();
-    }
+      g.setAttribute('position', new THREE.BufferAttribute(pos,3));
+      const m = new THREE.PointsMaterial({ size:1.2, sizeAttenuation:true, color:0xbcd5ff, transparent:true, opacity:0.9 });
+      return new THREE.Points(g,m);
+    })();
+    scene.add(stars);
 
+    /* ---------- Project data ---------- */
     const PROJECTS = [
       { id:'p1', title:'Audio Reactive + Hand Tracked Visualizer', tag:'TouchDesigner', cover:'media/covers/p1.jpg' },
       { id:'p2', title:'Odin Pendant Animation',                   tag:'3D Works',      cover:'media/covers/p2.jpg' },
@@ -155,83 +175,90 @@
       { id:'p9', title:'AI Visualizer from Image',                 tag:'AI Visuals',    cover:'media/covers/p9.jpg' }
     ];
 
+    /* ---------- Planets (projeler) ---------- */
     const ring = [
-      [-70,-16], [-22,-40], [38,-22],
-      [-62, 24], [  0, 34], [54,  36],
-      [-30, 68], [ 22, 62], [62,  70]
+      [-90,-30], [-30,-70], [50,-40],
+      [-80, 30], [  0, 45], [60,  55],
+      [-40, 90], [ 20, 85], [80,  95]
     ];
-    const islands = [];
-    const islandBase = new THREE.Color(0x3f5a44), islandHi = new THREE.Color(0x9fe38a);
+    const planets = [];
+    const overlay = document.getElementById('overlay');
 
-    function makeIsland(R=10, H=4.0, segs=22){
-      const geo = new THREE.CylinderGeometry(R*0.72, R, H, segs, 2, false);
-      const p = geo.attributes.position;
-      for(let i=0;i<p.count;i++){
-        const y = p.getY(i);
-        if(y > H*0.3){
-          const n = (Math.random()-0.5)*0.6;
-          p.setY(i, y + n);
-          p.setX(i, p.getX(i) + (Math.random()-0.5)*0.45);
-          p.setZ(i, p.getZ(i) + (Math.random()-0.5)*0.45);
-        }
-      }
-      geo.computeVertexNormals();
-      const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color:islandBase, roughness:0.95 }));
-      mesh.castShadow = mesh.receiveShadow = true;
-      return mesh;
+    function makePlanet(size=10, tint=0x88b5ff){
+      const geo = new THREE.SphereGeometry(size, 36, 24);
+      const mat = new THREE.MeshStandardMaterial({
+        color:tint, roughness:0.9, metalness:0.1, emissive:0x0a0f1c, emissiveIntensity:0.15
+      });
+      const m = new THREE.Mesh(geo, mat);
+      m.castShadow = true; m.receiveShadow = true;
+      // ince halkalı aura
+      const ringG = new THREE.RingGeometry(size*1.15, size*1.45, 64);
+      const ringM = new THREE.MeshBasicMaterial({ color:0x66d1ff, transparent:true, opacity:0.12, side:THREE.DoubleSide });
+      const aura = new THREE.Mesh(ringG, ringM); aura.rotation.x = -Math.PI/2;
+      m.add(aura); m.userData.aura = aura;
+      return m;
     }
 
-    const overlay = document.getElementById('overlay');
-    function makeOverlayCard(p){
+    function makeCard(p){
       const el = document.createElement('div');
-      el.className = 'island-card';
+      el.className = 'planet-card';
       el.innerHTML = `
-        <div class="island-card__media" style="background-image:url('${p.cover || ''}')"></div>
+        <div class="planet-card__media" style="background-image:url('${p.cover || ''}')"></div>
         <div class="badge">${p.tag || ''}</div>
-        <div class="island-card__meta">
+        <div class="planet-card__meta">
           <div class="title">${p.title}</div>
           <div class="tag">${p.tag || ''}</div>
         </div>`;
-      overlay.appendChild(el);
-      return el;
+      overlay.appendChild(el); return el;
     }
 
     const cards = [];
     PROJECTS.forEach((proj, i)=>{
       const [x,z] = ring[i];
-      const isle = makeIsland( 9.5 + Math.random()*3.5, 4.0 + Math.random()*1.2, 24 );
-      isle.position.set(x, 1.2, z);
-      isle.userData.project = proj;
-      scene.add(isle);
-      islands.push(isle);
-
-      const rg = new THREE.RingGeometry((isle.geometry.parameters.radiusTop||8)*0.92,(isle.geometry.parameters.radiusBottom||10)*1.32,64);
-      const rm = new THREE.MeshBasicMaterial({ color:0xb6e6ff, transparent:true, opacity:0.10, side:THREE.DoubleSide });
-      const ringMesh = new THREE.Mesh(rg, rm);
-      ringMesh.rotation.x = -Math.PI/2; ringMesh.position.set(x, 0.1, z);
-      scene.add(ringMesh); isle.userData.ring = ringMesh;
-
-      cards.push({ el: makeOverlayCard(proj), obj: isle });
+      const radius = 9 + Math.random()*4;
+      const tint = new THREE.Color().setHSL(THREE.MathUtils.randFloat(0.55,0.68), 0.45, THREE.MathUtils.randFloat(0.55,0.7));
+      const planet = makePlanet(radius, tint.getHex());
+      planet.position.set(x, THREE.MathUtils.randFloat(-3,3), z);
+      planet.userData.project = proj;
+      scene.add(planet);
+      planets.push(planet);
+      cards.push({ el: makeCard(proj), obj: planet, size: radius });
     });
 
-    // ---- Ship (front = +X) ----
-    const ship = new THREE.Group();
-    const hull = new THREE.Mesh(new THREE.CapsuleGeometry(0.8, 3.2, 6, 12), new THREE.MeshStandardMaterial({ color:0x6b4f3b, roughness:0.8 }));
-    hull.rotation.z = Math.PI/2; hull.castShadow = hull.receiveShadow = true; ship.add(hull);
-    const deck = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.2, 0.9), new THREE.MeshStandardMaterial({ color:0x7b5a40, roughness:0.85 }));
-    deck.position.set(0, 0.55, 0); ship.add(deck);
-    const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.2, 8), new THREE.MeshStandardMaterial({ color:0xdad7cd, roughness:0.6 }));
-    mast.position.set(0.1, 1.4, 0); ship.add(mast);
-    const sail = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.4, 6, 6), new THREE.MeshStandardMaterial({ color:0xffffff, roughness:0.7, side:THREE.DoubleSide }));
-    sail.position.set(0.7, 1.4, 0); sail.rotation.y = Math.PI/2.2; ship.add(sail);
-    ship.position.set(0, 1.02, 0); scene.add(ship);
+    /* ---------- Spaceship (GLB) ---------- */
+    const ship = new THREE.Group(); // holder
+    scene.add(ship);
 
-    // ---- Camera POV: BEHIND (-X) & ABOVE (+Y) ----
-    const camOffsetLocal  = new THREE.Vector3(-12.8, 7.2, 0); // *** düzeltildi ***
-    const lookAheadLocal  = new THREE.Vector3(  4.0, 1.6, 0);
+    const loader = new GLTFLoader();
+    loader.load(
+      "media/models/spaceship.glb",
+      (gltf)=>{
+        const model = gltf.scene;
+        model.traverse(o=>{
+          if(o.isMesh){
+            o.castShadow = true; o.receiveShadow = true;
+            if(o.material) o.material.roughness = Math.min(0.9, (o.material.roughness ?? 0.6));
+          }
+        });
+        // Yöneyi ayarla: ilerisi +X olacak şekilde çevir (glTF genelde -Z ileri gelir)
+        model.rotation.y = Math.PI/2;
+        model.scale.set(1.2,1.2,1.2);
+        ship.add(model);
+      },
+      undefined,
+      (err)=>{ console.error("GLB load error:", err); }
+    );
+
+    // Başlangıç konumu
+    ship.position.set(0, 0, 0);
+
+    /* ---------- Camera: TRUE 3rd-Person (arka: -X, üst: +Y) ---------- */
+    const camOffsetLocal  = new THREE.Vector3(-16.0, 7.5, 0);
+    const lookAheadLocal  = new THREE.Vector3(  6.0, 1.8, 0);
     const camPos = new THREE.Vector3(), lookAt = new THREE.Vector3();
     camera.position.copy(ship.position).add(camOffsetLocal);
     camera.lookAt(ship.position.clone().add(lookAheadLocal));
+
     function updateCamera(dt){
       const off = camOffsetLocal.clone().applyQuaternion(ship.quaternion);
       camPos.copy(ship.position).add(off);
@@ -241,7 +268,7 @@
       camera.lookAt(lookAt);
     }
 
-    // ---- Controls ----
+    /* ---------- Controls (W/S ileri‑geri, A/D dönüş) ---------- */
     const keys = new Set();
     window.addEventListener('keydown', (e)=>{ keys.add(e.key.toLowerCase()); handleHotkeys(e); });
     window.addEventListener('keyup',   (e)=>{ keys.delete(e.key.toLowerCase()); });
@@ -253,28 +280,30 @@
       const a = keys.has('a') || keys.has('arrowleft');
       const d = keys.has('d') || keys.has('arrowright');
 
-      const ACC_F = 3.0, ACC_B = 1.8;
-      const MAX_F = 4.2, MAX_B = -1.5;
+      const ACC_F = 3.4, ACC_B = 2.0;
+      const MAX_F = 6.0, MAX_B = -2.4;
       if (w) vel = Math.min(MAX_F, vel + ACC_F*dt);
       if (s) vel = Math.max(MAX_B, vel - ACC_B*dt);
       if (!w && !s) vel *= Math.pow(0.988, dt*60);
 
-      const TURN = 0.85;
+      const TURN = 0.95;
       if (a) yawVel += TURN*dt;
       if (d) yawVel -= TURN*dt;
-      yawVel = THREE.MathUtils.clamp(yawVel, -0.018, 0.018);
+      yawVel = THREE.MathUtils.clamp(yawVel, -0.02, 0.02);
       ship.rotation.y += yawVel;
       yawVel *= Math.pow(0.92, dt*60);
 
+      // ileri/geri — geminin +X yönü
       const fwd = new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion);
-      ship.position.addScaledVector(fwd, vel * dt * 2.1);
+      ship.position.addScaledVector(fwd, vel * dt * 3.0);
 
-      ship.position.y = 1.02 + Math.sin(t*1.9)*0.12;
-      ship.rotation.z = Math.sin(t*1.2 + ship.position.x*0.03)*0.02;
-      ship.rotation.x = Math.cos(t*1.0 + ship.position.z*0.03)*0.015;
+      // hafif "drift" hissi
+      ship.position.y = Math.sin(t*0.9)*0.2;
+      ship.rotation.z = Math.sin(t*0.7 + ship.position.x*0.01)*0.01;
+      ship.rotation.x = Math.cos(t*0.8 + ship.position.z*0.01)*0.008;
     }
 
-    // ---- Raycast / Hover / Quick View ----
+    /* ---------- Raycast & Hover ---------- */
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     let hovered = null;
@@ -285,46 +314,61 @@
     }
     renderer.domElement.addEventListener('pointermove', onPointerMove, {passive:true});
 
-    function hoverIslands(){
+    function hoverPlanets(){
       raycaster.setFromCamera(mouse, camera);
-      const hits = raycaster.intersectObjects(islands, false);
+      const hits = raycaster.intersectObjects(planets, false);
       const hit = hits[0]?.object || null;
       if(hovered !== hit){
-        if(hovered){ hovered.material.color.copy(islandBase); hovered.userData.ring.material.opacity = 0.10; }
+        if(hovered){
+          hovered.material.emissiveIntensity = 0.15;
+          hovered.userData.aura.material.opacity = 0.12;
+        }
         hovered = hit;
-        if(hovered){ hovered.material.color.copy(islandHi); hovered.userData.ring.material.opacity = 0.22; }
+        if(hovered){
+          hovered.material.emissiveIntensity = 0.35;
+          hovered.userData.aura.material.opacity = 0.22;
+        }
       }
     }
 
     function onClick(){
       raycaster.setFromCamera(mouse, camera);
-      const hits = raycaster.intersectObjects(islands, false);
+      const hits = raycaster.intersectObjects(planets, false);
       if(hits.length){ qvOpenFor(hits[0].object); }
     }
     renderer.domElement.addEventListener('click', onClick);
 
+    /* ---------- Overlay cards (screen‑space, clamped) ---------- */
     const tmpV = new THREE.Vector3();
-    function clampv(v, min, max){ return Math.max(min, Math.min(max, v)); }
+    function clamp1(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
     const cardsRef = [];
-    islands.forEach((i,idx)=> cardsRef.push({ el: overlay.children[idx], obj: i }));
+    // eklenen sıraya göre overlay çocuklarıyla eşleştir
+    setTimeout(()=> {
+      // overlay'e kartlar bastıkça children doluyor; küçük gecikme ile eşle
+      [...overlay.children].forEach((el, idx)=> cardsRef.push({ el, obj: planets[idx] }));
+    });
+
     function updateCards(){
       const W = window.innerWidth, H = window.innerHeight;
       for(const {el, obj} of cardsRef){
-        tmpV.copy(obj.position); tmpV.y += 3.6; tmpV.project(camera);
+        if(!obj) continue;
+        tmpV.copy(obj.position); tmpV.y += 10; // gezegen üstü
+        tmpV.project(camera);
         let x = (tmpV.x*0.5+0.5)*W, y = (-tmpV.y*0.5+0.5)*H;
         const onScreen = tmpV.z < 1 && tmpV.z > -1;
         if(onScreen){
-          x = clampv(x, 18, W-18); y = clampv(y, 80, H-96);
+          x = clamp1(x, 18, W-18); y = clamp1(y, 80, H-96);
           el.style.left = x+'px'; el.style.top = y+'px';
           const dist = camera.position.distanceTo(obj.position);
-          const alpha = THREE.MathUtils.clamp(1 - (dist-22)/90, 0, 1);
+          const alpha = THREE.MathUtils.clamp(1 - (dist-60)/200, 0, 1);
           el.style.opacity = alpha;
-          el.style.transform = `translate(-50%,-100%) scale(${0.9 + alpha*0.15})`;
+          el.style.transform = `translate(-50%,-100%) scale(${0.9 + alpha*0.12})`;
         } else el.style.opacity = 0;
       }
     }
 
-    // ---- Quick View modal ----
+    /* ---------- Quick View (modal) ---------- */
     const qv = document.getElementById('quickview');
     const qvTitle = document.getElementById('qvTitle');
     const qvTag   = document.getElementById('qvTag');
@@ -333,8 +377,8 @@
     const qvEnter = document.getElementById('qvEnter');
     const qvExit  = document.getElementById('qvExit');
 
-    function qvOpenFor(isle){
-      const p = isle.userData.project;
+    function qvOpenFor(planet){
+      const p = planet.userData.project;
       qvTitle.textContent = p.title;
       qvTag.textContent   = p.tag || '';
       qvMedia.style.backgroundImage = `url('${p.cover || ''}')`;
@@ -346,14 +390,15 @@
     qvEnter.addEventListener('click', ()=>{ qv.classList.add('pulse'); setTimeout(()=> qv.classList.remove('pulse'), 220); });
     window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') qvCloseFn(); });
 
+    // yakınlık eşiği: E ile açılabilsin
     let nearest = null;
     function checkProximity(){
       let best=null, dmin=Infinity;
-      for(const isle of islands){
-        const d = ship.position.distanceTo(isle.position);
-        if(d<dmin){ dmin=d; best=isle; }
+      for(const pl of planets){
+        const d = ship.position.distanceTo(pl.position);
+        if(d<dmin){ dmin=d; best=pl; }
       }
-      nearest = (best && dmin<14) ? best : null;
+      nearest = (best && dmin<30) ? best : null;
       if(!nearest) qvCloseFn();
     }
     function handleHotkeys(e){
@@ -362,6 +407,7 @@
       if(k==='q') qvCloseFn();
     }
 
+    /* ---------- Resize & Loop ---------- */
     function onResize(){
       renderer.setSize(window.innerWidth, window.innerHeight);
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -373,17 +419,19 @@
     function loop(){
       const dt = Math.min(0.033, clock.getDelta());
       const t  = clock.elapsedTime;
-      animateWaves(t);
+
       updateShip(dt, t);
       updateCamera(dt);
-      hoverIslands();
+      hoverPlanets();
       updateCards();
       checkProximity();
+
       renderer.render(scene, camera);
       requestAnimationFrame(loop);
     }
     loop();
 
+    // klavye odak
     window.addEventListener('click', ()=> canvas.focus(), {once:true});
   </script>
 </body>

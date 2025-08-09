@@ -13,7 +13,6 @@
   body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
   canvas#scene{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
 
-  /* HUD */
   .hud{
     position:fixed;top:12px;left:12px;right:12px;z-index:10;
     display:flex;align-items:center;justify-content:space-between;
@@ -31,7 +30,6 @@
     padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.06);backdrop-filter:blur(6px)
   }
 
-  /* Ada üstü kartlar */
   .overlay{position:fixed;inset:0;pointer-events:none;z-index:9}
   .island-card{
     position:absolute; transform:translate(-50%,-100%); width:260px; max-width:40vw;
@@ -49,7 +47,6 @@
     font-size:11px;padding:6px 8px;border-radius:999px;color:#f7f8fc
   }
 
-  /* Quick View modal */
   .popup{position:fixed;inset:0;z-index:12;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
   .popup.show{display:flex}
   .popup-card{width:min(820px,92vw); border:1px solid rgba(255,255,255,.18); border-radius:18px; background:#0f1116; box-shadow:0 20px 60px rgba(0,0,0,.55); overflow:hidden}
@@ -87,10 +84,8 @@
     Click island: Quick View · E: Open (near) · Q / Esc: Close
   </div>
 
-  <!-- Ada üstü 2D kartlar -->
   <div class="overlay" id="overlay"></div>
 
-  <!-- Quick View modal -->
   <div class="popup" id="quickview">
     <div class="popup-card" role="dialog" aria-modal="true" aria-labelledby="qvTitle">
       <button class="popup-close" id="qvClose" aria-label="Close">✕</button>
@@ -112,7 +107,6 @@
 
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script>
-    /* ============ THREE Setup ============ */
     const canvas = document.getElementById('scene');
     const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
     const DPR = Math.min(2, window.devicePixelRatio || 1);
@@ -126,7 +120,6 @@
 
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 800);
 
-    // Lights
     scene.add(new THREE.HemisphereLight(0xbad7ff, 0x0a0d13, 0.7));
     const sun = new THREE.DirectionalLight(0xffffff, 0.9);
     sun.position.set(80, 120, 40);
@@ -135,7 +128,6 @@
     Object.assign(sun.shadow.camera, { near:10, far:300, left:-120, right:120, top:120, bottom:-120 });
     scene.add(sun);
 
-    // Water (simple vertex waves)
     const waterGeo = new THREE.PlaneGeometry(2000, 2000, 200, 200);
     const waterMat = new THREE.MeshStandardMaterial({ color:0x0b2030, roughness:0.88, metalness:0.02 });
     const water = new THREE.Mesh(waterGeo, waterMat);
@@ -151,7 +143,6 @@
       pos.needsUpdate = true; waterGeo.computeVertexNormals();
     }
 
-    /* ============ Data ============ */
     const PROJECTS = [
       { id:'p1', title:'Audio Reactive + Hand Tracked Visualizer', tag:'TouchDesigner', cover:'media/covers/p1.jpg' },
       { id:'p2', title:'Odin Pendant Animation',                   tag:'3D Works',      cover:'media/covers/p2.jpg' },
@@ -164,7 +155,6 @@
       { id:'p9', title:'AI Visualizer from Image',                 tag:'AI Visuals',    cover:'media/covers/p9.jpg' }
     ];
 
-    /* ============ Islands ============ */
     const ring = [
       [-70,-16], [-22,-40], [38,-22],
       [-62, 24], [  0, 34], [54,  36],
@@ -191,7 +181,6 @@
       return mesh;
     }
 
-    // 2D overlay cards
     const overlay = document.getElementById('overlay');
     function makeOverlayCard(p){
       const el = document.createElement('div');
@@ -208,7 +197,6 @@
     }
 
     const cards = [];
-    // create islands and cards once
     PROJECTS.forEach((proj, i)=>{
       const [x,z] = ring[i];
       const isle = makeIsland( 9.5 + Math.random()*3.5, 4.0 + Math.random()*1.2, 24 );
@@ -226,7 +214,7 @@
       cards.push({ el: makeOverlayCard(proj), obj: isle });
     });
 
-    /* ============ Ship (front = +X) ============ */
+    // ---- Ship (front = +X) ----
     const ship = new THREE.Group();
     const hull = new THREE.Mesh(new THREE.CapsuleGeometry(0.8, 3.2, 6, 12), new THREE.MeshStandardMaterial({ color:0x6b4f3b, roughness:0.8 }));
     hull.rotation.z = Math.PI/2; hull.castShadow = hull.receiveShadow = true; ship.add(hull);
@@ -236,12 +224,11 @@
     mast.position.set(0.1, 1.4, 0); ship.add(mast);
     const sail = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.4, 6, 6), new THREE.MeshStandardMaterial({ color:0xffffff, roughness:0.7, side:THREE.DoubleSide }));
     sail.position.set(0.7, 1.4, 0); sail.rotation.y = Math.PI/2.2; ship.add(sail);
-
     ship.position.set(0, 1.02, 0); scene.add(ship);
 
-    /* ============ Camera: true 3rd-person POV (behind & above) ============ */
-    const camOffsetLocal = new THREE.Vector3(0, 7.2, -12.8); // arka-yukarı
-    const lookAheadLocal = new THREE.Vector3(4.0, 1.6, 0);
+    // ---- Camera POV: BEHIND (-X) & ABOVE (+Y) ----
+    const camOffsetLocal  = new THREE.Vector3(-12.8, 7.2, 0); // *** düzeltildi ***
+    const lookAheadLocal  = new THREE.Vector3(  4.0, 1.6, 0);
     const camPos = new THREE.Vector3(), lookAt = new THREE.Vector3();
     camera.position.copy(ship.position).add(camOffsetLocal);
     camera.lookAt(ship.position.clone().add(lookAheadLocal));
@@ -254,7 +241,7 @@
       camera.lookAt(lookAt);
     }
 
-    /* ============ Controls (W/S forward/back, A/D slow turn) ============ */
+    // ---- Controls ----
     const keys = new Set();
     window.addEventListener('keydown', (e)=>{ keys.add(e.key.toLowerCase()); handleHotkeys(e); });
     window.addEventListener('keyup',   (e)=>{ keys.delete(e.key.toLowerCase()); });
@@ -287,7 +274,7 @@
       ship.rotation.x = Math.cos(t*1.0 + ship.position.z*0.03)*0.015;
     }
 
-    /* ============ Raycast / Hover / Click (open Quick View) ============ */
+    // ---- Raycast / Hover / Quick View ----
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     let hovered = null;
@@ -296,13 +283,7 @@
       mouse.x = ((e.clientX - rect.left)/rect.width)*2 - 1;
       mouse.y = -((e.clientY - rect.top)/rect.height)*2 + 1;
     }
-    function onClick(){
-      raycaster.setFromCamera(mouse, camera);
-      const hits = raycaster.intersectObjects(islands, false);
-      if(hits.length){ qvOpenFor(hits[0].object); }
-    }
     renderer.domElement.addEventListener('pointermove', onPointerMove, {passive:true});
-    renderer.domElement.addEventListener('click', onClick);
 
     function hoverIslands(){
       raycaster.setFromCamera(mouse, camera);
@@ -315,32 +296,36 @@
       }
     }
 
-    /* ============ Overlay cards (screen‑space, clamped) ============ */
+    function onClick(){
+      raycaster.setFromCamera(mouse, camera);
+      const hits = raycaster.intersectObjects(islands, false);
+      if(hits.length){ qvOpenFor(hits[0].object); }
+    }
+    renderer.domElement.addEventListener('click', onClick);
+
     const tmpV = new THREE.Vector3();
-    function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+    function clampv(v, min, max){ return Math.max(min, Math.min(max, v)); }
+    const cardsRef = [];
+    islands.forEach((i,idx)=> cardsRef.push({ el: overlay.children[idx], obj: i }));
     function updateCards(){
       const W = window.innerWidth, H = window.innerHeight;
-      for(const {el, obj} of cards){
-        tmpV.copy(obj.position); tmpV.y += 3.6;
-        tmpV.project(camera);
-        let x = (tmpV.x *  0.5 + 0.5) * W;
-        let y = (-tmpV.y * 0.5 + 0.5) * H;
+      for(const {el, obj} of cardsRef){
+        tmpV.copy(obj.position); tmpV.y += 3.6; tmpV.project(camera);
+        let x = (tmpV.x*0.5+0.5)*W, y = (-tmpV.y*0.5+0.5)*H;
         const onScreen = tmpV.z < 1 && tmpV.z > -1;
         if(onScreen){
-          const padX = 18, padYTop = 80, padYBot = 96;
-          x = clamp(x, padX, W - padX);
-          y = clamp(y, padYTop, H - padYBot);
-          el.style.left = x + 'px'; el.style.top  = y + 'px';
+          x = clampv(x, 18, W-18); y = clampv(y, 80, H-96);
+          el.style.left = x+'px'; el.style.top = y+'px';
           const dist = camera.position.distanceTo(obj.position);
           const alpha = THREE.MathUtils.clamp(1 - (dist-22)/90, 0, 1);
-          el.style.opacity = (hovered===obj ? 1 : alpha*0.95);
+          el.style.opacity = alpha;
           el.style.transform = `translate(-50%,-100%) scale(${0.9 + alpha*0.15})`;
-        } else { el.style.opacity = 0; }
+        } else el.style.opacity = 0;
       }
     }
 
-    /* ============ Quick View (modal) ============ */
-    const qv      = document.getElementById('quickview');
+    // ---- Quick View modal ----
+    const qv = document.getElementById('quickview');
     const qvTitle = document.getElementById('qvTitle');
     const qvTag   = document.getElementById('qvTag');
     const qvMedia = document.getElementById('qvMedia');
@@ -356,16 +341,11 @@
       qv.classList.add('show');
     }
     function qvCloseFn(){ qv.classList.remove('show'); }
-
     qvClose.addEventListener('click', qvCloseFn);
     qvExit .addEventListener('click', qvCloseFn);
-    qvEnter.addEventListener('click', ()=> {
-      // şimdilik modal içinde kalıyoruz; içerik sekmeleri/galeri ekleyebiliriz
-      qv.classList.add('pulse'); setTimeout(()=> qv.classList.remove('pulse'), 220);
-    });
+    qvEnter.addEventListener('click', ()=>{ qv.classList.add('pulse'); setTimeout(()=> qv.classList.remove('pulse'), 220); });
     window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') qvCloseFn(); });
 
-    // yakınlık eşiği: E ile açılabilsin
     let nearest = null;
     function checkProximity(){
       let best=null, dmin=Infinity;
@@ -382,7 +362,6 @@
       if(k==='q') qvCloseFn();
     }
 
-    /* ============ Resize & Loop ============ */
     function onResize(){
       renderer.setSize(window.innerWidth, window.innerHeight);
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -394,20 +373,17 @@
     function loop(){
       const dt = Math.min(0.033, clock.getDelta());
       const t  = clock.elapsedTime;
-
       animateWaves(t);
       updateShip(dt, t);
       updateCamera(dt);
       hoverIslands();
       updateCards();
       checkProximity();
-
       renderer.render(scene, camera);
       requestAnimationFrame(loop);
     }
     loop();
 
-    // keyboard focus
     window.addEventListener('click', ()=> canvas.focus(), {once:true});
   </script>
 </body>

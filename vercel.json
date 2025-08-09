@@ -6,10 +6,10 @@
     { "src": "contact.html", "use": "@vercel/static" },
     { "src": "media/**", "use": "@vercel/static" }
   ],
-  "routes": [
-    { "src": "/", "dest": "/index.html" },
-    { "src": "/about", "dest": "/about.html" },
-    { "src": "/contact", "dest": "/contact.html" }
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/about", "destination": "/about.html" },
+    { "source": "/contact", "destination": "/contact.html" }
   ],
   "headers": [
     {

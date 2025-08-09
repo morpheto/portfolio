@@ -12,7 +12,7 @@
     :root{
       --bg:#0c0c0e; --panel:#121215; --text:#f6f7fb; --muted:#aeb4c0; --border:#1f2126;
       --radius:20px; --radius-sm:10px; --shadow:0 14px 40px rgba(0,0,0,.45);
-      --tilt: 6; --scale:1.02;
+      --tilt:6; --scale:1.02;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -23,14 +23,14 @@
     /* Header */
     header{position:sticky;top:0;z-index:50;background:rgba(12,12,14,.6);backdrop-filter:saturate(160%) blur(10px);border-bottom:1px solid var(--border)}
     nav{display:flex;align-items:center;justify-content:space-between;height:64px}
-    .brand{font-weight:800;letter-spacing:.4px; font-size:16px;}
+    .brand{font-weight:800;letter-spacing:.4px;font-size:16px}
     .navlinks{display:flex;gap:20px;font-size:14px}
     .navlinks a{opacity:.85;position:relative}
     .navlinks a:after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:#2b2d33;transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
     .navlinks a:hover{opacity:1}
     .navlinks a:hover:after{transform:scaleX(1)}
 
-    /* Hero — boyutlar about.html ile aynı */
+    /* Hero (about ile aynı hiyerarşi) */
     .hero{padding:56px 0 8px}
     .hero h1{font-size:clamp(30px,4.2vw,44px);margin:0 0 10px;line-height:1.1;font-weight:800}
     .hero .sub{font-size:clamp(20px,3.2vw,28px);margin:0 0 8px;color:var(--text)}
@@ -41,8 +41,8 @@
     @media(min-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
     @media(min-width:1040px){.grid{grid-template-columns:repeat(3,1fr)}}
     .card{display:block;border:1px solid var(--border);background:var(--panel);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
-          transform-style:preserve-3d; position:relative; transition:transform .32s cubic-bezier(.2,.7,.2,1), border-color .32s, box-shadow .32s}
-    .card:hover{border-color:#2b2d33; box-shadow:0 18px 52px rgba(0,0,0,.55)}
+          transform-style:preserve-3d;position:relative;transition:transform .32s cubic-bezier(.2,.7,.2,1), border-color .32s, box-shadow .32s}
+    .card:hover{border-color:#2b2d33;box-shadow:0 18px 52px rgba(0,0,0,.55)}
     .media{position:relative;aspect-ratio:16/10;overflow:hidden}
     .media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:translateZ(30px) scale(1);transition:transform .5s ease}
     .card:hover .media img{transform:translateZ(30px) scale(1.04)}
@@ -50,7 +50,7 @@
     .glare{pointer-events:none;position:absolute;inset:-1px;border-radius:inherit;overflow:hidden}
     .glare::before{content:"";position:absolute;left:var(--gx,50%);top:var(--gy,50%);width:90%;height:90%;
       background:radial-gradient(circle at center, rgba(255,255,255,.20), rgba(255,255,255,.06) 45%, rgba(255,255,255,0) 60%);
-      transform:translate(-50%,-50%) rotate(var(--grot,0deg)); filter:blur(16px); opacity:.9; transition:opacity .32s ease}
+      transform:translate(-50%,-50%) rotate(var(--grot,0deg));filter:blur(16px);opacity:.9;transition:opacity .32s ease}
     .meta{display:flex;align-items:center;justify-content:space-between;padding:12px 14px}
     .title{font-weight:600}
     .tag{font-size:12px;color:#c8cdd8}
@@ -58,11 +58,7 @@
     /* Detail */
     #detail{display:none}
     .crumbs{font-size:13px;color:#cbd5e1;margin:18px 0}
-    .back-btn{
-      display:inline-block;padding:8px 14px;background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.15);border-radius:8px;font-size:14px;color:#fff;
-      text-decoration:none;transition:background .25s ease, border-color .25s ease
-    }
+    .back-btn{display:inline-block;padding:8px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:8px;font-size:14px;color:#fff;text-decoration:none;transition:background .25s ease,border-color .25s ease}
     .back-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}
     .detail-hero{position:relative;border:1px solid var(--border);border-radius:var(--radius);aspect-ratio:16/9;background:#0f1013;overflow:hidden}
     .detail-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -71,51 +67,32 @@
     .detail-desc{color:#d1d6df;line-height:1.7;margin-top:10px}
     .section-title{margin:18px 0 8px;font-size:16px;color:#cbd5e1;font-weight:600}
     .detail-video{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;aspect-ratio:16/9;background:#0f0f10}
-    .detail-video iframe, .detail-video video{width:100%;height:100%;border:0;display:block}
-    .gif-grid{display:grid;gap:12px;grid-template-columns:repeat(2,1fr)}
-    @media(min-width:920px){.gif-grid{grid-template-columns:repeat(4,1fr)}}
-    .gif-grid img{width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--border)}
-    .gallery{display:grid;gap:14px;margin-top:8px;grid-template-columns:repeat(1,minmax(0,1fr))}
-    @media(min-width:820px){.gallery{grid-template-columns:repeat(2,1fr)}}
-    .gallery img{width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--border)}
+    .detail-video iframe,.detail-video video{width:100%;height:100%;border:0;display:block}
 
     footer{border-top:1px solid var(--border);margin-top:44px}
     footer .inner{padding:22px 0;color:#cbd5e1;font-size:14px;text-align:center}
 
     /* Custom cursor (about/contact ile aynı) */
-    body.custom-cursor { cursor: none; }
-    .cursor-dot {
-      position: fixed; left:0; top:0; width:20px; height:20px; border-radius:50%;
-      pointer-events: none; transform: translate(-50%, -50%);
-      background: rgba(255,255,255,0.18);
-      box-shadow: 0 0 18px rgba(255,255,255,0.75), 0 0 48px rgba(255,255,255,0.35);
-      mix-blend-mode: screen; backdrop-filter: blur(2px);
-      z-index: 1000;
+    body.custom-cursor{cursor:none}
+    .cursor-dot{
+      position:fixed;left:0;top:0;width:20px;height:20px;border-radius:50%;
+      pointer-events:none;transform:translate(-50%,-50%);
+      background:rgba(255,255,255,0.18);
+      box-shadow:0 0 18px rgba(255,255,255,0.75), 0 0 48px rgba(255,255,255,0.35);
+      mix-blend-mode:screen;backdrop-filter:blur(2px);z-index:1000;
     }
-    .cursor-trail {
-      position: fixed; left:0; top:0; width:8px; height:8px; border-radius:50%;
-      pointer-events: none; transform: translate(-50%, -50%) scale(1);
-      background: rgba(255,255,255,0.18);
-      filter: blur(0.3px);
-      will-change: transform, opacity;
-      z-index: 999;
-      opacity: .9;
-      animation: trailFade .5s ease-out forwards;
-      box-shadow: 0 0 14px rgba(255,255,255,.65);
+    .cursor-trail{
+      position:fixed;left:0;top:0;width:8px;height:8px;border-radius:50%;
+      pointer-events:none;transform:translate(-50%,-50%) scale(1);
+      background:rgba(255,255,255,0.2);z-index:999;opacity:.9;
+      animation:trailFade .5s ease-out forwards;box-shadow:0 0 14px rgba(255,255,255,.65);
+      will-change:transform,opacity;
     }
-    @keyframes trailFade { to { transform: translate(-50%, -50%) scale(0); opacity: 0; } }
-    @media (hover: none) { body.custom-cursor { cursor: auto; } .cursor-dot { display:none !important; } }
-    @media (prefers-reduced-motion: reduce) { body.custom-cursor { cursor: auto; } .cursor-dot, .cursor-trail { display:none !important; } }
-
-    /* Clickable cursor state */
-    a, button, [role="button"], .card { cursor: pointer; }
-    body.cursor-pointer .cursor-dot {
-      width:26px; height:26px;
-      background: rgba(255,255,255,0.12);
-      box-shadow: 0 0 24px rgba(255,255,255,0.9), 0 0 60px rgba(255,255,255,0.45);
-      outline: 2px solid rgba(255,255,255,0.6);
-      outline-offset: 2px;
-    }
+    @keyframes trailFade{to{transform:translate(-50%,-50%) scale(0);opacity:0}}
+    a,button,[role="button"],.card{cursor:pointer}
+    body.cursor-pointer .cursor-dot{width:26px;height:26px;background:rgba(255,255,255,0.12);box-shadow:0 0 24px rgba(255,255,255,0.9),0 0 60px rgba(255,255,255,0.45);outline:2px solid rgba(255,255,255,0.6);outline-offset:2px}
+    @media(hover:none){body.custom-cursor{cursor:auto}.cursor-dot{display:none!important}}
+    @media(prefers-reduced-motion:reduce){body.custom-cursor{cursor:auto}.cursor-dot,.cursor-trail{display:none!important}}
   </style>
 </head>
 <body>
@@ -136,18 +113,15 @@
   </header>
 
   <main class="container" id="top">
-    <!-- Hero -->
     <section class="hero">
       <h1>Orhun Ege Eker</h1>
       <p class="sub">Multidisciplinary Designer</p>
       <p class="desc">TouchDesigner • 3D Works • Graphic Editing • Unreal Engine • Creative Visuals</p>
     </section>
 
-    <!-- List View -->
     <div id="list">
       <section id="work">
         <div class="grid" id="grid">
-          <!-- 9 pre-rendered cards -->
           <a class="card" href="?p=p1">
             <div class="media">
               <img src="media/p1_cover.jpg" alt="Audio Reactive + Hand Tracked Visualizer" loading="lazy" onerror="this.src='https://picsum.photos/seed/p1/1200/800'">
@@ -224,7 +198,6 @@
       </section>
     </div>
 
-    <!-- Detail View -->
     <div id="detail">
       <div class="crumbs"><a href="projects.html" id="backLink" class="back-btn">← Back to Projects</a></div>
       <div class="detail-hero"><img id="detailCover" alt="cover"></div>
@@ -259,10 +232,11 @@
       p9:{ title:'AI Visualizer from Image', tag:'Concept · AI', cover:'media/p9_cover.jpg', desc:'Transforming a provided image into AI-augmented motion and visual textures.', video:'media/p9_demo.mp4', gifs:['media/p9_g1.gif'], images:['media/p9_img1.jpg','media/p9_img2.jpg'] }
     };
 
-    // Routing
     const listEl = document.getElementById('list');
     const detailEl = document.getElementById('detail');
+
     function showList(){ detailEl.style.display='none'; listEl.style.display='block'; }
+
     function renderDetail(slug){
       const p = PROJECTS[slug]; if(!p){ return showList(); }
       document.getElementById('detailCover').src = p.cover;
@@ -273,13 +247,9 @@
       const v = document.getElementById('detailVideo'); v.innerHTML='';
       if(p.video){
         if(/\.(mp4|webm)$/i.test(p.video)){
-          const vid = document.createElement('video');
-          vid.controls = true; vid.playsInline = true; vid.src = p.video;
-          v.appendChild(vid);
+          const vid = document.createElement('video'); vid.controls = true; vid.playsInline = true; vid.src = p.video; v.appendChild(vid);
         } else {
-          const iframe = document.createElement('iframe');
-          iframe.src = p.video; iframe.allow = 'autoplay; fullscreen; picture-in-picture';
-          v.appendChild(iframe);
+          const iframe = document.createElement('iframe'); iframe.src = p.video; iframe.allow = 'autoplay; fullscreen; picture-in-picture'; v.appendChild(iframe);
         }
       }
       const gifWrap = document.getElementById('detailGifs'); gifWrap.innerHTML='';
@@ -291,19 +261,23 @@
 
       listEl.style.display='none'; detailEl.style.display='block'; window.scrollTo({top:0,behavior:'instant'});
     }
+
     function getSlugFromURL(){ const url = new URL(window.location.href); return url.searchParams.get('p') || null; }
     function navigateTo(slug){
       if(slug){ history.pushState({p:slug}, '', `?p=${slug}`); renderDetail(slug); }
       else { history.pushState({}, '', 'projects.html'); showList(); }
     }
+
+    // Deep-link (TEK kez)
     const initial = getSlugFromURL(); if(initial){ renderDetail(initial); }
+
     document.addEventListener('click',(e)=>{
       const a = e.target.closest('a.card');
       if(a && a.href.includes('?p=')){ e.preventDefault(); navigateTo(new URL(a.href).searchParams.get('p')); }
     });
     document.getElementById('backLink').addEventListener('click', (e)=>{ e.preventDefault(); navigateTo(null); });
 
-    // Tilt + Glare
+    // Tilt + glare
     if (window.matchMedia('(hover: hover)').matches) {
       const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
       const maxTilt = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tilt')) || 6;
@@ -338,77 +312,35 @@
       });
     }
 
-    // Custom cursor + particle trail
+    // Custom cursor (about/contact ile birebir)
     (function(){
-      const isHoverable = window.matchMedia('(hover: hover)').matches;
+      const hover = window.matchMedia('(hover: hover)').matches;
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if(!isHoverable || reduced) return;
-
+      if(!hover || reduced) return;
       document.body.classList.add('custom-cursor');
       const dot = document.getElementById('cursorDot');
-      if(!dot) return;
+      let x=0,y=0,rafId=null; const live=new Set(); const max=60;
 
-      let x=0, y=0, rafId=null;
-      const particlesMax = 60;
-      const live = new Set();
-
-      function moveDot(e){
-        x = e.clientX; y = e.clientY;
-        if(!rafId){
-          rafId = requestAnimationFrame(()=>{
-            dot.style.left = x + 'px';
-            dot.style.top = y + 'px';
-            rafId = null;
-          });
-        }
-        spawnParticle(x, y);
+      function move(e){
+        x=e.clientX; y=e.clientY;
+        if(!rafId){ rafId=requestAnimationFrame(()=>{ dot.style.left=x+'px'; dot.style.top=y+'px'; rafId=null; }); }
+        spawn(x,y);
       }
-
-      function spawnParticle(px, py){
-        if(live.size >= particlesMax){
-          const first = live.values().next().value;
-          if(first){ live.delete(first); first.remove(); }
-        }
-        const p = document.createElement('div');
-        p.className = 'cursor-trail';
-        const size = 6 + Math.random()*6;
-        p.style.width = size + 'px';
-        p.style.height = size + 'px';
-        p.style.left = px + 'px';
-        p.style.top = py + 'px';
-        p.style.boxShadow = '0 0 '+(6+Math.random()*10)+'px rgba(255,255,255,.45)';
-        document.body.appendChild(p);
-        live.add(p);
-        p.addEventListener('animationend', ()=>{ live.delete(p); p.remove(); }, {once:true});
+      function spawn(px,py){
+        if(live.size>=max){ const d=live.values().next().value; if(d){live.delete(d); d.remove();} }
+        const p=document.createElement('div'); p.className='cursor-trail';
+        const s=6+Math.random()*6; p.style.width=s+'px'; p.style.height=s+'px';
+        p.style.left=px+'px'; p.style.top=py+'px';
+        p.style.boxShadow='0 0 '+(10+Math.random()*12)+'px rgba(255,255,255,.7)';
+        document.body.appendChild(p); live.add(p);
+        p.addEventListener('animationend',()=>{live.delete(p); p.remove();},{once:true});
       }
-
-      window.addEventListener('pointermove', moveDot, {passive:true});
-      window.addEventListener('pointerdown', ()=>{ dot.style.transform = 'translate(-50%, -50%) scale(0.85)'; });
-      window.addEventListener('pointerup',   ()=>{ dot.style.transform = 'translate(-50%, -50%) scale(1)'; });
-      window.addEventListener('blur',  ()=>{ dot.style.display='none'; });
-      window.addEventListener('focus', ()=>{ dot.style.display='block'; });
+      document.addEventListener('pointermove', move, {passive:true});
+      document.addEventListener('pointerover', e => document.body.classList.toggle('cursor-pointer', !!e.target.closest('a,button,[role="button"]')), {passive:true});
+      document.addEventListener('pointerout',  ()=> document.body.classList.remove('cursor-pointer'), {passive:true});
+      window.addEventListener('pointerdown', ()=>{ dot.style.transform='translate(-50%, -50%) scale(0.85)'; });
+      window.addEventListener('pointerup',   ()=>{ dot.style.transform='translate(-50%, -50%) scale(1)'; });
     })();
-
-    // Cursor state on clickable elements
-    (function(){
-      const isHoverable = window.matchMedia('(hover: hover)').matches;
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if(!isHoverable || reduced) return;
-      const selector = 'a, button, [role="button"], .card, [data-cursor="pointer"]';
-      function updateState(el){
-        if(el && el.closest && el.closest(selector)) {
-          document.body.classList.add('cursor-pointer');
-        } else {
-          document.body.classList.remove('cursor-pointer');
-        }
-      }
-      document.addEventListener('pointerover', e => updateState(e.target), {passive:true});
-      document.addEventListener('pointerout',  e => updateState(e.relatedTarget), {passive:true});
-    })();
-
-    // Deep link detail on load
-    const initial = new URL(window.location.href).searchParams.get('p');
-    if(initial){ renderDetail(initial); }
   </script>
 </body>
 </html>

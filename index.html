@@ -81,7 +81,7 @@
 
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script>
-  /* ---------- Helpers & Textures (single definitions) ---------- */
+  /* ---------- Helpers & Textures ---------- */
   function makeRadialTexture(inner, outer, size=128){
     const c=document.createElement('canvas'); c.width=c.height=size;
     const ctx=c.getContext('2d');
@@ -169,7 +169,6 @@
 
   const exhaustLocal = new THREE.Vector3(-2.0,0,0);
 
-  // particle pools
   const flameMatBase = new THREE.SpriteMaterial({map:flameTex, depthWrite:false, depthTest:true, transparent:true, blending:THREE.AdditiveBlending, opacity:0.9, color:0xffffff});
   const smokeMatBase = new THREE.SpriteMaterial({map:smokeTex, depthWrite:false, depthTest:true, transparent:true, opacity:0.0, color:0xffffff});
   function makeSprite(mat){ const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s; }
@@ -231,14 +230,15 @@
   camera.position.copy(ship.position).add(camOffsetLocal);
   camera.lookAt(ship.position.clone().add(lookAheadLocal));
 
-  /* ---------- Input & aim ---------- */
+  /* ---------- Input & Aim (ray-based absolute) ---------- */
   const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
   helpBox.innerHTML = isTouch
     ? '<b>Mobile</b> — Left joystick: move/turn · Right drag: aim · Up/Down buttons · Tap card near planet: Quick View'
-    : '<b>Desktop</b> — Mouse‑aim (absolute) + <b>W/S</b> forward/back, <b>A/D</b> turn · <b>E</b> Quick View · <b>Q</b> Close';
+    : '<b>Desktop</b> — Mouse‑aim (ray) + <b>W/S</b> forward/back, <b>A/D</b> turn · <b>E</b> Quick View · <b>Q</b> Close';
 
   let controlsEnabled = true;
   const keyState={KeyW:false,KeyA:false,KeyS:false,KeyD:false,KeyQ:false,KeyE:false};
+
   function setKey(e,down){
     if(!controlsEnabled) return;
     const c=e.code; if(c in keyState){keyState[c]=down;}
@@ -247,19 +247,19 @@
   }
   if(!isTouch){ addEventListener('keydown',e=>setKey(e,true)); addEventListener('keyup',e=>setKey(e,false)); }
 
-  // Mouse absolute aim (with edge brake)
-  let mouseNX = 0, mouseNY = 0; // -1..+1
-  function updateMousePos(e){
+  // Mouse NDC
+  let mouseNX=0, mouseNY=0;
+  function updateMouse(e){
     if(!controlsEnabled || isTouch) return;
-    const r = renderer.domElement.getBoundingClientRect();
-    mouseNX = ((e.clientX - r.left)/r.width  - 0.5) * 2;
-    mouseNY = ((e.clientY - r.top )/r.height - 0.5) * 2;
+    const r=renderer.domElement.getBoundingClientRect();
+    mouseNX = ((e.clientX - r.left)/r.width  - 0.5)*2;
+    mouseNY = ((e.clientY - r.top )/r.height - 0.5)*2;
   }
-  addEventListener('mousemove', updateMousePos, {passive:true});
-  addEventListener('mouseleave', ()=>{ mouseNX=0; mouseNY=0; });
-  addEventListener('blur', ()=>{ mouseNX=0; mouseNY=0; });
+  addEventListener('mousemove',updateMouse,{passive:true});
+  addEventListener('mouseleave',()=>{mouseNX=mouseNY=0;});
+  addEventListener('blur',()=>{mouseNX=mouseNY=0;});
 
-  // Mobile joystick + aim
+  // Mobile joystick + aim (ince nişan)
   let joyX=0, joyY=0, aimDX=0, aimDY=0, upHeld=false, downHeld=false;
   if(isTouch){ const joy=document.getElementById('joyL'), knob=joy.querySelector('.knob'); const rj=()=>joy.getBoundingClientRect();
     function onJoy(e){ if(!controlsEnabled) return; e.preventDefault();
@@ -277,29 +277,39 @@
     document.getElementById('btnDown').addEventListener('touchend',e=>{e.preventDefault();downHeld=false;},{passive:false});
   }
 
-  /* ---------- Mouse sensitivity & yaw limit ---------- */
-  const MOUSE_GAIN = 1.0;   // genel hassasiyet
-  const EDGE_BRAKE = 1.8;   // uca gittikçe fren
-  const MAX_YAW_RATE = 2.8; // rad/s
+  // Ray helpers
+  const raycaster = new THREE.Raycaster();
+  const aimTarget = new THREE.Vector3(); // kameradan ileri uzak nokta
+  const tmpDir = new THREE.Vector3();
 
-  /* ---------- Movement (throttle + inertia) ---------- */
-  let velF=0, vY=0, turnVel=0, throttle=0, prevThrottle=0, yaw=0, pitch=0;
+  /* ---------- Movement (ray-aim + inertia) ---------- */
+  const MAX_YAW_RATE = 2.8;
+  let velF=0, vY=0, yaw=0, pitch=0, throttle=0, prevThrottle=0, turnVel=0;
   function updateShip(dt){
     if(!controlsEnabled){
       velF*=Math.pow(0.94,dt*60); turnVel*=Math.pow(0.92,dt*60); vY*=Math.pow(0.92,dt*60);
       updateParticles(dt); return;
     }
 
-    // absolute aim hedefleri (mouse için frenli)
-    let targetTurnFromMouse = 0, targetPitchFromMouse = pitch;
-    if (!isTouch) {
-      const attX = MOUSE_GAIN / (1 + EDGE_BRAKE * Math.abs(mouseNX));
-      const attY = MOUSE_GAIN / (1 + EDGE_BRAKE * Math.abs(mouseNY));
-      targetTurnFromMouse  = (-mouseNX) * attX;
-      targetPitchFromMouse = THREE.MathUtils.clamp((-mouseNY*0.9) * attY, -Math.PI/3, Math.PI/3);
+    // Hedef yön: mouse'a karşılık gelen ray doğrultusu
+    let targetYaw = yaw, targetPitch = pitch;
+    if(!isTouch){
+      raycaster.setFromCamera({x:mouseNX,y:mouseNY}, camera);
+      // ray yönüne, kameradan belli bir mesafede bir nokta al
+      aimTarget.copy(raycaster.ray.direction).multiplyScalar(200).add(camera.position);
+      // geminin bulunduğu referansa göre hedef yön vektörü
+      tmpDir.copy(aimTarget).sub(ship.position).normalize();
+      // +X ileri, +Y yukarı, +Z sağ (bizim local)
+      targetYaw   = Math.atan2(tmpDir.z, tmpDir.x);                        // Y ekseni etrafında
+      targetPitch = Math.atan2(tmpDir.y, Math.hypot(tmpDir.x, tmpDir.z));  // X ekseni etrafında
+      // sınırlama
+      targetPitch = THREE.MathUtils.clamp(targetPitch, -Math.PI/3, Math.PI/3);
+    } else {
+      // mobil: nişan katkısı küçük
+      yaw += aimDX; pitch += aimDY; aimDX*=Math.pow(.92,dt*60); aimDY*=Math.pow(.92,dt*60);
     }
 
-    // inputs
+    // Klavye/joystick katkısı
     let fwd=0, turnKey=0, updn=0;
     if(!isTouch){
       if(keyState.KeyW) fwd+=1;
@@ -309,21 +319,20 @@
     } else {
       fwd = joyY;  turnKey = -joyX;
       if(upHeld) updn += 1; if(downHeld) updn -= 1;
-      // mobil ince nişan
-      yaw += aimDX; pitch += aimDY; aimDX*=Math.pow(.92,dt*60); aimDY*=Math.pow(.92,dt*60);
     }
 
-    // yaw/pitch
-    const targetTurn = targetTurnFromMouse + turnKey*0.8;
-    turnVel = THREE.MathUtils.damp(turnVel, targetTurn*1.6, 6, dt);
-    const yawRate = THREE.MathUtils.clamp(turnVel * 3.0, -MAX_YAW_RATE, MAX_YAW_RATE);
+    // Yaw/pitch'ı hedefe doğru dample + klavye ekle
+    const desiredYaw = targetYaw + turnKey*0.12;
+    // yaw farkını -PI..PI aralığına al
+    let dyaw = desiredYaw - yaw; dyaw = Math.atan2(Math.sin(dyaw), Math.cos(dyaw));
+    const yawRate = THREE.MathUtils.clamp(dyaw*3.0, -MAX_YAW_RATE, MAX_YAW_RATE);
     yaw += yawRate * dt;
 
-    const targetPitch = (!isTouch) ? targetPitchFromMouse : (pitch + updn*0.02);
-    pitch = THREE.MathUtils.damp(pitch, targetPitch, 6, dt);
+    const desiredPitch = (!isTouch) ? targetPitch : (pitch + updn*0.02);
+    pitch = THREE.MathUtils.damp(pitch, desiredPitch, 6, dt);
     pitch = THREE.MathUtils.clamp(pitch, -Math.PI/3, Math.PI/3);
 
-    // throttle & speed (coasting/fren)
+    // throttle & hız
     const ACC = (isTouch? 16 : 26);
     const MAX = (isTouch? 15 : 26);
     const DRAG_COAST = 0.985, DRAG_ACTIVE=0.96, DRAG_BRAKE = 0.90;
@@ -337,8 +346,8 @@
     velF *= Math.pow(drag, dt*60);
     velF = THREE.MathUtils.clamp(velF, -MAX, MAX);
 
-    // görsel roll düşük
-    const targetRoll = -turnVel*0.25;
+    // roll görsel
+    const targetRoll = -yawRate*0.08;
     ship.rotation.set(pitch, yaw, THREE.MathUtils.damp(ship.rotation.z, targetRoll, 8, dt));
 
     // hareket
@@ -393,7 +402,7 @@
     const p=planet.userData.project; qvTitle.textContent=p.title; qvTag.textContent=p.tag||''; qvMedia.style.backgroundImage=`url('${p.cover||''}')`;
     qv.classList.add('show');
   }
-  function qvCloseFn(){ qv.classList.remove('show'); controlsEnabled = true; mouseNX=0; mouseNY=0; }
+  function qvCloseFn(){ qv.classList.remove('show'); controlsEnabled = true; mouseNX=mouseNY=0; }
   qvClose.addEventListener('click', qvCloseFn); qvExit.addEventListener('click', qvCloseFn);
 
   /* ---------- Tick ---------- */

@@ -24,12 +24,7 @@
   .planet-card__meta{display:flex;justify-content:space-between;align-items:center;padding:8px 10px}
   .title{font-weight:700}
   .badge{position:absolute;left:8px;top:8px;background:rgba(64,191,255,.12);border:1px solid rgba(64,191,255,.4);backdrop-filter:blur(6px);font-size:11px;padding:6px 8px;border-radius:999px;color:#cfefff}
-  .enter-pill{
-    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-    padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);
-    background:rgba(64,191,255,.10);color:#dff2ff;font-size:12px;
-    box-shadow:0 0 16px rgba(64,191,255,.25);opacity:0;transition:opacity .15s ease;pointer-events:none
-  }
+  .enter-pill{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.10);color:#dff2ff;font-size:12px;box-shadow:0 0 16px rgba(64,191,255,.25);opacity:0;transition:opacity .15s ease;pointer-events:none}
 
   .popup{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
   .popup.show{display:flex}
@@ -98,11 +93,21 @@
 
   <canvas id="scene"></canvas>
 
-  <!-- THREE (global) + GLTFLoader (classic, non-module) -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/GLTFLoader.js"></script>
+  <!-- Import map: three & addons -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
 
-  <script>
+  <!-- App (module) -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
     const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
     const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
@@ -202,41 +207,41 @@
     /* Ship & particles */
     const ship=new THREE.Group(); scene.add(ship);
 
-    // Fallback hull (model yoksa)
+    // Fallback hull
     const hull=new THREE.Mesh(new THREE.CapsuleGeometry(.8,3,6,12),
       new THREE.MeshStandardMaterial({color:0x9aa7ff,roughness:.55,metalness:.2,emissive:0x10163a,emissiveIntensity:.2}));
     hull.rotation.z=Math.PI/2; ship.add(hull);
 
-    // GLB yükle — yön: +X (sağa doğru)
-    const loader = new THREE.GLTFLoader();
-    let exhaustLocal=new THREE.Vector3(-2,0,0); // egzoz lokali
+    // GLB yükle — yönü +X (sağ)
+    const loader = new GLTFLoader();
+    let exhaustLocal=new THREE.Vector3(-2,0,0);
 
     loader.load('media/spaceship.glb', (gltf)=>{
-      const model = gltf.scene || (gltf.scenes && gltf.scenes[0]);
+      const model = gltf.scene || gltf.scenes?.[0];
       if(!model) return;
 
-      ship.clear(); // fallback kaldır
+      ship.clear();
 
-      // ölçek
+      // scale to max ~6 units
       const box0 = new THREE.Box3().setFromObject(model);
       const size0 = new THREE.Vector3(); box0.getSize(size0);
-      const s = 6 / Math.max(size0.x,size0.y,size0.z, 1e-3);
+      const s = 6 / Math.max(size0.x,size0.y,size0.z || 1);
       model.scale.setScalar(s);
 
-      // çoğu GLB +Z ileri: -90° Y çevir → +X’e baksın
+      // çoğu GLB +Z ileri → -90° Y ile +X’e çevir
       model.rotation.set(0, -Math.PI/2, 0);
 
-      // merkeze al
+      // center pivot
       const b1 = new THREE.Box3().setFromObject(model);
       const c1 = new THREE.Vector3(); b1.getCenter(c1);
       model.position.sub(c1);
 
-      // egzoz için minX
+      // exhaust near minX
       const b2 = new THREE.Box3().setFromObject(model);
       exhaustLocal = new THREE.Vector3(b2.min.x - 0.6, 0, 0);
 
       ship.add(model);
-    });
+    }, undefined, ()=>{/* yoksa fallback kalır */});
 
     function worldFromExhaust(out){return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);}
     function makeSprite(mat){const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s;}
@@ -371,7 +376,7 @@
     /* Planet spin */
     function spinPlanets(dt){ for(const pl of planets){ pl.rotation.y += (pl.userData.spin||0.03)*dt; } }
 
-    /* Satellites (3x size) + debris */
+    /* Satellites (3x) + debris */
     const satellites=[], debrisPool=[];
     function makeSatellite(x,y,z){
       const group=new THREE.Group();

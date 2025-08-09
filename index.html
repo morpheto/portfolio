@@ -81,7 +81,7 @@
 
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script>
-  /* ===================== ONE-TIME HELPERS / TEXTURES (NO DUPLICATES) ===================== */
+  /* ---------- Helpers & Textures (single definitions) ---------- */
   function makeRadialTexture(inner, outer, size=128){
     const c=document.createElement('canvas'); c.width=c.height=size;
     const ctx=c.getContext('2d');
@@ -94,7 +94,7 @@
   const flameTex = makeRadialTexture('rgba(255,200,80,1)','rgba(255,120,0,0)');
   const smokeTex = makeRadialTexture('rgba(220,230,245,0.6)','rgba(130,140,155,0.0)');
 
-  /* ===================== SCENE & LIGHTS ===================== */
+  /* ---------- Scene ---------- */
   const canvas = document.getElementById('scene');
   const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
   renderer.setPixelRatio(Math.min(2, devicePixelRatio||1));
@@ -105,7 +105,7 @@
   scene.add(new THREE.HemisphereLight(0x89b4ff, 0x05060a, .55));
   const key = new THREE.DirectionalLight(0xffffff,.85); key.position.set(160,220,120); scene.add(key);
 
-  /* ===================== STARS ===================== */
+  /* ---------- Stars ---------- */
   (function stars(){
     const g=new THREE.BufferGeometry(), N=3500, pos=new Float32Array(N*3);
     for(let i=0;i<N;i++){const r=800+Math.random()*1500, th=Math.random()*Math.PI*2, u=Math.random()*2-1, s=Math.sqrt(1-u*u);
@@ -114,7 +114,7 @@
     scene.add(new THREE.Points(g,new THREE.PointsMaterial({size:1.6,color:0xbfd9ff,sizeAttenuation:true})));
   })();
 
-  /* ===================== PROJECT DATA ===================== */
+  /* ---------- Projects ---------- */
   const PROJECTS=[{id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg'},
   {id:'p2',title:'Odin Pendant Animation',tag:'3D Works',cover:'media/covers/p2.jpg'},
   {id:'p3',title:'MediaPipe + Ableton + PointCloud',tag:'Interactive',cover:'media/covers/p3.jpg'},
@@ -140,7 +140,7 @@
     return m;
   }
 
-  // planet positions
+  // positions
   const POS=[], RMIN=70, RMAX=150;
   for(let i=0;i<PROJECTS.length;i++){
     const R=THREE.MathUtils.randFloat(RMIN,RMAX), th=(i/PROJECTS.length)*Math.PI*2 + Math.random()*0.6;
@@ -148,7 +148,6 @@
   }
   for(let i=POS.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [POS[i],POS[j]]=[POS[j],POS[i]];}
 
-  // planets + overlay cards
   PROJECTS.forEach((p,i)=>{
     const r=THREE.MathUtils.randFloat(9,16);
     const col=new THREE.Color().setHSL(THREE.MathUtils.randFloat(.55,.72),.45,.58).getHex();
@@ -162,7 +161,7 @@
     const item={el, obj:m}; item.el.addEventListener('click',()=>{ if(nearest===m) qvOpenFor(m); }); cardsRef.push(item);
   });
 
-  /* ===================== SHIP & PARTICLES ===================== */
+  /* ---------- Ship & particles ---------- */
   const ship=new THREE.Group(); scene.add(ship);
   const hull=new THREE.Mesh(new THREE.CapsuleGeometry(.8,3,6,12),
     new THREE.MeshStandardMaterial({color:0x9aa7ff,roughness:.55,metalness:.2,emissive:0x10163a,emissiveIntensity:.2}));
@@ -170,6 +169,7 @@
 
   const exhaustLocal = new THREE.Vector3(-2.0,0,0);
 
+  // particle pools
   const flameMatBase = new THREE.SpriteMaterial({map:flameTex, depthWrite:false, depthTest:true, transparent:true, blending:THREE.AdditiveBlending, opacity:0.9, color:0xffffff});
   const smokeMatBase = new THREE.SpriteMaterial({map:smokeTex, depthWrite:false, depthTest:true, transparent:true, opacity:0.0, color:0xffffff});
   function makeSprite(mat){ const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s; }
@@ -180,28 +180,44 @@
   const smokeData=smokePool.map(()=>({life:0,max:0,vel:new THREE.Vector3()}));
 
   function worldFromExhaust(out){ return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position); }
-  function spawnFlame(n,intensity=1){ for(let i=0;i<flamePool.length && n>0;i++){ if(flameData[i].life>0) continue; n--; const sp=flamePool[i], d=flameData[i];
-    const pos=new THREE.Vector3(); worldFromExhaust(pos); sp.position.copy(pos);
-    sp.scale.setScalar(0.9 + Math.random()*1.4*intensity);
-    d.max=0.35+Math.random()*0.25; d.life=d.max;
-    const dir=new THREE.Vector3(-1, THREE.MathUtils.randFloatSpread(0.35), THREE.MathUtils.randFloatSpread(0.35)).applyQuaternion(ship.quaternion);
-    d.vel.copy(dir.multiplyScalar(12+18*intensity)); sp.material.opacity=0.85; sp.visible=true; } }
-  function spawnSmoke(n,boost=1){ for(let i=0;i<smokePool.length && n>0;i++){ if(smokeData[i].life>0) continue; n--; const sp=smokePool[i], d=smokeData[i];
-    const pos=new THREE.Vector3(); worldFromExhaust(pos); sp.position.copy(pos);
-    const s= 1.2 + Math.random()*2.2*boost; sp.scale.set(s,s,1);
-    d.max=0.9+Math.random()*0.8; d.life=d.max;
-    const dir=new THREE.Vector3(-1, THREE.MathUtils.randFloatSpread(0.25), THREE.MathUtils.randFloatSpread(0.25)).applyQuaternion(ship.quaternion);
-    d.vel.copy(dir.multiplyScalar(3+2*boost)); sp.material.opacity=0.3; sp.visible=true; } }
+  function spawnFlame(n,intensity=1){
+    for(let i=0;i<flamePool.length && n>0;i++){
+      if(flameData[i].life>0) continue; n--;
+      const sp=flamePool[i], d=flameData[i];
+      const pos=new THREE.Vector3(); worldFromExhaust(pos); sp.position.copy(pos);
+      sp.scale.setScalar(0.9 + Math.random()*1.4*intensity);
+      d.max=0.35+Math.random()*0.25; d.life=d.max;
+      const dir=new THREE.Vector3(-1, THREE.MathUtils.randFloatSpread(0.35), THREE.MathUtils.randFloatSpread(0.35)).applyQuaternion(ship.quaternion);
+      d.vel.copy(dir.multiplyScalar(12+18*intensity)); sp.material.opacity=0.85; sp.visible=true;
+    }
+  }
+  function spawnSmoke(n,boost=1){
+    for(let i=0;i<smokePool.length && n>0;i++){
+      if(smokeData[i].life>0) continue; n--;
+      const sp=smokePool[i], d=smokeData[i];
+      const pos=new THREE.Vector3(); worldFromExhaust(pos); sp.position.copy(pos);
+      const s= 1.2 + Math.random()*2.2*boost; sp.scale.set(s,s,1);
+      d.max=0.9+Math.random()*0.8; d.life=d.max;
+      const dir=new THREE.Vector3(-1, THREE.MathUtils.randFloatSpread(0.25), THREE.MathUtils.randFloatSpread(0.25)).applyQuaternion(ship.quaternion);
+      d.vel.copy(dir.multiplyScalar(3+2*boost)); sp.material.opacity=0.3; sp.visible=true;
+    }
+  }
   function updateParticles(dt){
-    for(let i=0;i<flamePool.length;i++){ const p=flamePool[i], d=flameData[i]; if(d.life<=0){p.visible=false; continue;}
+    for(let i=0;i<flamePool.length;i++){
+      const p=flamePool[i], d=flameData[i]; if(d.life<=0){p.visible=false; continue;}
       d.life-=dt; p.position.addScaledVector(d.vel,dt);
-      const t=d.life/d.max; p.material.opacity=0.15+0.75*t; const s=(0.6+1.8*(1-t)); p.scale.set(s,s,1); if(d.life<=0) p.visible=false; }
-    for(let i=0;i<smokePool.length;i++){ const p=smokePool[i], d=smokeData[i]; if(d.life<=0){p.visible=false; continue;}
+      const t=d.life/d.max; p.material.opacity=0.15+0.75*t; const s=(0.6+1.8*(1-t)); p.scale.set(s,s,1);
+      if(d.life<=0) p.visible=false;
+    }
+    for(let i=0;i<smokePool.length;i++){
+      const p=smokePool[i], d=smokeData[i]; if(d.life<=0){p.visible=false; continue;}
       d.life-=dt; p.position.addScaledVector(d.vel,dt); p.position.y += dt*0.6;
-      const t=d.life/d.max; p.material.opacity=0.35*t; const s=p.scale.x*(1+0.35*dt); p.scale.set(s,s,1); if(d.life<=0) p.visible=false; }
+      const t=d.life/d.max; p.material.opacity=0.35*t; const s=p.scale.x*(1+0.35*dt); p.scale.set(s,s,1);
+      if(d.life<=0) p.visible=false;
+    }
   }
 
-  /* ===================== CAMERA ===================== */
+  /* ---------- Camera ---------- */
   const camOffsetLocal=new THREE.Vector3(-20,8.8,0);
   const lookAheadLocal=new THREE.Vector3( 8, 2.0,0);
   const camPos=new THREE.Vector3(), lookAt=new THREE.Vector3();
@@ -215,7 +231,7 @@
   camera.position.copy(ship.position).add(camOffsetLocal);
   camera.lookAt(ship.position.clone().add(lookAheadLocal));
 
-  /* ===================== INPUT (ABSOLUTE MOUSE AIM) ===================== */
+  /* ---------- Input & aim ---------- */
   const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
   helpBox.innerHTML = isTouch
     ? '<b>Mobile</b> — Left joystick: move/turn · Right drag: aim · Up/Down buttons · Tap card near planet: Quick View'
@@ -231,7 +247,7 @@
   }
   if(!isTouch){ addEventListener('keydown',e=>setKey(e,true)); addEventListener('keyup',e=>setKey(e,false)); }
 
-  // Absolute mouse aim
+  // Mouse absolute aim (with edge brake)
   let mouseNX = 0, mouseNY = 0; // -1..+1
   function updateMousePos(e){
     if(!controlsEnabled || isTouch) return;
@@ -261,7 +277,12 @@
     document.getElementById('btnDown').addEventListener('touchend',e=>{e.preventDefault();downHeld=false;},{passive:false});
   }
 
-  /* ===================== MOVEMENT (THROTTLE + INERTIA) ===================== */
+  /* ---------- Mouse sensitivity & yaw limit ---------- */
+  const MOUSE_GAIN = 1.0;   // genel hassasiyet
+  const EDGE_BRAKE = 1.8;   // uca gittikçe fren
+  const MAX_YAW_RATE = 2.8; // rad/s
+
+  /* ---------- Movement (throttle + inertia) ---------- */
   let velF=0, vY=0, turnVel=0, throttle=0, prevThrottle=0, yaw=0, pitch=0;
   function updateShip(dt){
     if(!controlsEnabled){
@@ -269,12 +290,16 @@
       updateParticles(dt); return;
     }
 
-    // desktop: mouse target; mobile: aim katkısı
-    const targetTurnFromMouse = (!isTouch) ? (-mouseNX) : 0;
-    const targetPitchFromMouse = (!isTouch) ? THREE.MathUtils.clamp(-mouseNY*0.9, -Math.PI/3, Math.PI/3) : pitch;
-    if(isTouch){ yaw += aimDX; pitch += aimDY; aimDX*=Math.pow(.92,dt*60); aimDY*=Math.pow(.92,dt*60); }
+    // absolute aim hedefleri (mouse için frenli)
+    let targetTurnFromMouse = 0, targetPitchFromMouse = pitch;
+    if (!isTouch) {
+      const attX = MOUSE_GAIN / (1 + EDGE_BRAKE * Math.abs(mouseNX));
+      const attY = MOUSE_GAIN / (1 + EDGE_BRAKE * Math.abs(mouseNY));
+      targetTurnFromMouse  = (-mouseNX) * attX;
+      targetPitchFromMouse = THREE.MathUtils.clamp((-mouseNY*0.9) * attY, -Math.PI/3, Math.PI/3);
+    }
 
-    // keyboard / joystick
+    // inputs
     let fwd=0, turnKey=0, updn=0;
     if(!isTouch){
       if(keyState.KeyW) fwd+=1;
@@ -284,17 +309,21 @@
     } else {
       fwd = joyY;  turnKey = -joyX;
       if(upHeld) updn += 1; if(downHeld) updn -= 1;
+      // mobil ince nişan
+      yaw += aimDX; pitch += aimDY; aimDX*=Math.pow(.92,dt*60); aimDY*=Math.pow(.92,dt*60);
     }
 
+    // yaw/pitch
     const targetTurn = targetTurnFromMouse + turnKey*0.8;
     turnVel = THREE.MathUtils.damp(turnVel, targetTurn*1.6, 6, dt);
-    yaw += turnVel * dt * 3.0;
+    const yawRate = THREE.MathUtils.clamp(turnVel * 3.0, -MAX_YAW_RATE, MAX_YAW_RATE);
+    yaw += yawRate * dt;
 
     const targetPitch = (!isTouch) ? targetPitchFromMouse : (pitch + updn*0.02);
     pitch = THREE.MathUtils.damp(pitch, targetPitch, 6, dt);
     pitch = THREE.MathUtils.clamp(pitch, -Math.PI/3, Math.PI/3);
 
-    // throttle & speed
+    // throttle & speed (coasting/fren)
     const ACC = (isTouch? 16 : 26);
     const MAX = (isTouch? 15 : 26);
     const DRAG_COAST = 0.985, DRAG_ACTIVE=0.96, DRAG_BRAKE = 0.90;
@@ -308,16 +337,18 @@
     velF *= Math.pow(drag, dt*60);
     velF = THREE.MathUtils.clamp(velF, -MAX, MAX);
 
+    // görsel roll düşük
     const targetRoll = -turnVel*0.25;
     ship.rotation.set(pitch, yaw, THREE.MathUtils.damp(ship.rotation.z, targetRoll, 8, dt));
 
+    // hareket
     const forward=new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion);
     ship.position.addScaledVector(forward, velF*dt);
     if(isTouch) ship.position.y += (updn*8)*dt;
     ship.position.y += Math.sin(pitch)*velF*.75*dt;
     ship.position.y  = THREE.MathUtils.clamp(ship.position.y, -70, 70);
 
-    // particles
+    // partiküller
     const speedAbs = Math.abs(velF);
     const flameRate = Math.floor( 6 + 14*THREE.MathUtils.clamp(throttle + speedAbs/20, 0, 1.5) );
     if(throttle>0.01) spawnFlame(flameRate, THREE.MathUtils.clamp(throttle + speedAbs/30, .6, 1.6));
@@ -328,7 +359,7 @@
     updateParticles(dt);
   }
 
-  /* ===================== OVERLAY / HINT ===================== */
+  /* ---------- Overlay & hint ---------- */
   function clamp1(v,min,max){return Math.max(min,Math.min(max,v));}
   let nearest=null;
   function updateCardsAndHint(){
@@ -353,7 +384,7 @@
     } else hintEl.style.display='none';
   }
 
-  /* ===================== QUICK VIEW ===================== */
+  /* ---------- Quick View ---------- */
   const qv=document.getElementById('quickview'), qvTitle=document.getElementById('qvTitle'),
         qvTag=document.getElementById('qvTag'), qvMedia=document.getElementById('qvMedia'),
         qvClose=document.getElementById('qvClose'), qvExit=document.getElementById('qvExit');
@@ -365,7 +396,7 @@
   function qvCloseFn(){ qv.classList.remove('show'); controlsEnabled = true; mouseNX=0; mouseNY=0; }
   qvClose.addEventListener('click', qvCloseFn); qvExit.addEventListener('click', qvCloseFn);
 
-  /* ===================== TICK ===================== */
+  /* ---------- Tick ---------- */
   addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();});
   const clock=new THREE.Clock();
   function loop(){ const dt=Math.min(.033,clock.getDelta()); updateShip(dt); updateCamera(dt); updateParticles(dt); updateCardsAndHint(); renderer.render(scene,camera); requestAnimationFrame(loop); }

@@ -13,7 +13,6 @@
   body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
   canvas#scene{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
 
-  /* HUD */
   .hud{
     position:fixed;top:12px;left:12px;right:12px;z-index:20;
     display:flex;align-items:center;justify-content:space-between;
@@ -31,7 +30,6 @@
     padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.06);backdrop-filter:blur(6px)
   }
 
-  /* Hologram overlay kartları */
   .overlay{position:fixed;inset:0;pointer-events:none;z-index:12}
   .planet-card{
     position:absolute;transform:translate(-50%,-100%);width:260px;max-width:40vw;
@@ -50,7 +48,6 @@
     font-size:11px;padding:6px 8px;border-radius:999px;color:#cfefff
   }
 
-  /* Quick View modal */
   .popup{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
   .popup.show{display:flex}
   .popup-card{width:min(880px,92vw);border:1px solid rgba(120,198,255,.28);border-radius:18px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
@@ -88,10 +85,8 @@
     Click planet: Quick View · E: Open (near) · Q / Esc: Close
   </div>
 
-  <!-- Hologram kartlar -->
   <div class="overlay" id="overlay"></div>
 
-  <!-- Quick View modal -->
   <div class="popup" id="quickview">
     <div class="popup-card" role="dialog" aria-modal="true" aria-labelledby="qvTitle">
       <button class="popup-close" id="qvClose" aria-label="Close">✕</button>
@@ -111,12 +106,12 @@
 
   <canvas id="scene" tabindex="0" aria-label="3D project map"></canvas>
 
-  <!-- Three.js (ESM) -->
-  <script type="module">
-    import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
-    import { GLTFLoader } from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
+  <!-- NON-MODULE builds (yerelde file:// ile de çalışır) -->
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 
-    /* ---------- Renderer / Scene / Camera ---------- */
+  <script>
+    // ------------- Renderer / Scene / Camera -------------
     const canvas = document.getElementById('scene');
     const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
     const DPR = Math.min(2, window.devicePixelRatio || 1);
@@ -126,11 +121,11 @@
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x05060a, 0.008); // hafif uzay sisi
+    scene.fog = new THREE.FogExp2(0x05060a, 0.008);
 
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 2000);
 
-    /* ---------- Lights (uzay: hafif mavi/soğuk) ---------- */
+    // ------------- Lights -------------
     const hemi = new THREE.HemisphereLight(0x89b4ff, 0x05060a, 0.5);
     scene.add(hemi);
     const key = new THREE.DirectionalLight(0xffffff, 1.0);
@@ -143,26 +138,24 @@
     rim.position.set(-120, 80, -60);
     scene.add(rim);
 
-    /* ---------- Starfield (GPU ucuz) ---------- */
-    const stars = (() => {
+    // ------------- Starfield -------------
+    (function addStars(){
       const g = new THREE.BufferGeometry();
-      const N = 4000;
-      const pos = new Float32Array(N*3);
+      const N = 4000, pos = new Float32Array(N*3);
       for(let i=0;i<N;i++){
         const r = 600 + Math.random()*800;
         const theta = Math.random()*Math.PI*2;
         const phi = Math.acos(THREE.MathUtils.randFloatSpread(2));
         pos[i*3+0] = r*Math.sin(phi)*Math.cos(theta);
-        pos[i*3+1] = r*Math.cos(phi)*0.6;     // hafif yassı
+        pos[i*3+1] = r*Math.cos(phi)*0.6;
         pos[i*3+2] = r*Math.sin(phi)*Math.sin(theta);
       }
       g.setAttribute('position', new THREE.BufferAttribute(pos,3));
       const m = new THREE.PointsMaterial({ size:1.2, sizeAttenuation:true, color:0xbcd5ff, transparent:true, opacity:0.9 });
-      return new THREE.Points(g,m);
+      scene.add(new THREE.Points(g,m));
     })();
-    scene.add(stars);
 
-    /* ---------- Project data ---------- */
+    // ------------- Project data -------------
     const PROJECTS = [
       { id:'p1', title:'Audio Reactive + Hand Tracked Visualizer', tag:'TouchDesigner', cover:'media/covers/p1.jpg' },
       { id:'p2', title:'Odin Pendant Animation',                   tag:'3D Works',      cover:'media/covers/p2.jpg' },
@@ -175,7 +168,7 @@
       { id:'p9', title:'AI Visualizer from Image',                 tag:'AI Visuals',    cover:'media/covers/p9.jpg' }
     ];
 
-    /* ---------- Planets (projeler) ---------- */
+    // ------------- Planets -------------
     const ring = [
       [-90,-30], [-30,-70], [50,-40],
       [-80, 30], [  0, 45], [60,  55],
@@ -191,7 +184,6 @@
       });
       const m = new THREE.Mesh(geo, mat);
       m.castShadow = true; m.receiveShadow = true;
-      // ince halkalı aura
       const ringG = new THREE.RingGeometry(size*1.15, size*1.45, 64);
       const ringM = new THREE.MeshBasicMaterial({ color:0x66d1ff, transparent:true, opacity:0.12, side:THREE.DoubleSide });
       const aura = new THREE.Mesh(ringG, ringM); aura.rotation.x = -Math.PI/2;
@@ -225,40 +217,49 @@
       cards.push({ el: makeCard(proj), obj: planet, size: radius });
     });
 
-    /* ---------- Spaceship (GLB) ---------- */
-    const ship = new THREE.Group(); // holder
+    // ------------- Spaceship (GLB + fallback) -------------
+    const ship = new THREE.Group();
     scene.add(ship);
 
-    const loader = new GLTFLoader();
-    loader.load(
-      "media/models/spaceship.glb",
-      (gltf)=>{
-        const model = gltf.scene;
-        model.traverse(o=>{
-          if(o.isMesh){
-            o.castShadow = true; o.receiveShadow = true;
-            if(o.material) o.material.roughness = Math.min(0.9, (o.material.roughness ?? 0.6));
-          }
-        });
-        // Yöneyi ayarla: ilerisi +X olacak şekilde çevir (glTF genelde -Z ileri gelir)
-        model.rotation.y = Math.PI/2;
-        model.scale.set(1.2,1.2,1.2);
-        ship.add(model);
-      },
-      undefined,
-      (err)=>{ console.error("GLB load error:", err); }
-    );
+    function addFallbackShip(){
+      const hull = new THREE.Mesh(
+        new THREE.CapsuleGeometry(0.8, 3.2, 6, 12),
+        new THREE.MeshStandardMaterial({ color:0x9aa7ff, roughness:0.6, metalness:0.2, emissive:0x10163a, emissiveIntensity:0.2 })
+      );
+      hull.rotation.z = Math.PI/2;
+      ship.add(hull);
+    }
 
-    // Başlangıç konumu
+    try{
+      const loader = new THREE.GLTFLoader();
+      loader.load(
+        "media/models/spaceship.glb",
+        (gltf)=>{
+          const model = gltf.scene;
+          model.traverse(o=>{
+            if(o.isMesh){ o.castShadow = o.receiveShadow = true; }
+          });
+          // Yön: ileri +X olacak şekilde çevir (glTF genelde -Z ileri gelir)
+          model.rotation.y = Math.PI/2;
+          model.scale.set(1.2,1.2,1.2);
+          ship.add(model);
+        },
+        undefined,
+        (err)=>{ console.warn("GLB load error, using fallback:", err); addFallbackShip(); }
+      );
+    }catch(e){
+      console.warn("GLTFLoader not available, using fallback.", e);
+      addFallbackShip();
+    }
+
     ship.position.set(0, 0, 0);
 
-    /* ---------- Camera: TRUE 3rd-Person (arka: -X, üst: +Y) ---------- */
+    // ------------- Camera (behind -X, above +Y) -------------
     const camOffsetLocal  = new THREE.Vector3(-16.0, 7.5, 0);
     const lookAheadLocal  = new THREE.Vector3(  6.0, 1.8, 0);
     const camPos = new THREE.Vector3(), lookAt = new THREE.Vector3();
     camera.position.copy(ship.position).add(camOffsetLocal);
     camera.lookAt(ship.position.clone().add(lookAheadLocal));
-
     function updateCamera(dt){
       const off = camOffsetLocal.clone().applyQuaternion(ship.quaternion);
       camPos.copy(ship.position).add(off);
@@ -268,7 +269,7 @@
       camera.lookAt(lookAt);
     }
 
-    /* ---------- Controls (W/S ileri‑geri, A/D dönüş) ---------- */
+    // ------------- Controls -------------
     const keys = new Set();
     window.addEventListener('keydown', (e)=>{ keys.add(e.key.toLowerCase()); handleHotkeys(e); });
     window.addEventListener('keyup',   (e)=>{ keys.delete(e.key.toLowerCase()); });
@@ -293,17 +294,15 @@
       ship.rotation.y += yawVel;
       yawVel *= Math.pow(0.92, dt*60);
 
-      // ileri/geri — geminin +X yönü
       const fwd = new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion);
       ship.position.addScaledVector(fwd, vel * dt * 3.0);
 
-      // hafif "drift" hissi
       ship.position.y = Math.sin(t*0.9)*0.2;
       ship.rotation.z = Math.sin(t*0.7 + ship.position.x*0.01)*0.01;
       ship.rotation.x = Math.cos(t*0.8 + ship.position.z*0.01)*0.008;
     }
 
-    /* ---------- Raycast & Hover ---------- */
+    // ------------- Raycast / Hover / Click -------------
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     let hovered = null;
@@ -338,22 +337,26 @@
     }
     renderer.domElement.addEventListener('click', onClick);
 
-    /* ---------- Overlay cards (screen‑space, clamped) ---------- */
+    // ------------- Overlay kartlar -------------
     const tmpV = new THREE.Vector3();
     function clamp1(v, min, max){ return Math.max(min, Math.min(max, v)); }
 
     const cardsRef = [];
-    // eklenen sıraya göre overlay çocuklarıyla eşleştir
-    setTimeout(()=> {
-      // overlay'e kartlar bastıkça children doluyor; küçük gecikme ile eşle
-      [...overlay.children].forEach((el, idx)=> cardsRef.push({ el, obj: planets[idx] }));
-    });
+    function buildCardsRef(){
+      cardsRef.length = 0;
+      const children = overlay.children;
+      for(let i=0;i<children.length;i++){ cardsRef.push({ el: children[i], obj: planets[i] }); }
+    }
+    // kartları oluştur
+    PROJECTS.forEach(()=>{}); // (zaten oluşturduk)
+    // DOM eklendi; eşle
+    setTimeout(buildCardsRef, 0);
 
     function updateCards(){
       const W = window.innerWidth, H = window.innerHeight;
       for(const {el, obj} of cardsRef){
         if(!obj) continue;
-        tmpV.copy(obj.position); tmpV.y += 10; // gezegen üstü
+        tmpV.copy(obj.position); tmpV.y += 10;
         tmpV.project(camera);
         let x = (tmpV.x*0.5+0.5)*W, y = (-tmpV.y*0.5+0.5)*H;
         const onScreen = tmpV.z < 1 && tmpV.z > -1;
@@ -368,7 +371,7 @@
       }
     }
 
-    /* ---------- Quick View (modal) ---------- */
+    // ------------- Quick View -------------
     const qv = document.getElementById('quickview');
     const qvTitle = document.getElementById('qvTitle');
     const qvTag   = document.getElementById('qvTag');
@@ -390,7 +393,6 @@
     qvEnter.addEventListener('click', ()=>{ qv.classList.add('pulse'); setTimeout(()=> qv.classList.remove('pulse'), 220); });
     window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') qvCloseFn(); });
 
-    // yakınlık eşiği: E ile açılabilsin
     let nearest = null;
     function checkProximity(){
       let best=null, dmin=Infinity;
@@ -407,7 +409,7 @@
       if(k==='q') qvCloseFn();
     }
 
-    /* ---------- Resize & Loop ---------- */
+    // ------------- Resize & Loop -------------
     function onResize(){
       renderer.setSize(window.innerWidth, window.innerHeight);
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -431,7 +433,7 @@
     }
     loop();
 
-    // klavye odak
+    // ilk tıklamada klavye odak
     window.addEventListener('click', ()=> canvas.focus(), {once:true});
   </script>
 </body>

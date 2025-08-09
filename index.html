@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Orhun Ege Eker — Space</title>
+<title>Orhun Ege Eker — Space Portfolio</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{ --bg:#05060a; --text:#f6f7fb; --muted:#cbd5e1; }
@@ -12,7 +12,7 @@
   canvas#scene{position:fixed;inset:0;width:100%;height:100%;display:block}
 
   .hud{position:fixed;top:12px;left:12px;right:12px;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(8,10,18,.45);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px);border-radius:16px}
-  .brand{font-weight:800;letter-spacing:.4px;font-size:16px;text-decoration:none;color:var(--text)}
+  .brand{font-weight:800;letter-spacing:.4px;font-size:16px}
   .nav{display:flex;gap:16px}
   .nav a{color:var(--text);text-decoration:none;opacity:.9;font-size:14px}
 
@@ -41,16 +41,20 @@
   .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
   .btn.primary{background:#1e5eff;border-color:#2b66ff}
 
+  /* start */
   .start{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 600px at 50% -20%, rgba(120,170,255,.08), rgba(5,6,10,.95))}
   .start.hide{animation:fade .6s both}@keyframes fade{to{opacity:0;visibility:hidden}}
-  .start-card{padding:28px 32px;border:1px solid rgba(255,255,255,.12);background:rgba(10,12,20,.72);backdrop-filter:blur(8px);border-radius:16px;display:flex;flex-direction:column;gap:12px;align-items:center}
+  .start-card{padding:28px 32px;border:1px solid rgba(255,255,255,.12);background:rgba(10,12,20,.72);backdrop-filter:blur(8px);border-radius:16px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center}
+  .start-card .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
   .kbd{font-weight:700;border:1px solid rgba(255,255,255,.18);padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.06)}
 </style>
 </head>
 <body>
   <div class="hud">
-    <a class="brand" href="space.html">SPACE</a>
+    <div class="brand">ORHUN EGE EKER</div>
+    <!-- NAV: SPACE (index.html) ve PROJECTS (projects.html) -->
     <div class="nav">
+      <a href="index.html">SPACE</a>
       <a href="projects.html">PROJECTS</a>
       <a href="about.html">ABOUT</a>
       <a href="contact.html">CONTACT</a>
@@ -80,11 +84,15 @@
   <!-- Start -->
   <div class="start" id="start">
     <div class="start-card">
-      <h1>Orhun Ege Eker – Portfolio</h1>
+      <h1>Orhun Ege Eker — Portfolio</h1>
       <p>If you choose the basic way</p>
-      <button onclick="location.href='projects.html'" class="btn">Basic Portfolio</button>
-      <p><span class="kbd">W/S</span> move · mouse turn · near planet <span class="kbd">E</span> enter</p>
-      <button id="btnStart" class="btn primary">Start</button>
+      <div class="row">
+        <a href="projects.html" class="btn">Basic Portfolio</a>
+      </div>
+      <p style="margin-top:6px;"><span class="kbd">W/S</span> move · mouse turn · near planet <span class="kbd">E</span> enter</p>
+      <div class="row">
+        <button id="btnStart" class="btn primary">Start Space Tour</button>
+      </div>
     </div>
   </div>
 
@@ -212,7 +220,7 @@
   camera.position.copy(ship.position).add(camOff); camera.lookAt(ship.position.clone().add(lookAhead));
 
   /* Input */
-  let controlsEnabled=false; // start'a kadar kilit
+  let controlsEnabled=false;
   const keys={KeyW:false,KeyA:false,KeyS:false,KeyD:false};
   addEventListener('keydown',e=>{ if(!controlsEnabled) return; if(e.code in keys) keys[e.code]=true; });
   addEventListener('keyup',e=>{ if(!controlsEnabled) return; if(e.code in keys) keys[e.code]=false; });
@@ -285,7 +293,7 @@
   /* Planet spin */
   function spinPlanets(dt){ for(const pl of planets){ pl.rotation.y += (pl.userData.spin||0.03)*dt; } }
 
-  /* ---------- Uydu(lar) & Çarpışma ---------- */
+  /* ---------- Uydu(lar) & Çarpışma (3× büyütüldü) ---------- */
   const satellites=[], debrisPool=[];
   function makeSatellite(x,y,z){
     const group=new THREE.Group();
@@ -296,8 +304,8 @@
     panelL.position.set(-1.2,0,0); panelR.position.set(1.2,0,0);
     group.add(body,panelL,panelR);
     group.position.set(x,y,z);
+    group.scale.setScalar(3);            // 3× büyütme
     group.userData.spin = THREE.MathUtils.randFloat(0.3,0.8);
-    group.scale.set(3,3,3); // 3x büyütme
     scene.add(group);
     satellites.push(group);
   }
@@ -339,8 +347,12 @@
   });
 
   /* Resize & loop */
+  const tmpV=new THREE.Vector3();
   addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();});
   const clock=new THREE.Clock();
+  function updateCamera(dt){const camOff=new THREE.Vector3(-20,8.8,0), lookAhead=new THREE.Vector3(8,2,0), camPos=new THREE.Vector3(), lookAt=new THREE.Vector3();
+    const off=camOff.clone().applyQuaternion(ship.quaternion);camPos.copy(ship.position).add(off);camera.position.lerp(camPos,1-Math.pow(.0028,dt*60));const la=lookAhead.clone().applyQuaternion(ship.quaternion);lookAt.copy(ship.position).add(la);camera.lookAt(lookAt);}
+  const ship=new THREE.Group(); // (gövde yukarıda eklendi)
   function loop(){
     const dt=Math.min(.033,clock.getDelta());
     updateShip(dt); updateCamera(dt); updateParticles(dt); spinPlanets(dt*0.5); updateSatellites(dt); updateCardsAndHint();

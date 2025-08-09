@@ -98,15 +98,15 @@
 
   <canvas id="scene"></canvas>
 
-  <!-- THREE (global) + classic GLTFLoader (no ESM, no bare imports) -->
-  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-  <script src="https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+  <!-- THREE (global) + GLTFLoader (classic, non-module) -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/GLTFLoader.js"></script>
 
   <script>
     const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
     const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
-    // --- Particle textures: BLUE / CYAN ---
+    // Blue/cyan exhaust textures
     function makeRadialTexture(inner, outer, size=128){
       const c=document.createElement('canvas'); c.width=c.height=size;
       const ctx=c.getContext('2d'); const g=ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
@@ -134,7 +134,7 @@
       scene.add(new THREE.Points(g,new THREE.PointsMaterial({size:1.6,color:0xbfd9ff,sizeAttenuation:true})));
     })();
 
-    /* Projects */
+    /* Projects (cards) */
     const PROJECTS=[
       {id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg'},
       {id:'p2',title:'Odin Pendant Animation',tag:'3D Works',cover:'media/covers/p2.jpg'},
@@ -199,7 +199,7 @@
       const item={el,obj:m,pill}; el.addEventListener('click',()=>{ if(nearest===m) qvOpenFor(m); }); cardsRef.push(item);
     });
 
-    /* Ship & (BLUE) particles */
+    /* Ship & particles */
     const ship=new THREE.Group(); scene.add(ship);
 
     // Fallback hull (model yoksa)
@@ -207,7 +207,7 @@
       new THREE.MeshStandardMaterial({color:0x9aa7ff,roughness:.55,metalness:.2,emissive:0x10163a,emissiveIntensity:.2}));
     hull.rotation.z=Math.PI/2; ship.add(hull);
 
-    // GLB yükle — yön düzeltmesi: +X'e bak
+    // GLB yükle — yön: +X (sağa doğru)
     const loader = new THREE.GLTFLoader();
     let exhaustLocal=new THREE.Vector3(-2,0,0); // egzoz lokali
 
@@ -215,25 +215,25 @@
       const model = gltf.scene || (gltf.scenes && gltf.scenes[0]);
       if(!model) return;
 
-      ship.clear(); // fallback'i kaldır
+      ship.clear(); // fallback kaldır
 
-      // ölçek normalizasyonu
+      // ölçek
       const box0 = new THREE.Box3().setFromObject(model);
       const size0 = new THREE.Vector3(); box0.getSize(size0);
-      const maxDim = Math.max(size0.x,size0.y,size0.z) || 1;
-      const target = 6; model.scale.setScalar(target/maxDim);
+      const s = 6 / Math.max(size0.x,size0.y,size0.z, 1e-3);
+      model.scale.setScalar(s);
 
-      // bir çok GLB +Z ileri kabul eder; -90° Y ile +X'e çevir
+      // çoğu GLB +Z ileri: -90° Y çevir → +X’e baksın
       model.rotation.set(0, -Math.PI/2, 0);
 
-      // merkezle
-      const box1 = new THREE.Box3().setFromObject(model);
-      const c1 = new THREE.Vector3(); box1.getCenter(c1);
+      // merkeze al
+      const b1 = new THREE.Box3().setFromObject(model);
+      const c1 = new THREE.Vector3(); b1.getCenter(c1);
       model.position.sub(c1);
 
-      // egzoz: minX kuyruk
-      const box2 = new THREE.Box3().setFromObject(model);
-      exhaustLocal = new THREE.Vector3(box2.min.x - 0.6, 0, 0);
+      // egzoz için minX
+      const b2 = new THREE.Box3().setFromObject(model);
+      exhaustLocal = new THREE.Vector3(b2.min.x - 0.6, 0, 0);
 
       ship.add(model);
     });

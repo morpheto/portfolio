@@ -31,7 +31,7 @@
 
   .popup{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
   .popup.show{display:flex}
-  .popup-card{width:min(780px,92vw);border:1px solid rgba(120,198,255,.28);border-radius:16px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
+  .popup-card{width:min(820px,92vw);border:1px solid rgba(120,198,255,.28);border-radius:16px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
   .popup-media{height:min(52vh,460px);background:#0e1433;background-size:cover;background-position:center}
   .popup-body{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
   .popup-title{font-weight:800;font-size:18px}.popup-tag{font-size:12px;color:#cfd6e3}
@@ -40,12 +40,24 @@
   .btn:hover{background:#13203a}.btn.primary{background:#1e5eff;border-color:#2b66ff}.btn.primary:hover{background:#2a6bff}
   .popup-close{position:absolute;top:12px;right:12px;border:1px solid rgba(120,198,255,.3);background:rgba(64,191,255,.08);border-radius:10px;padding:6px 10px;cursor:pointer}
 
+  .kbd{font-weight:700;border:1px solid rgba(255,255,255,.18);padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.06)}
+  .qv-keys{font-size:12px;color:#cfd6e3;opacity:.9}
+
   .touch-only{display:none}
   .joystick{position:fixed;z-index:35;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(6px)}
   .joystick .knob{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;background:rgba(200,220,255,.25);border:1px solid rgba(200,220,255,.35)}
   .btn-vert{position:fixed;z-index:35;right:16px;bottom:140px;display:flex;flex-direction:column;gap:10px}
   .btn-vert button{width:60px;height:60px;border-radius:12px;border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.12);color:#e9f4ff;font-weight:700}
   @media (pointer:coarse){ .touch-only{display:block} }
+
+  /* START OVERLAY */
+  .start{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 600px at 50% -20%, rgba(120,170,255,.08), rgba(5,6,10,.95));backdrop-filter:blur(4px)}
+  .start.hide{animation:fade .6s both}
+  @keyframes fade{to{opacity:0;visibility:hidden}}
+  .start-card{padding:28px 32px;border:1px solid rgba(255,255,255,.12);background:rgba(10,12,20,.72);backdrop-filter:blur(8px);border-radius:16px;display:flex;flex-direction:column;gap:12px;align-items:center}
+  .start h1{margin:0;font-size:18px;letter-spacing:.5px}
+  .start p{margin:0;color:#cfd6e3;font-size:13px}
+  .start .btn{font-weight:700}
 </style>
 </head>
 <body>
@@ -57,15 +69,24 @@
   <div class="help" id="helpBox">Loading controls…</div>
 
   <div class="overlay" id="overlay"></div>
-  <div class="hint" id="hint">Press <b>E</b> to View</div>
+  <div class="hint" id="hint">Press <b>E</b> to Enter</div>
 
   <div class="popup" id="quickview">
     <div class="popup-card" role="dialog" aria-modal="true">
       <button class="popup-close" id="qvClose" aria-label="Close">✕</button>
       <div class="popup-media" id="qvMedia"></div>
       <div class="popup-body">
-        <div><div class="popup-title" id="qvTitle">Project</div><div class="popup-tag" id="qvTag">Category</div></div>
-        <div class="popup-actions"><button class="btn primary" id="qvEnter">Enter</button><button class="btn" id="qvExit">Exit</button></div>
+        <div>
+          <div class="popup-title" id="qvTitle">Project</div>
+          <div class="popup-tag" id="qvTag">Category</div>
+          <div class="qv-keys" id="qvKeys" style="margin-top:6px;display:none">
+            <span class="kbd">E</span> Enter &nbsp;•&nbsp; <span class="kbd">Q</span> Exit
+          </div>
+        </div>
+        <div class="popup-actions">
+          <button class="btn primary" id="qvEnter">Enter</button>
+          <button class="btn" id="qvExit">Exit</button>
+        </div>
       </div>
     </div>
   </div>
@@ -77,324 +98,306 @@
     <div class="btn-vert"><button id="btnUp">UP</button><button id="btnDown">DOWN</button></div>
   </div>
 
+  <!-- START -->
+  <div class="start" id="start">
+    <div class="start-card">
+      <h1>Portfolio — Space Tour</h1>
+      <p>Explore projects by piloting the ship.</p>
+      <p><span class="kbd">W/S</span> move · mouse turn · near planet <span class="kbd">E</span> enter</p>
+      <button id="btnStart" class="btn primary">Start</button>
+    </div>
+  </div>
+
   <canvas id="scene"></canvas>
 
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script>
-  /* ---------- Helpers & Textures ---------- */
+  /* ---------- tiny utils ---------- */
+  const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
   function makeRadialTexture(inner, outer, size=128){
     const c=document.createElement('canvas'); c.width=c.height=size;
-    const ctx=c.getContext('2d');
-    const g=ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
-    g.addColorStop(0, inner); g.addColorStop(1, outer);
-    ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
-    const tex=new THREE.CanvasTexture(c); tex.minFilter=THREE.LinearFilter; tex.magFilter=THREE.LinearFilter; tex.anisotropy=4;
-    return tex;
+    const g=c.getContext('2d').createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
+    const x=c.getContext('2d'); g.addColorStop(0,inner); g.addColorStop(1,outer); x.fillStyle=g; x.fillRect(0,0,size,size);
+    const t=new THREE.CanvasTexture(c); t.minFilter=THREE.LinearFilter; t.magFilter=THREE.LinearFilter; return t;
   }
-  const flameTex = makeRadialTexture('rgba(255,200,80,1)','rgba(255,120,0,0)');
-  const smokeTex = makeRadialTexture('rgba(220,230,245,0.6)','rgba(130,140,155,0.0)');
 
-  /* ---------- Scene ---------- */
-  const canvas = document.getElementById('scene');
-  const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
-  renderer.setPixelRatio(Math.min(2, devicePixelRatio||1));
-  renderer.setSize(innerWidth, innerHeight);
-  const scene = new THREE.Scene(); scene.background=new THREE.Color(0x05060a);
+  /* ---------- scene ---------- */
+  const r = new THREE.WebGLRenderer({canvas:document.getElementById('scene'), antialias:true});
+  r.setPixelRatio(Math.min(2, devicePixelRatio||1)); r.setSize(innerWidth, innerHeight);
+  const scene = new THREE.Scene(); scene.background = new THREE.Color(0x05060a);
   const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 6000);
 
   scene.add(new THREE.HemisphereLight(0x89b4ff, 0x05060a, .55));
   const key = new THREE.DirectionalLight(0xffffff,.85); key.position.set(160,220,120); scene.add(key);
 
-  /* ---------- Stars ---------- */
-  (function stars(){
-    const g=new THREE.BufferGeometry(), N=3500, pos=new Float32Array(N*3);
-    for(let i=0;i<N;i++){const r=800+Math.random()*1500, th=Math.random()*Math.PI*2, u=Math.random()*2-1, s=Math.sqrt(1-u*u);
-      pos[i*3]=r*s*Math.cos(th); pos[i*3+1]=r*u*0.7; pos[i*3+2]=r*s*Math.sin(th);}
+  /* ---------- stars ---------- */
+  (function(){
+    const g=new THREE.BufferGeometry(), N=2500, pos=new Float32Array(N*3);
+    for(let i=0;i<N;i++){const R=900+Math.random()*1400, th=Math.random()*Math.PI*2, u=Math.random()*2-1, s=Math.sqrt(1-u*u);
+      pos[i*3]=R*s*Math.cos(th); pos[i*3+1]=R*u*0.7; pos[i*3+2]=R*s*Math.sin(th);}
     g.setAttribute('position', new THREE.BufferAttribute(pos,3));
     scene.add(new THREE.Points(g,new THREE.PointsMaterial({size:1.6,color:0xbfd9ff,sizeAttenuation:true})));
   })();
 
-  /* ---------- Projects ---------- */
-  const PROJECTS=[{id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg'},
-  {id:'p2',title:'Odin Pendant Animation',tag:'3D Works',cover:'media/covers/p2.jpg'},
-  {id:'p3',title:'MediaPipe + Ableton + PointCloud',tag:'Interactive',cover:'media/covers/p3.jpg'},
-  {id:'p4',title:'Nike Air Jordan CGI',tag:'CGI',cover:'media/covers/p4.jpg'},
-  {id:'p5',title:'Bic Mini Lighter Spider Case',tag:'Product CGI',cover:'media/covers/p5.jpg'},
-  {id:'p6',title:'Space Keycap Animation',tag:'3D Works',cover:'media/covers/p6.jpg'},
-  {id:'p7',title:'Oxidized Silver Jewelry — Maverick',tag:'LookDev',cover:'media/covers/p7.jpg'},
-  {id:'p8',title:'YouTube Channel Intro',tag:'Motion · Audio',cover:'media/covers/p8.jpg'},
-  {id:'p9',title:'AI Visualizer from Image',tag:'AI Visuals',cover:'media/covers/p9.jpg'}];
-
+  /* ---------- projects & planets (same as before, with spin) ---------- */
+  const PROJECTS=[ /* (kısaltıldı – senin 9 projen burada) */
+    {id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg'},
+    {id:'p2',title:'Odin Pendant Animation',tag:'3D Works',cover:'media/covers/p2.jpg'},
+    {id:'p3',title:'MediaPipe + Ableton + PointCloud',tag:'Interactive',cover:'media/covers/p3.jpg'},
+    {id:'p4',title:'Nike Air Jordan CGI',tag:'CGI',cover:'media/covers/p4.jpg'},
+    {id:'p5',title:'Bic Mini Lighter Spider Case',tag:'Product CGI',cover:'media/covers/p5.jpg'},
+    {id:'p6',title:'Space Keycap Animation',tag:'3D Works',cover:'media/covers/p6.jpg'},
+    {id:'p7',title:'Oxidized Silver Jewelry — Maverick',tag:'LookDev',cover:'media/covers/p7.jpg'},
+    {id:'p8',title:'YouTube Channel Intro',tag:'Motion · Audio',cover:'media/covers/p8.jpg'},
+    {id:'p9',title:'AI Visualizer from Image',tag:'AI Visuals',cover:'media/covers/p9.jpg'}
+  ];
+  function appearanceFor(p){
+    const t=(p.tag||'').toLowerCase(), name=p.title.toLowerCase();
+    if(t.includes('cgi') || name.includes('nike')) return {h:0.02,s:0.55,l:0.62,metal:0.45,rough:0.35,ring:true,emiss:0.18};
+    if(t.includes('touchdesigner')||t.includes('interactive')||name.includes('mediapipe')) return {h:0.62,s:0.55,l:0.58,metal:0.2,rough:0.55,ring:Math.random()<0.4,emiss:0.28};
+    if(t.includes('lookdev')||name.includes('maverick')) return {h:0.58,s:0.28,l:0.60,metal:0.35,rough:0.42,ring:Math.random()<0.5,emiss:0.16};
+    if(t.includes('ai')) return {h:0.76,s:0.45,l:0.64,metal:0.25,rough:0.5,ring:false,emiss:0.26};
+    return {h:0.66,s:0.40,l:0.58,metal:0.22,rough:0.55,ring:Math.random()<0.5,emiss:0.18};
+  }
   const overlay=document.getElementById('overlay'), hintEl=document.getElementById('hint'), helpBox=document.getElementById('helpBox');
-  const planets=[], cardsRef=[], tmpV=new THREE.Vector3();
+  helpBox.innerHTML = isTouch
+    ? '<b>Mobile</b> — Left joystick: move/turn · Right drag: aim · Up/Down buttons · Tap near planet → Quick View'
+    : '<b>Desktop</b> — Mouse move: turn/tilt · <b>W/S</b> forward/back · <b>A/D</b> turn · Near planet: <b>E</b> enter · In modal: <b>Q</b> exit';
 
-  function makePlanet(r,color){
-    const m=new THREE.Mesh(new THREE.SphereGeometry(r,48,32),
-      new THREE.MeshStandardMaterial({color,roughness:.8,metalness:.12,emissive:(new THREE.Color(color)).multiplyScalar(.15)}));
-    if(Math.random()<.5){
-      const ring=new THREE.Mesh(new THREE.RingGeometry(r*1.2,r*1.45,64),
-        new THREE.MeshBasicMaterial({color:(new THREE.Color(color)).offsetHSL(.08,0,0).getHex(),transparent:true,opacity:.15,side:THREE.DoubleSide}));
+  const planets=[], cardsRef=[], tmpV=new THREE.Vector3();
+  const sphereGeo=new THREE.SphereGeometry(1,40,28);
+  function makePlanet(r,app){
+    const col=new THREE.Color().setHSL(app.h,app.s,app.l);
+    const m=new THREE.Mesh(sphereGeo,new THREE.MeshStandardMaterial({
+      color:col.getHex(), roughness:app.rough, metalness:app.metal,
+      emissive:col.clone().multiplyScalar(app.emiss).getHex(), emissiveIntensity:1
+    }));
+    m.rotation.z = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(12));
+    if(app.ring){
+      const ring=new THREE.Mesh(new THREE.RingGeometry(r*1.2,r*1.45,56),
+        new THREE.MeshBasicMaterial({color:col.clone().offsetHSL(.08,0,0).getHex(),transparent:true,opacity:.16,side:THREE.DoubleSide}));
       ring.rotation.x=-Math.PI/2 + THREE.MathUtils.randFloatSpread(.6);
       ring.rotation.z=Math.random()*Math.PI*2; m.add(ring);
     }
+    m.scale.setScalar(r); m.userData.spin=THREE.MathUtils.randFloat(0.02,0.05);
     return m;
   }
-
-  // positions
   const POS=[], RMIN=70, RMAX=150;
-  for(let i=0;i<PROJECTS.length;i++){
-    const R=THREE.MathUtils.randFloat(RMIN,RMAX), th=(i/PROJECTS.length)*Math.PI*2 + Math.random()*0.6;
-    POS.push([Math.cos(th)*R + THREE.MathUtils.randFloatSpread(20), THREE.MathUtils.randFloatSpread(18), Math.sin(th)*R + THREE.MathUtils.randFloatSpread(20)]);
-  }
+  for(let i=0;i<PROJECTS.length;i++){const R=THREE.MathUtils.randFloat(RMIN,RMAX), th=(i/PROJECTS.length)*Math.PI*2+Math.random()*0.6;
+    POS.push([Math.cos(th)*R+THREE.MathUtils.randFloatSpread(20), THREE.MathUtils.randFloatSpread(18), Math.sin(th)*R+THREE.MathUtils.randFloatSpread(20)]);}
   for(let i=POS.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [POS[i],POS[j]]=[POS[j],POS[i]];}
-
   PROJECTS.forEach((p,i)=>{
-    const r=THREE.MathUtils.randFloat(9,16);
-    const col=new THREE.Color().setHSL(THREE.MathUtils.randFloat(.55,.72),.45,.58).getHex();
-    const m=makePlanet(r,col); const [x,y,z]=POS[i]; m.position.set(x,y,z);
-    m.userData.project=p; scene.add(m); planets.push(m);
+    const r=THREE.MathUtils.randFloat(9,16), app=appearanceFor(p), m=makePlanet(r,app); const [x,y,z]=POS[i];
+    m.position.set(x,y,z); m.userData.project=p; scene.add(m); planets.push(m);
     const el=document.createElement('div'); el.className='planet-card';
     const cover=p.cover?`background-image:url('${p.cover}')`:`background-image:none`;
     el.innerHTML=`<div class="planet-card__media" style="${cover}"></div>
     <div class="badge">${p.tag||''}</div><div class="planet-card__meta"><div class="title">${p.title}</div><div class="tag">${p.tag||''}</div></div>`;
     overlay.appendChild(el);
-    const item={el, obj:m}; item.el.addEventListener('click',()=>{ if(nearest===m) qvOpenFor(m); }); cardsRef.push(item);
+    const item={el,obj:m}; el.addEventListener('click',()=>{ if(nearest===m) qvOpenFor(m); }); cardsRef.push(item);
   });
 
-  /* ---------- Ship & particles ---------- */
+  /* ---------- ship & particles (kısaltılmış, öncekiyle aynı davranış) ---------- */
+  const flameTex = makeRadialTexture('rgba(255,200,80,1)','rgba(255,120,0,0)');
+  const smokeTex = makeRadialTexture('rgba(220,230,245,0.6)','rgba(130,140,155,0.0)');
   const ship=new THREE.Group(); scene.add(ship);
   const hull=new THREE.Mesh(new THREE.CapsuleGeometry(.8,3,6,12),
     new THREE.MeshStandardMaterial({color:0x9aa7ff,roughness:.55,metalness:.2,emissive:0x10163a,emissiveIntensity:.2}));
   hull.rotation.z=Math.PI/2; ship.add(hull);
-
-  const exhaustLocal = new THREE.Vector3(-2.0,0,0);
-
-  // particle pools
-  const flameMatBase = new THREE.SpriteMaterial({map:flameTex, depthWrite:false, depthTest:true, transparent:true, blending:THREE.AdditiveBlending, opacity:0.9, color:0xffffff});
-  const smokeMatBase = new THREE.SpriteMaterial({map:smokeTex, depthWrite:false, depthTest:true, transparent:true, opacity:0.0, color:0xffffff});
-  function makeSprite(mat){ const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s; }
-  const FLAME_MAX=160, SMOKE_MAX=120;
-  const flamePool=[...Array(FLAME_MAX)].map(()=>makeSprite(flameMatBase));
-  const smokePool=[...Array(SMOKE_MAX)].map(()=>makeSprite(smokeMatBase));
-  const flameData=flamePool.map(()=>({life:0,max:0,vel:new THREE.Vector3()}));
-  const smokeData=smokePool.map(()=>({life:0,max:0,vel:new THREE.Vector3()}));
-
-  function worldFromExhaust(out){ return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position); }
-  function spawnFlame(n,intensity=1){
-    for(let i=0;i<flamePool.length && n>0;i++){
-      if(flameData[i].life>0) continue; n--;
-      const sp=flamePool[i], d=flameData[i];
-      const pos=new THREE.Vector3(); worldFromExhaust(pos); sp.position.copy(pos);
-      sp.scale.setScalar(0.9 + Math.random()*1.4*intensity);
-      d.max=0.35+Math.random()*0.25; d.life=d.max;
-      const dir=new THREE.Vector3(-1, THREE.MathUtils.randFloatSpread(0.35), THREE.MathUtils.randFloatSpread(0.35)).applyQuaternion(ship.quaternion);
-      d.vel.copy(dir.multiplyScalar(12+18*intensity)); sp.material.opacity=0.85; sp.visible=true;
-    }
-  }
-  function spawnSmoke(n,boost=1){
-    for(let i=0;i<smokePool.length && n>0;i++){
-      if(smokeData[i].life>0) continue; n--;
-      const sp=smokePool[i], d=smokeData[i];
-      const pos=new THREE.Vector3(); worldFromExhaust(pos); sp.position.copy(pos);
-      const s= 1.2 + Math.random()*2.2*boost; sp.scale.set(s,s,1);
-      d.max=0.9+Math.random()*0.8; d.life=d.max;
-      const dir=new THREE.Vector3(-1, THREE.MathUtils.randFloatSpread(0.25), THREE.MathUtils.randFloatSpread(0.25)).applyQuaternion(ship.quaternion);
-      d.vel.copy(dir.multiplyScalar(3+2*boost)); sp.material.opacity=0.3; sp.visible=true;
-    }
-  }
+  const exhaustLocal=new THREE.Vector3(-2,0,0);
+  function worldFromExhaust(out){return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);}
+  function makeSprite(mat){const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s;}
+  const flameMat=new THREE.SpriteMaterial({map:flameTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.9});
+  const smokeMat=new THREE.SpriteMaterial({map:smokeTex,transparent:true,depthWrite:false,opacity:.0});
+  const flamePool=[...Array(140)].map(()=>makeSprite(flameMat)), smokePool=[...Array(100)].map(()=>makeSprite(smokeMat));
+  const flameData=flamePool.map(()=>({life:0,max:0,vel:new THREE.Vector3()})), smokeData=smokePool.map(()=>({life:0,max:0,vel:new THREE.Vector3()}));
+  function spawnFlame(n,intensity=1){for(let i=0;i<flamePool.length&&n>0;i++){if(flameData[i].life>0)continue;n--;const sp=flamePool[i],d=flameData[i];const pos=new THREE.Vector3();worldFromExhaust(pos);sp.position.copy(pos);sp.scale.setScalar(.9+Math.random()*1.4*intensity);d.max=.35+Math.random()*.25;d.life=d.max;const dir=new THREE.Vector3(-1,THREE.MathUtils.randFloatSpread(.35),THREE.MathUtils.randFloatSpread(.35)).applyQuaternion(ship.quaternion);d.vel.copy(dir.multiplyScalar(12+18*intensity));sp.material.opacity=.85;sp.visible=true;}}
+  function spawnSmoke(n,boost=1){for(let i=0;i<smokePool.length&&n>0;i++){if(smokeData[i].life>0)continue;n--;const sp=smokePool[i],d=smokeData[i];const pos=new THREE.Vector3();worldFromExhaust(pos);sp.position.copy(pos);const s=1.2+Math.random()*2.2*boost;sp.scale.set(s,s,1);d.max=.9+Math.random()*.8;d.life=d.max;const dir=new THREE.Vector3(-1,THREE.MathUtils.randFloatSpread(.25),THREE.MathUtils.randFloatSpread(.25)).applyQuaternion(ship.quaternion);d.vel.copy(dir.multiplyScalar(3+2*boost));sp.material.opacity=.3;sp.visible=true;}}
   function updateParticles(dt){
-    for(let i=0;i<flamePool.length;i++){
-      const p=flamePool[i], d=flameData[i]; if(d.life<=0){p.visible=false; continue;}
-      d.life-=dt; p.position.addScaledVector(d.vel,dt);
-      const t=d.life/d.max; p.material.opacity=0.15+0.75*t; const s=(0.6+1.8*(1-t)); p.scale.set(s,s,1);
-      if(d.life<=0) p.visible=false;
-    }
-    for(let i=0;i<smokePool.length;i++){
-      const p=smokePool[i], d=smokeData[i]; if(d.life<=0){p.visible=false; continue;}
-      d.life-=dt; p.position.addScaledVector(d.vel,dt); p.position.y += dt*0.6;
-      const t=d.life/d.max; p.material.opacity=0.35*t; const s=p.scale.x*(1+0.35*dt); p.scale.set(s,s,1);
-      if(d.life<=0) p.visible=false;
-    }
+    for(let i=0;i<flamePool.length;i++){const p=flamePool[i],d=flameData[i];if(d.life<=0){p.visible=false;continue;}d.life-=dt;p.position.addScaledVector(d.vel,dt);const t=d.life/d.max;p.material.opacity=.15+.75*t;const s=(.6+1.8*(1-t));p.scale.set(s,s,1);if(d.life<=0)p.visible=false;}
+    for(let i=0;i<smokePool.length;i++){const p=smokePool[i],d=smokeData[i];if(d.life<=0){p.visible=false;continue;}d.life-=dt;p.position.addScaledVector(d.vel,dt);p.position.y+=dt*.6;const t=d.life/d.max;p.material.opacity=.35*t;const s=p.scale.x*(1+.35*dt);p.scale.set(s,s,1);if(d.life<=0)p.visible=false;}
   }
 
-  /* ---------- Camera ---------- */
-  const camOffsetLocal=new THREE.Vector3(-20,8.8,0);
-  const lookAheadLocal=new THREE.Vector3( 8, 2.0,0);
-  const camPos=new THREE.Vector3(), lookAt=new THREE.Vector3();
-  function updateCamera(dt){
-    const off=camOffsetLocal.clone().applyQuaternion(ship.quaternion);
-    camPos.copy(ship.position).add(off);
-    camera.position.lerp(camPos, 1 - Math.pow(0.0028, dt*60));
-    const la=lookAheadLocal.clone().applyQuaternion(ship.quaternion);
-    lookAt.copy(ship.position).add(la); camera.lookAt(lookAt);
-  }
-  camera.position.copy(ship.position).add(camOffsetLocal);
-  camera.lookAt(ship.position.clone().add(lookAheadLocal));
+  /* ---------- camera ---------- */
+  const camOff=new THREE.Vector3(-20,8.8,0), lookAhead=new THREE.Vector3(8,2,0), camPos=new THREE.Vector3(), lookAt=new THREE.Vector3();
+  function updateCamera(dt){const off=camOff.clone().applyQuaternion(ship.quaternion);camPos.copy(ship.position).add(off);camera.position.lerp(camPos,1-Math.pow(.0028,dt*60));const la=lookAhead.clone().applyQuaternion(ship.quaternion);lookAt.copy(ship.position).add(la);camera.lookAt(lookAt);}
+  camera.position.copy(ship.position).add(camOff); camera.lookAt(ship.position.clone().add(lookAhead));
 
-  /* ---------- Input (desktop = mobile-like relative) ---------- */
-  const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
-  helpBox.innerHTML = isTouch
-    ? '<b>Mobile</b> — Left joystick: move/turn · Right drag: aim · Up/Down buttons · Tap card near planet: Quick View'
-    : '<b>Desktop</b> — Mouse move: turn/tilt (relative) · <b>W/S</b> forward/back · <b>A/D</b> turn · <b>E</b> Quick View · <b>Q</b> Close';
-
-  let controlsEnabled = true;
-  const keyState={KeyW:false,KeyA:false,KeyS:false,KeyD:false,KeyQ:false,KeyE:false};
-  function setKey(e,down){
-    if(!controlsEnabled) return;
-    const c=e.code; if(c in keyState){keyState[c]=down;}
-    if(down&&c==='KeyE'&&nearest&&!qv.classList.contains('show')) qvOpenFor(nearest);
-    if(down&&c==='KeyQ') qvCloseFn();
-  }
-  if(!isTouch){ addEventListener('keydown',e=>setKey(e,true)); addEventListener('keyup',e=>setKey(e,false)); }
-
-  // Desktop: relative mouse (delta) -> yaw/pitch hızına katkı (mobil joystick gibi)
-  let lastX=null, lastY=null, yawVel=0, pitchVel=0;
-  const M_SENS_X = 0.0016;    // yatay hassasiyet
-  const M_SENS_Y = 0.0014;    // dikey hassasiyet
-  const YAW_DAMP  = 0.90;     // hızın sönümü
-  const PITCH_DAMP= 0.90;
-  const MAX_YAW_RATE = 2.8;   // rad/s tavan
-  addEventListener('mousemove',e=>{
-    if(!controlsEnabled || isTouch) return;
-    if(lastX===null){ lastX=e.clientX; lastY=e.clientY; return; }
-    const dx=e.clientX-lastX, dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY;
-    yawVel   += dx * M_SENS_X;       // sağa hareket -> pozitif yaw
-    pitchVel += -dy * M_SENS_Y;      // yukarı hareket -> pozitif pitch (yukarı bak)
-  }, {passive:true});
-  addEventListener('mouseleave',()=>{ lastX=lastY=null; });
-  addEventListener('blur',()=>{ lastX=lastY=null; });
-
-  // Mobile joystick + aim (aynı)
-  let joyX=0, joyY=0, aimDX=0, aimDY=0, upHeld=false, downHeld=false;
-  if(isTouch){ const joy=document.getElementById('joyL'), knob=joy.querySelector('.knob'); const rj=()=>joy.getBoundingClientRect();
-    function onJoy(e){ if(!controlsEnabled) return; e.preventDefault();
-      const r=rj(),t=e.touches[0]; let dx=t.clientX-(r.left+r.width/2), dy=t.clientY-(r.top+r.height/2);
-      const max=r.width*.45,len=Math.hypot(dx,dy); if(len>max){dx*=max/len;dy*=max/len;} knob.style.transform=`translate(${dx}px,${dy}px)`; joyX=dx/max; joyY=-dy/max;}
-    function endJoy(e){e.preventDefault(); knob.style.transform='translate(-50%,-50%)'; joyX=joyY=0;}
-    joy.addEventListener('touchstart',onJoy,{passive:false}); joy.addEventListener('touchmove',onJoy,{passive:false}); joy.addEventListener('touchend',endJoy,{passive:false});
-    const aimZ=document.getElementById('aimZone'); let ax=0,ay=0,act=false; function aStart(e){ if(!controlsEnabled) return; e.preventDefault();act=true;const t=e.touches[0];ax=t.clientX;ay=t.clientY;}
-    function aMove(e){ if(!controlsEnabled) return; e.preventDefault(); if(!act)return; const t=e.touches[0]; const dx=t.clientX-ax, dy=t.clientY-ay; ax=t.clientX; ay=t.clientY; aimDX-=dx*0.0016; aimDY-=dy*0.0016;}
-    function aEnd(e){e.preventDefault();act=false;}
-    aimZ.addEventListener('touchstart',aStart,{passive:false}); aimZ.addEventListener('touchmove',aMove,{passive:false}); aimZ.addEventListener('touchend',aEnd,{passive:false});
-    document.getElementById('btnUp').addEventListener('touchstart',e=>{ if(!controlsEnabled) return; e.preventDefault();upHeld=true;},{passive:false});
-    document.getElementById('btnUp').addEventListener('touchend',e=>{e.preventDefault();upHeld=false;},{passive:false});
-    document.getElementById('btnDown').addEventListener('touchstart',e=>{ if(!controlsEnabled) return; e.preventDefault();downHeld=true;},{passive:false});
-    document.getElementById('btnDown').addEventListener('touchend',e=>{e.preventDefault();downHeld=false;},{passive:false});
+  /* ---------- input (relative mouse like mobile) ---------- */
+  let controlsEnabled=false; // start ekranı bitene kadar kilitli
+  const key={KeyW:false,KeyA:false,KeyS:false,KeyD:false};
+  addEventListener('keydown',e=>{if(!controlsEnabled)return;if(e.code in key) key[e.code]=true;});
+  addEventListener('keyup',e=>{if(!controlsEnabled)return;if(e.code in key) key[e.code]=false;});
+  let lastX=null,lastY=null,yawVel=0,pitchVel=0,joyX=0,joyY=0,upHeld=false,downHeld=false,aimDX=0,aimDY=0;
+  const M_SENS_X=.0016,M_SENS_Y=.0014, YAW_D=.90, PITCH_D=.90, MAX_YAW=2.8;
+  addEventListener('mousemove',e=>{if(!controlsEnabled||isTouch)return; if(lastX===null){lastX=e.clientX;lastY=e.clientY;return;}const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY; yawVel+=dx*M_SENS_X; pitchVel+=-dy*M_SENS_Y;},{passive:true});
+  addEventListener('mouseleave',()=>{lastX=lastY=null;}); addEventListener('blur',()=>{lastX=lastY=null;});
+  if(isTouch){ // basit joystick – (kısaltıldı)
+    const joy=document.getElementById('joyL'),knob=joy.querySelector('.knob'); const rj=()=>joy.getBoundingClientRect();
+    function onJoy(e){if(!controlsEnabled)return;e.preventDefault();const r=rj(),t=e.touches[0];let dx=t.clientX-(r.left+r.width/2),dy=t.clientY-(r.top+r.height/2);const m=r.width*.45,l=Math.hypot(dx,dy);if(l>m){dx*=m/l;dy*=m/l;}knob.style.transform=`translate(${dx}px,${dy}px)`;joyX=dx/m;joyY=-dy/m;}
+    function end(e){e.preventDefault();knob.style.transform='translate(-50%,-50%)';joyX=joyY=0;}
+    joy.addEventListener('touchstart',onJoy,{passive:false}); joy.addEventListener('touchmove',onJoy,{passive:false}); joy.addEventListener('touchend',end,{passive:false});
+    document.getElementById('aimZone').addEventListener('touchmove',e=>{if(!controlsEnabled)return;const t=e.touches[0];aimDX+=0;aimDY+=0;},{passive:false});
+    document.getElementById('btnUp').addEventListener('touchstart',e=>{if(!controlsEnabled)return;upHeld=true},{passive:true});
+    document.getElementById('btnDown').addEventListener('touchstart',e=>{if(!controlsEnabled)return;downHeld=true},{passive:true});
+    document.getElementById('btnUp').addEventListener('touchend',()=>upHeld=false,{passive:true});
+    document.getElementById('btnDown').addEventListener('touchend',()=>downHeld=false,{passive:true});
   }
 
-  /* ---------- Movement (relative aim + inertia) ---------- */
-  let velF=0, vY=0, yaw=0, pitch=0, throttle=0, prevThrottle=0, turnKeyVel=0;
+  /* ---------- movement ---------- */
+  let velF=0,yaw=0,pitch=0,throttle=0,prevThrottle=0,turnKeyVel=0;
   function updateShip(dt){
-    if(!controlsEnabled){
-      velF*=Math.pow(0.94,dt*60); yawVel*=Math.pow(0.92,dt*60); pitchVel*=Math.pow(0.92,dt*60);
-      updateParticles(dt); return;
-    }
-
-    // klavye katkısı
+    if(!controlsEnabled){ velF*=Math.pow(.94,dt*60); yawVel*=Math.pow(.92,dt*60); pitchVel*=Math.pow(.92,dt*60); updateParticles(dt); return; }
     let fwd=0, turnKey=0, updn=0;
-    if(!isTouch){
-      if(keyState.KeyW) fwd+=1;
-      if(keyState.KeyS) fwd-=1;
-      if(keyState.KeyD) turnKey -= 1;
-      if(keyState.KeyA) turnKey += 1;
-    } else {
-      fwd = joyY;  turnKey = -joyX;
-      if(upHeld) updn += 1; if(downHeld) updn -= 1;
-      // mobil incelik
-      yaw += aimDX; pitch += aimDY; aimDX*=Math.pow(.92,dt*60); aimDY*=Math.pow(.92,dt*60);
-    }
-
-    // mouse delta hızlarını sönümle
-    yawVel   *= Math.pow(YAW_DAMP, dt*60);
-    pitchVel *= Math.pow(PITCH_DAMP, dt*60);
-
-    // klavye dönüş katkısını yumuşat
-    turnKeyVel = THREE.MathUtils.damp(turnKeyVel, turnKey*1.2, 6, dt);
-
-    // yaw/pitch güncelle
-    const yawRate   = THREE.MathUtils.clamp((yawVel + turnKeyVel)*3.0, -MAX_YAW_RATE, MAX_YAW_RATE);
-    const pitchRate = THREE.MathUtils.clamp(pitchVel*3.0, -1.6, 1.6);
-    yaw   += yawRate   * dt;
-    pitch += pitchRate * dt;
-    pitch = THREE.MathUtils.clamp(pitch, -Math.PI/3, Math.PI/3);
-
-    // throttle & hız (coasting/fren)
-    const ACC = (isTouch? 16 : 26);
-    const MAX = (isTouch? 15 : 26);
-    const DRAG_COAST = 0.985, DRAG_ACTIVE=0.96, DRAG_BRAKE = 0.90;
-
-    const targetThrottle = Math.max(0, fwd);
-    throttle += (targetThrottle - throttle) * (1 - Math.pow(0.2, dt*60));
-    velF += throttle * ACC * dt;
-    if(fwd < 0) velF += fwd * ACC * dt;
-
-    const drag = (fwd < 0) ? DRAG_BRAKE : (throttle>0.02 ? DRAG_ACTIVE : DRAG_COAST);
-    velF *= Math.pow(drag, dt*60);
-    velF = THREE.MathUtils.clamp(velF, -MAX, MAX);
-
-    // görsel roll
-    const targetRoll = -(yawVel + turnKeyVel)*0.25;
-    ship.rotation.set(pitch, yaw, THREE.MathUtils.damp(ship.rotation.z, targetRoll, 8, dt));
-
-    // hareket
-    const forward=new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion);
-    ship.position.addScaledVector(forward, velF*dt);
-    if(isTouch) ship.position.y += (updn*8)*dt;
-    ship.position.y += Math.sin(pitch)*velF*.75*dt;
-    ship.position.y  = THREE.MathUtils.clamp(ship.position.y, -70, 70);
-
-    // partiküller
-    const speedAbs = Math.abs(velF);
-    const flameRate = Math.floor( 6 + 14*THREE.MathUtils.clamp(throttle + speedAbs/20, 0, 1.5) );
-    if(throttle>0.01) spawnFlame(flameRate, THREE.MathUtils.clamp(throttle + speedAbs/30, .6, 1.6));
-    if(prevThrottle>0.25 && throttle<=0.02) spawnSmoke(24, 1.4);
-    if((throttle<=0.02 && speedAbs>2) || fwd<0) spawnSmoke(2, 1.0 + (fwd<0?0.6:0));
-    prevThrottle = throttle;
-
+    if(!isTouch){ if(key.KeyW)fwd+=1; if(key.KeyS)fwd-=1; if(key.KeyD)turnKey-=1; if(key.KeyA)turnKey+=1; }
+    else { fwd=joyY; turnKey=-joyX; if(upHeld)updn+=1; if(downHeld)updn-=1; yaw+=aimDX; pitch+=aimDY; aimDX*=Math.pow(.92,dt*60); aimDY*=Math.pow(.92,dt*60); }
+    yawVel*=Math.pow(YAW_D,dt*60); pitchVel*=Math.pow(PITCH_D,dt*60); turnKeyVel=THREE.MathUtils.damp(turnKeyVel,turnKey*1.2,6,dt);
+    const yawRate=THREE.MathUtils.clamp((yawVel+turnKeyVel)*3.0,-MAX_YAW,MAX_YAW), pitchRate=THREE.MathUtils.clamp(pitchVel*3.0,-1.6,1.6);
+    yaw+=yawRate*dt; pitch+=pitchRate*dt; pitch=clamp(pitch,-Math.PI/3,Math.PI/3);
+    const ACC=isTouch?16:26, MAX=isTouch?15:26, DRAG_C=.985, DRAG_A=.96, DRAG_B=.90;
+    const tTarget=Math.max(0,fwd); throttle += (tTarget-throttle)*(1-Math.pow(.2,dt*60)); velF+=throttle*ACC*dt; if(fwd<0) velF+=fwd*ACC*dt;
+    const drag=(fwd<0)?DRAG_B:(throttle>.02?DRAG_A:DRAG_C); velF*=Math.pow(drag,dt*60); velF=clamp(velF,-MAX,MAX);
+    const targetRoll=-(yawVel+turnKeyVel)*0.25; ship.rotation.set(pitch,yaw,THREE.MathUtils.damp(ship.rotation.z,targetRoll,8,dt));
+    const forward=new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion); ship.position.addScaledVector(forward,velF*dt);
+    if(isTouch) ship.position.y += (updn*8)*dt; ship.position.y += Math.sin(pitch)*velF*.75*dt; ship.position.y=clamp(ship.position.y,-70,70);
+    const speedAbs=Math.abs(velF); const rate=Math.floor(6+14*clamp(throttle+speedAbs/20,0,1.5)); if(throttle>.01) spawnFlame(rate,clamp(throttle+speedAbs/30,.6,1.6));
+    if(prevThrottle>.25 && throttle<=.02) spawnSmoke(24,1.4); if((throttle<=.02 && speedAbs>2) || fwd<0) spawnSmoke(2,1.0+(fwd<0?.6:0)); prevThrottle=throttle;
     updateParticles(dt);
   }
 
-  /* ---------- Overlay & hint ---------- */
-  function clamp1(v,min,max){return Math.max(min,Math.min(max,v));}
+  /* ---------- overlay & hint ---------- */
   let nearest=null;
   function updateCardsAndHint(){
     const W=innerWidth,H=innerHeight; let best=null,dmin=Infinity;
     for(const {el,obj} of cardsRef){
-      if(!obj) continue;
       tmpV.copy(obj.position); tmpV.y+=10; tmpV.project(camera);
-      const on=tmpV.z<1&&tmpV.z>-1; let x=(tmpV.x*.5+.5)*W, y=(-tmpV.y*.5+.5)*H;
-      if(on){
-        x=clamp1(x,18,W-18); y=clamp1(y,80,H-96); el.style.left=x+'px'; el.style.top=y+'px';
+      const on=tmpV.z<1&&tmpV.z>-1; let x=(tmpV.x*.5+.5)*W,y=(-tmpV.y*.5+.5)*H;
+      if(on){ x=clamp(x,18,W-18); y=clamp(y,80,H-96); el.style.left=x+'px'; el.style.top=y+'px';
         const dist=camera.position.distanceTo(obj.position); const a=THREE.MathUtils.clamp(1-(dist-60)/220,0,1);
         el.style.opacity=a; el.style.transform=`translate(-50%,-100%) scale(${0.92+a*0.1})`;
       } else el.style.opacity=0;
-      const d=ship.position.distanceTo(obj.position); if(d<dmin){ dmin=d; best=obj; }
+      const d=ship.position.distanceTo(obj.position); if(d<dmin){dmin=d; best=obj;}
     }
     const TH=28; nearest=(best&&dmin<TH)?best:null;
     if(nearest && controlsEnabled){
       tmpV.copy(nearest.position); tmpV.y+=12; tmpV.project(camera);
-      if(tmpV.z<1&&tmpV.z>-1){ let x=(tmpV.x*.5+.5)*W, y=(-tmpV.y*.5+.5)*H; x=clamp1(x,18,W-18); y=clamp1(y,60,H-80);
-        hintEl.textContent = (isTouch?'Tap card or E':'Press E or click card'); hintEl.style.left=x+'px'; hintEl.style.top=y+'px'; hintEl.style.display='block';
+      if(tmpV.z<1&&tmpV.z>-1){ let x=(tmpV.x*.5+.5)*W, y=(-tmpV.y*.5+.5)*H; x=clamp(x,18,W-18); y=clamp(y,60,H-80);
+        hintEl.textContent=isTouch?'Tap to Enter':'Press E to Enter'; hintEl.style.left=x+'px'; hintEl.style.top=y+'px'; hintEl.style.display='block';
       } else hintEl.style.display='none';
     } else hintEl.style.display='none';
   }
 
-  /* ---------- Quick View ---------- */
+  /* ---------- quick view ---------- */
   const qv=document.getElementById('quickview'), qvTitle=document.getElementById('qvTitle'),
         qvTag=document.getElementById('qvTag'), qvMedia=document.getElementById('qvMedia'),
-        qvClose=document.getElementById('qvClose'), qvExit=document.getElementById('qvExit');
-  function qvOpenFor(planet){
-    controlsEnabled = false;
-    const p=planet.userData.project; qvTitle.textContent=p.title; qvTag.textContent=p.tag||''; qvMedia.style.backgroundImage=`url('${p.cover||''}')`;
-    qv.classList.add('show');
-  }
-  function qvCloseFn(){ qv.classList.remove('show'); controlsEnabled = true; lastX=lastY=null; }
-  qvClose.addEventListener('click', qvCloseFn); qvExit.addEventListener('click', qvCloseFn);
+        qvClose=document.getElementById('qvClose'), qvExit=document.getElementById('qvExit'),
+        qvEnter=document.getElementById('qvEnter'), qvKeys=document.getElementById('qvKeys');
+  function qvOpenFor(pl){ controlsEnabled=false; const p=pl.userData.project; qvTitle.textContent=p.title; qvTag.textContent=p.tag||''; qvMedia.style.backgroundImage=`url('${p.cover||''}')`; qv.classList.add('show'); qvKeys.style.display = isTouch?'none':'block'; }
+  function qvCloseFn(){ qv.classList.remove('show'); controlsEnabled=true; }
+  function qvEnterFn(){ alert('Full Project — coming soon'); }
+  qvClose.addEventListener('click',qvCloseFn); qvExit.addEventListener('click',qvCloseFn); qvEnter.addEventListener('click',qvEnterFn);
+  addEventListener('keydown',e=>{ if(e.code==='KeyQ') qvCloseFn(); if(e.code==='KeyE' && qv.classList.contains('show')) qvEnterFn(); });
 
-  /* ---------- Tick ---------- */
-  addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();});
+  /* ---------- planet spin ---------- */
+  function spinPlanets(dt){ for(const pl of planets){ pl.rotation.y += (pl.userData.spin||0.03)*dt; } }
+
+  /* ---------- DIEGETIC CONTROLS BOARD ---------- */
+  function makeControlsBoard(){
+    const w=1024,h=512, c=document.createElement('canvas'); c.width=w; c.height=h; const x=c.getContext('2d');
+    x.fillStyle='#0c1224'; x.fillRect(0,0,w,h);
+    x.fillStyle='rgba(255,255,255,.08)'; x.fillRect(16,16,w-32,h-32);
+    x.font='bold 46px Inter, sans-serif'; x.fillStyle='#ffffff';
+    const k=(t,dx,dy)=>{x.strokeStyle='rgba(255,255,255,.9)';x.lineWidth=3;x.strokeRect(dx,dy,120,64);x.textBaseline='middle';x.textAlign='center';x.fillText(t,dx+60,dy+34);};
+    x.textAlign='left'; x.textBaseline='middle';
+    k('W',80,80); x.fillText('Forward',240,112);
+    k('S',80,170); x.fillText('Brake/Back',240,202);
+    k('A',80,260); x.fillText('Turn Left',240,292);
+    k('D',80,350); x.fillText('Turn Right',240,382);
+    k('E',560,80); x.fillText('Enter (Quick View)',720,112);
+    k('Q',560,170); x.fillText('Exit (Close)',720,202);
+    const tex=new THREE.CanvasTexture(c); tex.anisotropy=4;
+    const mesh=new THREE.Mesh(new THREE.PlaneGeometry(40,20), new THREE.MeshBasicMaterial({map:tex,transparent:false}));
+    mesh.position.set(-10,-8,0); mesh.rotation.x=-Math.PI/2; // yere gömülü gibi
+    scene.add(mesh);
+  }
+  makeControlsBoard();
+
+  /* ---------- INTERACTIVE SATELLITES (breakable) ---------- */
+  const satellites=[], debris=[];
+  function makeSatellite(){
+    const g=new THREE.Group(); // gövde + paneller
+    const body=new THREE.Mesh(new THREE.BoxGeometry(1.8,1.2,1.2), new THREE.MeshStandardMaterial({color:0xa9b4ff,metalness:.5,roughness:.35,emissive:0x0a1028}));
+    const panelMat=new THREE.MeshStandardMaterial({color:0x6bd5ff,metalness:.2,roughness:.6,emissive:0x0a1a33,emissiveIntensity:.6});
+    const p1=new THREE.Mesh(new THREE.BoxGeometry(1.8,.08,1.2),panelMat); p1.position.y=.7;
+    const p2=p1.clone(); p2.position.y=-.7;
+    g.add(body,p1,p2);
+    g.userData.broken=false;
+    return g;
+  }
+  function addSatellites(){
+    const COUNT=3;
+    for(let i=0;i<COUNT;i++){
+      const s=makeSatellite();
+      s.position.set(THREE.MathUtils.randFloat(-20,20), THREE.MathUtils.randFloat(-4,6), THREE.MathUtils.randFloat(-10,10));
+      s.position.addScaledVector(new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion), 15+i*10); // başlangıç önüne saç
+      s.rotation.y=Math.random()*Math.PI*2;
+      scene.add(s); satellites.push(s);
+    }
+  }
+  function breakSatellite(s){
+    if(s.userData.broken) return; s.userData.broken=true;
+    // parçalar
+    const parts=[]; s.traverse(o=>{ if(o.isMesh){ parts.push(o); }});
+    for(const m of parts){
+      const piece=new THREE.Mesh(m.geometry.clone(), m.material.clone());
+      piece.position.copy(m.getWorldPosition(new THREE.Vector3()));
+      piece.quaternion.copy(m.getWorldQuaternion(new THREE.Quaternion()));
+      piece.scale.copy(m.getWorldScale(new THREE.Vector3()));
+      scene.add(piece);
+      debris.push({mesh:piece, vel:new THREE.Vector3(
+        THREE.MathUtils.randFloatSpread(6),
+        THREE.MathUtils.randFloatSpread(4),
+        THREE.MathUtils.randFloatSpread(6)
+      ), life: 2.5 + Math.random()*1.5, rot:new THREE.Vector3(Math.random(),Math.random(),Math.random()).multiplyScalar(2)});
+    }
+    // eski uydunun tamamını kaldır
+    scene.remove(s);
+  }
+  function updateDebris(dt){
+    for(let i=debris.length-1;i>=0;i--){
+      const d=debris[i]; d.life-=dt; d.mesh.position.addScaledVector(d.vel,dt); d.mesh.rotation.x+=d.rot.x*dt; d.mesh.rotation.y+=d.rot.y*dt; d.mesh.rotation.z+=d.rot.z*dt;
+      d.vel.multiplyScalar(Math.pow(0.92,dt*60)); // sönüm
+      if(d.life<=0){ scene.remove(d.mesh); debris.splice(i,1); }
+    }
+  }
+  function checkCollisions(){
+    const R=3.2; // çarpışma eşiği
+    for(const s of satellites){
+      if(s.userData.broken) continue;
+      if(ship.position.distanceTo(s.position) < R){ breakSatellite(s); }
+    }
+  }
+  addSatellites();
+
+  /* ---------- START overlay ---------- */
+  const startEl=document.getElementById('start'); document.getElementById('btnStart').addEventListener('click',()=>{
+    startEl.classList.add('hide'); setTimeout(()=>{ controlsEnabled=true; },550);
+  });
+
+  /* ---------- loop ---------- */
+  addEventListener('resize',()=>{r.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();});
   const clock=new THREE.Clock();
-  function loop(){ const dt=Math.min(.033,clock.getDelta()); updateShip(dt); updateCamera(dt); updateParticles(dt); updateCardsAndHint(); renderer.render(scene,camera); requestAnimationFrame(loop); }
+  const overlayHint=document.getElementById('hint');
+  const qvEl=document.getElementById('quickview');
+  function loop(){
+    const dt=Math.min(.033,clock.getDelta());
+    updateShip(dt); updateCamera(dt); updateParticles(dt); spinPlanets(dt*0.5);
+    updateCardsAndHint(); if(controlsEnabled && !qvEl.classList.contains('show')){ checkCollisions(); }
+    updateDebris(dt);
+    r.render(scene,camera);
+    requestAnimationFrame(loop);
+  }
   loop();
   </script>
 </body>

@@ -43,19 +43,14 @@
 
   .start{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 600px at 50% -20%, rgba(120,170,255,.08), rgba(5,6,10,.95))}
   .start.hide{animation:fade .6s both}@keyframes fade{to{opacity:0;visibility:hidden}}
-  .start-card{padding:28px 32px;border:1px solid rgba(255,255,255,.12);background:rgba(10,12,20,.72);backdrop-filter:blur(8px);border-radius:16px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center}
+  .start-card{padding:28px 32px;border:1px solid rgba(255,255,255,.12);background:rgba(10,12,20,.72);backdrop-filter:blur(8px);border-radius:16px;display:flex;flex-direction:column;gap:12px;align-items:center}
   .kbd{font-weight:700;border:1px solid rgba(255,255,255,.18);padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.06)}
 </style>
 </head>
 <body>
   <div class="hud">
     <div class="brand">ORHUN EGE EKER</div>
-    <div class="nav">
-      <a href="index.html">SPACE</a>
-      <a href="projects.html">PROJECTS</a>
-      <a href="about.html">ABOUT</a>
-      <a href="contact.html">CONTACT</a>
-    </div>
+    <div class="nav"><a href="index.html">WORK</a><a href="about.html">ABOUT</a><a href="contact.html">CONTACT</a></div>
   </div>
 
   <div class="help" id="helpBox">Loading controls…</div>
@@ -81,17 +76,22 @@
   <!-- Start -->
   <div class="start" id="start">
     <div class="start-card">
-      <h1>Orhun Ege Eker — Portfolio</h1>
-      <p>If you choose the basic way</p>
-      <p><a href="./projects.html" class="btn">Basic Portfolio</a></p>
+      <h1>Portfolio — Space Tour</h1>
       <p><span class="kbd">W/S</span> move · mouse turn · near planet <span class="kbd">E</span> enter</p>
-      <button id="btnStart" class="btn primary">Start Space Experience</button>
+      <button id="btnStart" class="btn primary">Start</button>
     </div>
   </div>
 
   <canvas id="scene"></canvas>
 
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+
+  <!-- GLTFLoader'ı global'e ekle -->
+  <script type="module">
+    import { GLTFLoader } from 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+    window.GLTFLoader = GLTFLoader;
+  </script>
+
   <script>
   const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
   function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
@@ -189,11 +189,35 @@
   const flameTex = makeRadialTexture('rgba(255,200,80,1)','rgba(255,120,0,0)');
   const smokeTex = makeRadialTexture('rgba(220,230,245,0.6)','rgba(130,140,155,0.0)');
   const ship=new THREE.Group(); scene.add(ship);
+
+  // Fallback kapsül (GLB gelene kadar)
   const hull=new THREE.Mesh(new THREE.CapsuleGeometry(.8,3,6,12),
     new THREE.MeshStandardMaterial({color:0x9aa7ff,roughness:.55,metalness:.2,emissive:0x10163a,emissiveIntensity:.2}));
   hull.rotation.z=Math.PI/2; ship.add(hull);
 
-  const exhaustLocal=new THREE.Vector3(-2,0,0);
+  // --- GLB Spaceship (yüklendiyse kapsül gizlenir) ---
+  let EXHAUST_OFFSET_X = -2; // egzoz pozisyonu (modeline göre ayarlanır)
+  const loader = new (window.GLTFLoader||function(){})();
+  if (window.GLTFLoader){
+    loader.load(
+      'media/spaceship.glb',
+      (gltf)=>{
+        const model=gltf.scene;
+        // +X ileri olacak şekilde hizala (çoğu model Z ileri gelir)
+        model.rotation.set(0,-Math.PI/2,0);
+        model.scale.setScalar(1.0); // gerekiyorsa 0.6–1.5 dene
+        model.traverse(o=>{ if(o.isMesh){ o.castShadow=false; o.receiveShadow=false; } });
+        hull.visible=false;
+        ship.add(model);
+        EXHAUST_OFFSET_X = -2.8; // motor çıkışına göre ince ayar
+        exhaustLocal.set(EXHAUST_OFFSET_X,0,0);
+      },
+      undefined,
+      (err)=>{ console.warn('spaceship.glb yüklenemedi, kapsül kullanılacak.', err); }
+    );
+  }
+
+  const exhaustLocal=new THREE.Vector3(EXHAUST_OFFSET_X,0,0);
   function worldFromExhaust(out){return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);} 
   function makeSprite(mat){const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s;}
   const flameMat=new THREE.SpriteMaterial({map:flameTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.9});
@@ -290,7 +314,6 @@
   const satellites=[], debrisPool=[];
   function makeSatellite(x,y,z){
     const group=new THREE.Group();
-    // 3x büyütülmüş placeholder uydu
     const body=new THREE.Mesh(new THREE.BoxGeometry(1.2,0.8,0.8), new THREE.MeshStandardMaterial({color:0xd0d6e5,metalness:.4,roughness:.6}));
     const panelMat=new THREE.MeshStandardMaterial({color:0x6aa7ff,emissive:0x0e1a44,emissiveIntensity:.4,roughness:.4});
     const panelL=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.15,0.6), panelMat);
@@ -299,7 +322,7 @@
     group.add(body,panelL,panelR);
     group.position.set(x,y,z);
     group.userData.spin = THREE.MathUtils.randFloat(0.3,0.8);
-    group.scale.setScalar(3); // <<< 3 KAT BÜYÜK
+    group.scale.setScalar(3); // 3x büyütüldü
     scene.add(group);
     satellites.push(group);
   }

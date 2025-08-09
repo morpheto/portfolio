@@ -5,16 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
 <title>Orhun Ege Eker — Space Portfolio</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
-
-<!-- Import Map: GLTFLoader içindeki 'three' bare import'u buradan çözülecek -->
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
-  }
-}
-</script>
-
 <style>
   :root{ --bg:#05060a; --text:#f6f7fb; --muted:#cbd5e1; }
   *{box-sizing:border-box} html,body{height:100%}
@@ -108,21 +98,25 @@
 
   <canvas id="scene"></canvas>
 
-  <!-- Module script: import map sayesinde bare import kullanıyoruz -->
+  <!-- Three.js + GLTFLoader as ES modules (full URLs) -->
   <script type="module">
-    import * as THREE from 'three';
+    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
     import { GLTFLoader } from 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
 
     window.THREE = THREE;
 
     const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
-    function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+    const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+    // --- Particle textures: BLUE / CYAN ---
     function makeRadialTexture(inner, outer, size=128){
       const c=document.createElement('canvas'); c.width=c.height=size;
       const ctx=c.getContext('2d'); const g=ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
       g.addColorStop(0,inner); g.addColorStop(1,outer); ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
       const t=new THREE.CanvasTexture(c); t.minFilter=THREE.LinearFilter; t.magFilter=THREE.LinearFilter; return t;
     }
+    const flameTex = makeRadialTexture('rgba(120,230,255,1)','rgba(0,170,255,0)');      // turkuaz alev
+    const smokeTex = makeRadialTexture('rgba(160,210,255,0.55)','rgba(90,140,200,0)');   // açık mavi duman
 
     /* Scene */
     const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('scene'), antialias:true});
@@ -207,54 +201,97 @@
       const item={el,obj:m,pill}; el.addEventListener('click',()=>{ if(nearest===m) qvOpenFor(m); }); cardsRef.push(item);
     });
 
-    /* Ship & particles */
-    const flameTex = makeRadialTexture('rgba(255,200,80,1)','rgba(255,120,0,0)');
-    const smokeTex = makeRadialTexture('rgba(220,230,245,0.6)','rgba(130,140,155,0.0)');
+    /* Ship & (BLUE) particles */
     const ship=new THREE.Group(); scene.add(ship);
 
-    // Fallback hull
+    // Fallback hull (model yoksa)
     const hull=new THREE.Mesh(new THREE.CapsuleGeometry(.8,3,6,12),
       new THREE.MeshStandardMaterial({color:0x9aa7ff,roughness:.55,metalness:.2,emissive:0x10163a,emissiveIntensity:.2}));
     hull.rotation.z=Math.PI/2; ship.add(hull);
 
-    // GLB yükle (varsa fallback’i değiştir)
+    // GLB yükle — yön düzeltmesi: +X'e bak
     const loader = new GLTFLoader();
-    let exhaustLocal=new THREE.Vector3(-2,0,0);
+    let exhaustLocal=new THREE.Vector3(-2,0,0); // egzoz lokali
 
     loader.load('media/spaceship.glb', (gltf)=>{
       const model = gltf.scene || gltf.scenes?.[0];
-      if(model){
-        ship.clear();
-        const box = new THREE.Box3().setFromObject(model);
-        const size = new THREE.Vector3(); box.getSize(size);
-        const maxDim = Math.max(size.x,size.y,size.z) || 1;
-        const target = 6; const s = target / maxDim;
-        model.scale.setScalar(s);
-        const center = new THREE.Vector3(); box.getCenter(center);
-        model.position.sub(center.multiplyScalar(s));
-        model.rotation.y = 0;
-        const minX = (box.min.x - center.x) * s;
-        exhaustLocal = new THREE.Vector3(minX - 0.6, 0, 0);
-        ship.add(model);
-      }
-    }, undefined, ()=>{} );
+      if(!model) return;
 
-    function worldFromExhaust(out){return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);} 
+      ship.clear(); // fallback'i kaldır
+
+      // ölçek normalizasyonu
+      const box0 = new THREE.Box3().setFromObject(model);
+      const size0 = new THREE.Vector3(); box0.getSize(size0);
+      const maxDim = Math.max(size0.x,size0.y,size0.z) || 1;
+      const target = 6; model.scale.setScalar(target/maxDim);
+
+      // yön: bir çok model +Z ileri olur; -90° Y ile +X'e çevir
+      model.rotation.set(0, -Math.PI/2, 0);
+
+      // merkezle
+      const box1 = new THREE.Box3().setFromObject(model);
+      const c1 = new THREE.Vector3(); box1.getCenter(c1);
+      model.position.sub(c1);
+
+      // egzoz: minX kuyruk
+      const box2 = new THREE.Box3().setFromObject(model);
+      exhaustLocal = new THREE.Vector3(box2.min.x - 0.6, 0, 0);
+
+      ship.add(model);
+    }, undefined, ()=>{/* yoksa sorun değil */});
+
+    function worldFromExhaust(out){return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);}
     function makeSprite(mat){const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s;}
-    const flameMat=new THREE.SpriteMaterial({map:flameTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.9});
+    const flameMat=new THREE.SpriteMaterial({map:flameTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.95});
     const smokeMat=new THREE.SpriteMaterial({map:smokeTex,transparent:true,depthWrite:false,opacity:.0});
     const flamePool=[...Array(140)].map(()=>makeSprite(flameMat)), smokePool=[...Array(100)].map(()=>makeSprite(smokeMat));
     const flameData=flamePool.map(()=>({life:0,max:0,vel:new THREE.Vector3()})), smokeData=smokePool.map(()=>({life:0,max:0,vel:new THREE.Vector3()}));
-    function spawnFlame(n,intensity=1){for(let i=0;i<flamePool.length&&n>0;i++){if(flameData[i].life>0)continue;n--;const sp=flamePool[i],d=flameData[i];const pos=new THREE.Vector3();worldFromExhaust(pos);sp.position.copy(pos);sp.scale.setScalar(.9+Math.random()*1.4*intensity);d.max=.35+Math.random()*.25;d.life=d.max;const dir=new THREE.Vector3(-1,THREE.MathUtils.randFloatSpread(.35),THREE.MathUtils.randFloatSpread(.35)).applyQuaternion(ship.quaternion);d.vel.copy(dir.multiplyScalar(12+18*intensity));sp.material.opacity=.85;sp.visible=true;}}
-    function spawnSmoke(n,boost=1){for(let i=0;i<smokePool.length&&n>0;i++){if(smokeData[i].life>0)continue;n--;const sp=smokePool[i],d=smokeData[i];const pos=new THREE.Vector3();worldFromExhaust(pos);sp.position.copy(pos);const s=1.2+Math.random()*2.2*boost;sp.scale.set(s,s,1);d.max=.9+Math.random()*.8;d.life=d.max;const dir=new THREE.Vector3(-1,THREE.MathUtils.randFloatSpread(.25),THREE.MathUtils.randFloatSpread(.25)).applyQuaternion(ship.quaternion);d.vel.copy(dir.multiplyScalar(3+2*boost));sp.material.opacity=.3;sp.visible=true;}}
+    function spawnFlame(n,intensity=1){
+      for(let i=0;i<flamePool.length&&n>0;i++){
+        if(flameData[i].life>0)continue; n--;
+        const sp=flamePool[i],d=flameData[i]; const pos=new THREE.Vector3(); worldFromExhaust(pos);
+        sp.position.copy(pos); sp.scale.setScalar(1.0+Math.random()*1.6*intensity);
+        d.max=.38+Math.random()*.28; d.life=d.max;
+        const dir=new THREE.Vector3(-1,THREE.MathUtils.randFloatSpread(.35),THREE.MathUtils.randFloatSpread(.35)).applyQuaternion(ship.quaternion);
+        d.vel.copy(dir.multiplyScalar(13+20*intensity)); sp.material.opacity=.95; sp.visible=true;
+      }
+    }
+    function spawnSmoke(n,boost=1){
+      for(let i=0;i<smokePool.length&&n>0;i++){
+        if(smokeData[i].life>0)continue; n--;
+        const sp=smokePool[i],d=smokeData[i]; const pos=new THREE.Vector3(); worldFromExhaust(pos);
+        sp.position.copy(pos); const s=1.4+Math.random()*2.4*boost; sp.scale.set(s,s,1);
+        d.max=1.0+Math.random()*.9; d.life=d.max;
+        const dir=new THREE.Vector3(-1,THREE.MathUtils.randFloatSpread(.25),THREE.MathUtils.randFloatSpread(.25)).applyQuaternion(ship.quaternion);
+        d.vel.copy(dir.multiplyScalar(3+2.2*boost)); sp.material.opacity=.35; sp.visible=true;
+      }
+    }
     function updateParticles(dt){
-      for(let i=0;i<flamePool.length;i++){const p=flamePool[i],d=flameData[i];if(d.life<=0){p.visible=false;continue;}d.life-=dt;p.position.addScaledVector(d.vel,dt);const t=d.life/d.max;p.material.opacity=.15+.75*t;const s=(.6+1.8*(1-t));p.scale.set(s,s,1);if(d.life<=0)p.visible=false;}
-      for(let i=0;i<smokePool.length;i++){const p=smokePool[i],d=smokeData[i];if(d.life<=0){p.visible=false;continue;}d.life-=dt;p.position.addScaledVector(d.vel,dt);p.position.y+=dt*.6;const t=d.life/d.max;p.material.opacity=.35*t;const s=p.scale.x*(1+.35*dt);p.scale.set(s,s,1);if(d.life<=0)p.visible=false;}
+      for(let i=0;i<flamePool.length;i++){
+        const p=flamePool[i],d=flameData[i]; if(d.life<=0){p.visible=false;continue;}
+        d.life-=dt; p.position.addScaledVector(d.vel,dt);
+        const t=d.life/d.max; p.material.opacity=.18+.77*t;
+        const s=(.7+1.9*(1-t)); p.scale.set(s,s,1);
+        if(d.life<=0)p.visible=false;
+      }
+      for(let i=0;i<smokePool.length;i++){
+        const p=smokePool[i],d=smokeData[i]; if(d.life<=0){p.visible=false;continue;}
+        d.life-=dt; p.position.addScaledVector(d.vel,dt); p.position.y+=dt*.6;
+        const t=d.life/d.max; p.material.opacity=.35*t;
+        const s=p.scale.x*(1+.35*dt); p.scale.set(s,s,1);
+        if(d.life<=0)p.visible=false;
+      }
     }
 
     /* Camera */
     const camOff=new THREE.Vector3(-20,8.8,0), lookAhead=new THREE.Vector3(8,2,0), camPos=new THREE.Vector3(), lookAt=new THREE.Vector3();
-    function updateCamera(dt){const off=camOff.clone().applyQuaternion(ship.quaternion);camPos.copy(ship.position).add(off);camera.position.lerp(camPos,1-Math.pow(.0028,dt*60));const la=lookAhead.clone().applyQuaternion(ship.quaternion);lookAt.copy(ship.position).add(la);camera.lookAt(lookAt);} 
+    function updateCamera(dt){
+      const off=camOff.clone().applyQuaternion(ship.quaternion);
+      camPos.copy(ship.position).add(off);
+      camera.position.lerp(camPos,1-Math.pow(.0028,dt*60));
+      const la=lookAhead.clone().applyQuaternion(ship.quaternion);
+      lookAt.copy(ship.position).add(la); camera.lookAt(lookAt);
+    }
     camera.position.copy(ship.position).add(camOff); camera.lookAt(ship.position.clone().add(lookAhead));
 
     /* Input */
@@ -287,8 +324,13 @@
       const forward=new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion); ship.position.addScaledVector(forward,velF*dt);
       ship.position.y += Math.sin(pitch)*velF*.75*dt; ship.position.y=clamp(ship.position.y,-70,70);
 
-      const speedAbs=Math.abs(velF); const rate=Math.floor(6+14*clamp(throttle+speedAbs/20,0,1.5)); if(throttle>.01) spawnFlame(rate,clamp(throttle+speedAbs/30,.6,1.6));
-      if(prevThrottle>.25 && throttle<=.02) spawnSmoke(24,1.4); if((throttle<=.02 && speedAbs>2) || fwd<0) spawnSmoke(2,1.0+(fwd<0?.6:0)); prevThrottle=throttle;
+      const speedAbs=Math.abs(velF);
+      const rate=Math.floor(6+14*clamp(throttle+speedAbs/20,0,1.5));
+      if(throttle>.01) spawnFlame(rate,clamp(throttle+speedAbs/30,.6,1.6));
+      if(prevThrottle>.25 && throttle<=.02) spawnSmoke(24,1.4);
+      if((throttle<=.02 && speedAbs>2) || fwd<0) spawnSmoke(2,1.0+(fwd<0?.6:0));
+      prevThrottle=throttle;
+
       updateParticles(dt);
     }
 
@@ -341,7 +383,7 @@
       const panelR=panelL.clone(); panelL.position.set(-1.2,0,0); panelR.position.set(1.2,0,0);
       group.add(body,panelL,panelR);
       group.position.set(x,y,z);
-      group.scale.setScalar(3);
+      group.scale.setScalar(3); // 3x büyütme
       group.userData.spin = THREE.MathUtils.randFloat(0.3,0.8);
       scene.add(group);
       satellites.push(group);

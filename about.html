@@ -19,7 +19,7 @@
     a{color:inherit;text-decoration:none}
     .container{max-width:1180px;margin:0 auto;padding:0 20px}
 
-    /* Header (same as index) */
+    /* Header (matched with other pages) */
     header{position:sticky;top:0;z-index:50;background:rgba(12,12,14,.6);backdrop-filter:saturate(160%) blur(10px);border-bottom:1px solid var(--border)}
     nav{display:flex;align-items:center;justify-content:space-between;height:64px}
     .brand{font-weight:800;letter-spacing:.4px; font-size:16px}
@@ -44,7 +44,7 @@
     footer{border-top:1px solid var(--border);margin-top:44px}
     footer .inner{padding:22px 0;color:#cbd5e1;font-size:14px;text-align:center}
 
-    /* --- Custom circular cursor + particle trail (same as index, stronger glow) --- */
+    /* --- Custom circular cursor + particle trail --- */
     body.custom-cursor { cursor: none; }
     .cursor-dot {
       position: fixed; left:0; top:0; width:20px; height:20px; border-radius:50%;
@@ -85,7 +85,8 @@
       <nav>
         <a class="brand" href="index.html">ORHUN EGE EKER</a>
         <div class="navlinks">
-          <a href="index.html">WORK</a>
+          <a href="index.html">SPACE</a>
+          <a href="projects.html">PROJECTS</a>
           <a href="about.html">ABOUT</a>
           <a href="contact.html">CONTACT</a>
         </div>
@@ -157,7 +158,7 @@
       }
       document.addEventListener('pointermove', move, {passive:true});
       document.addEventListener('pointerover', e => document.body.classList.toggle('cursor-pointer', !!e.target.closest('a,button,[role="button"]')), {passive:true});
-      document.addEventListener('pointerout',  e => document.body.classList.remove('cursor-pointer'), {passive:true});
+      document.addEventListener('pointerout',  () => document.body.classList.remove('cursor-pointer'), {passive:true});
       window.addEventListener('pointerdown', ()=>{ dot.style.transform='translate(-50%, -50%) scale(0.85)'; });
       window.addEventListener('pointerup',   ()=>{ dot.style.transform='translate(-50%, -50%) scale(1)'; });
     })();

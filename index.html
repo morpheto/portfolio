@@ -41,18 +41,15 @@
   .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
   .btn.primary{background:#1e5eff;border-color:#2b66ff}
 
-  /* start */
   .start{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 600px at 50% -20%, rgba(120,170,255,.08), rgba(5,6,10,.95))}
   .start.hide{animation:fade .6s both}@keyframes fade{to{opacity:0;visibility:hidden}}
-  .start-card{padding:28px 32px;border:1px solid rgba(255,255,255,.12);background:rgba(10,12,20,.72);backdrop-filter:blur(8px);border-radius:16px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center}
-  .start-card .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .start-card{padding:28px 32px;border:1px solid rgba(255,255,255,.12);background:rgba(10,12,20,.72);backdrop-filter:blur(8px);border-radius:16px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center}
   .kbd{font-weight:700;border:1px solid rgba(255,255,255,.18);padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.06)}
 </style>
 </head>
 <body>
   <div class="hud">
     <div class="brand">ORHUN EGE EKER</div>
-    <!-- NAV: SPACE (index.html) ve PROJECTS (projects.html) -->
     <div class="nav">
       <a href="index.html">SPACE</a>
       <a href="projects.html">PROJECTS</a>
@@ -86,13 +83,9 @@
     <div class="start-card">
       <h1>Orhun Ege Eker — Portfolio</h1>
       <p>If you choose the basic way</p>
-      <div class="row">
-        <a href="projects.html" class="btn">Basic Portfolio</a>
-      </div>
-      <p style="margin-top:6px;"><span class="kbd">W/S</span> move · mouse turn · near planet <span class="kbd">E</span> enter</p>
-      <div class="row">
-        <button id="btnStart" class="btn primary">Start Space Tour</button>
-      </div>
+      <p><a href="./projects.html" class="btn">Basic Portfolio</a></p>
+      <p><span class="kbd">W/S</span> move · mouse turn · near planet <span class="kbd">E</span> enter</p>
+      <button id="btnStart" class="btn primary">Start Space Experience</button>
     </div>
   </div>
 
@@ -293,10 +286,11 @@
   /* Planet spin */
   function spinPlanets(dt){ for(const pl of planets){ pl.rotation.y += (pl.userData.spin||0.03)*dt; } }
 
-  /* ---------- Uydu(lar) & Çarpışma (3× büyütüldü) ---------- */
+  /* ---------- Uydu(lar) & Çarpışma ---------- */
   const satellites=[], debrisPool=[];
   function makeSatellite(x,y,z){
     const group=new THREE.Group();
+    // 3x büyütülmüş placeholder uydu
     const body=new THREE.Mesh(new THREE.BoxGeometry(1.2,0.8,0.8), new THREE.MeshStandardMaterial({color:0xd0d6e5,metalness:.4,roughness:.6}));
     const panelMat=new THREE.MeshStandardMaterial({color:0x6aa7ff,emissive:0x0e1a44,emissiveIntensity:.4,roughness:.4});
     const panelL=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.15,0.6), panelMat);
@@ -304,8 +298,8 @@
     panelL.position.set(-1.2,0,0); panelR.position.set(1.2,0,0);
     group.add(body,panelL,panelR);
     group.position.set(x,y,z);
-    group.scale.setScalar(3);            // 3× büyütme
     group.userData.spin = THREE.MathUtils.randFloat(0.3,0.8);
+    group.scale.setScalar(3); // <<< 3 KAT BÜYÜK
     scene.add(group);
     satellites.push(group);
   }
@@ -347,12 +341,8 @@
   });
 
   /* Resize & loop */
-  const tmpV=new THREE.Vector3();
   addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();});
   const clock=new THREE.Clock();
-  function updateCamera(dt){const camOff=new THREE.Vector3(-20,8.8,0), lookAhead=new THREE.Vector3(8,2,0), camPos=new THREE.Vector3(), lookAt=new THREE.Vector3();
-    const off=camOff.clone().applyQuaternion(ship.quaternion);camPos.copy(ship.position).add(off);camera.position.lerp(camPos,1-Math.pow(.0028,dt*60));const la=lookAhead.clone().applyQuaternion(ship.quaternion);lookAt.copy(ship.position).add(la);camera.lookAt(lookAt);}
-  const ship=new THREE.Group(); // (gövde yukarıda eklendi)
   function loop(){
     const dt=Math.min(.033,clock.getDelta());
     updateShip(dt); updateCamera(dt); updateParticles(dt); spinPlanets(dt*0.5); updateSatellites(dt); updateCardsAndHint();

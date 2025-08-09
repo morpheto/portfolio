@@ -26,7 +26,6 @@
   .badge{position:absolute;left:8px;top:8px;background:rgba(64,191,255,.12);border:1px solid rgba(64,191,255,.4);backdrop-filter:blur(6px);font-size:11px;padding:6px 8px;border-radius:999px;color:#cfefff}
   /* inline enter hint pill over card */
   .enter-pill{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.10);color:#dff2ff;font-size:12px;box-shadow:0 0 16px rgba(64,191,255,.25);opacity:0;transition:opacity .15s ease;pointer-events:none}
-  .hint{position:absolute;transform:translate(-50%,-120%);padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.10);color:#dff2ff;font-size:12px;pointer-events:none;box-shadow:0 0 16px rgba(64,191,255,.25);z-index:25;display:none}
 
   .popup{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
   .popup.show{display:flex}
@@ -64,8 +63,9 @@
           <div class="popup-tag" id="qvTag">Category</div>
         </div>
         <div class="popup-actions">
-          <button class="btn primary" id=\"qvEnter\">Enter (E)</button>
-          <button class="btn" id=\"qvExit\">Quit (Q)</button>
+          <!-- ESCAPES DÜZELTİLDİ -->
+          <button class="btn primary" id="qvEnter">Enter (E)</button>
+          <button class="btn" id="qvExit">Quit (Q)</button>
         </div>
       </div>
     </div>
@@ -247,23 +247,14 @@
         el.style.opacity=a; el.style.transform=`translate(-50%,-100%) scale(${0.92+a*0.1})`;
       } else { el.style.opacity=0; }
       const d=ship.position.distanceTo(obj.position); if(d<dmin){dmin=d; best=obj;}
-      // default hide pill; we'll enable after loop for the nearest
-      if(pill) pill.style.opacity=0;
+      if(pill) pill.style.opacity=0; // default gizle
     }
     const TH=28; nearest=(best&&dmin<TH)?best:null;
-    // show pill only on nearest when controls are enabled and not in modal
-    if(nearest && controlsEnabled && !document.getElementById('quickview').classList.contains('show')){
+    // sadece en yakında pill göster (modal kapalıyken)
+    const qv=document.getElementById('quickview');
+    if(nearest && controlsEnabled && !qv.classList.contains('show')){
       const ref=cardsRef.find(c=>c.obj===nearest); if(ref&&ref.pill){ ref.pill.style.opacity=1; }
     }
-  }
-}
-    const TH=28; nearest=(best&&dmin<TH)?best:null;
-    if(nearest && controlsEnabled){
-      tmpV.copy(nearest.position); tmpV.y+=12; tmpV.project(camera);
-      if(tmpV.z<1&&tmpV.z>-1){ let x=(tmpV.x*.5+.5)*W, y=(-tmpV.y*.5+.5)*H; x=clamp(x,18,W-18); y=clamp(y,60,H-80);
-        document.getElementById('hint').textContent='Press E to Enter'; document.getElementById('hint').style.left=x+'px'; document.getElementById('hint').style.top=y+'px'; document.getElementById('hint').style.display='block';
-      } else document.getElementById('hint').style.display='none';
-    } else document.getElementById('hint').style.display='none';
   }
 
   /* Quick View */

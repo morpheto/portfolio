@@ -86,8 +86,7 @@
     const c=document.createElement('canvas'); c.width=c.height=size;
     const ctx=c.getContext('2d');
     const g=ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
-    g.addColorStop(0, inner);
-    g.addColorStop(1, outer);
+    g.addColorStop(0, inner); g.addColorStop(1, outer);
     ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
     const tex=new THREE.CanvasTexture(c); tex.minFilter=THREE.LinearFilter; tex.magFilter=THREE.LinearFilter; tex.anisotropy=4;
     return tex;
@@ -163,70 +162,47 @@
     const item={el, obj:m}; item.el.addEventListener('click',()=>{ if(nearest===m) qvOpenFor(m); }); cardsRef.push(item);
   });
 
-  /* ---------- Ship ---------- */
+  /* ---------- Ship & particles ---------- */
   const ship=new THREE.Group(); scene.add(ship);
   const hull=new THREE.Mesh(new THREE.CapsuleGeometry(.8,3,6,12),
     new THREE.MeshStandardMaterial({color:0x9aa7ff,roughness:.55,metalness:.2,emissive:0x10163a,emissiveIntensity:.2}));
   hull.rotation.z=Math.PI/2; ship.add(hull);
 
-  // exhaust anchor (arka nokta)
   const exhaustLocal = new THREE.Vector3(-2.0,0,0);
 
-  /* ---------- Particle Pools (flame + smoke) ---------- */
-  function makeSprite(mat){ const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s; }
+  function makeRadialTexture(inner, outer, size=128){ /* already defined above */ }
+
+  const flameTex = makeRadialTexture('rgba(255,200,80,1)','rgba(255,120,0,0)');
+  const smokeTex = makeRadialTexture('rgba(220,230,245,0.6)','rgba(130,140,155,0.0)');
   const flameMatBase = new THREE.SpriteMaterial({map:flameTex, depthWrite:false, depthTest:true, transparent:true, blending:THREE.AdditiveBlending, opacity:0.9, color:0xffffff});
   const smokeMatBase = new THREE.SpriteMaterial({map:smokeTex, depthWrite:false, depthTest:true, transparent:true, opacity:0.0, color:0xffffff});
+  function makeSprite(mat){ const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s; }
   const FLAME_MAX=160, SMOKE_MAX=120;
   const flamePool=[...Array(FLAME_MAX)].map(()=>makeSprite(flameMatBase));
   const smokePool=[...Array(SMOKE_MAX)].map(()=>makeSprite(smokeMatBase));
   const flameData=flamePool.map(()=>({life:0,max:0,vel:new THREE.Vector3()}));
   const smokeData=smokePool.map(()=>({life:0,max:0,vel:new THREE.Vector3()}));
 
-  function worldFromExhaust(out){
-    return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);
-  }
-  function spawnFlame(n,intensity=1){
-    for(let i=0;i<flamePool.length && n>0;i++){
-      if(flameData[i].life>0) continue;
-      n--;
-      const sp=flamePool[i], d=flameData[i];
-      const pos=new THREE.Vector3(); worldFromExhaust(pos);
-      sp.position.copy(pos);
-      sp.scale.setScalar(0.9 + Math.random()*1.4*intensity);
-      d.max=0.35+Math.random()*0.25; d.life=d.max;
-      const dir=new THREE.Vector3(-1, THREE.MathUtils.randFloatSpread(0.35), THREE.MathUtils.randFloatSpread(0.35)).applyQuaternion(ship.quaternion);
-      d.vel.copy(dir.multiplyScalar(12+18*intensity));
-      sp.material.opacity=0.85; sp.visible=true;
-    }
-  }
-  function spawnSmoke(n,boost=1){
-    for(let i=0;i<smokePool.length && n>0;i++){
-      if(smokeData[i].life>0) continue;
-      n--;
-      const sp=smokePool[i], d=smokeData[i];
-      const pos=new THREE.Vector3(); worldFromExhaust(pos);
-      sp.position.copy(pos);
-      const s= 1.2 + Math.random()*2.2*boost;
-      sp.scale.set(s,s,1);
-      d.max=0.9+Math.random()*0.8; d.life=d.max;
-      const dir=new THREE.Vector3(-1, THREE.MathUtils.randFloatSpread(0.25), THREE.MathUtils.randFloatSpread(0.25)).applyQuaternion(ship.quaternion);
-      d.vel.copy(dir.multiplyScalar(3+2*boost));
-      sp.material.opacity=0.3; sp.visible=true;
-    }
-  }
+  function worldFromExhaust(out){ return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position); }
+  function spawnFlame(n,intensity=1){ for(let i=0;i<flamePool.length && n>0;i++){ if(flameData[i].life>0) continue; n--; const sp=flamePool[i], d=flameData[i];
+    const pos=new THREE.Vector3(); worldFromExhaust(pos); sp.position.copy(pos);
+    sp.scale.setScalar(0.9 + Math.random()*1.4*intensity);
+    d.max=0.35+Math.random()*0.25; d.life=d.max;
+    const dir=new THREE.Vector3(-1, THREE.MathUtils.randFloatSpread(0.35), THREE.MathUtils.randFloatSpread(0.35)).applyQuaternion(ship.quaternion);
+    d.vel.copy(dir.multiplyScalar(12+18*intensity)); sp.material.opacity=0.85; sp.visible=true; } }
+  function spawnSmoke(n,boost=1){ for(let i=0;i<smokePool.length && n>0;i++){ if(smokeData[i].life>0) continue; n--; const sp=smokePool[i], d=smokeData[i];
+    const pos=new THREE.Vector3(); worldFromExhaust(pos); sp.position.copy(pos);
+    const s= 1.2 + Math.random()*2.2*boost; sp.scale.set(s,s,1);
+    d.max=0.9+Math.random()*0.8; d.life=d.max;
+    const dir=new THREE.Vector3(-1, THREE.MathUtils.randFloatSpread(0.25), THREE.MathUtils.randFloatSpread(0.25)).applyQuaternion(ship.quaternion);
+    d.vel.copy(dir.multiplyScalar(3+2*boost)); sp.material.opacity=0.3; sp.visible=true; } }
   function updateParticles(dt){
-    for(let i=0;i<flamePool.length;i++){
-      const p=flamePool[i], d=flameData[i]; if(d.life<=0){p.visible=false; continue;}
+    for(let i=0;i<flamePool.length;i++){ const p=flamePool[i], d=flameData[i]; if(d.life<=0){p.visible=false; continue;}
       d.life-=dt; p.position.addScaledVector(d.vel,dt);
-      const t=d.life/d.max; p.material.opacity=0.15+0.75*t; const s=(0.6+1.8*(1-t)); p.scale.set(s,s,1);
-      if(d.life<=0) p.visible=false;
-    }
-    for(let i=0;i<smokePool.length;i++){
-      const p=smokePool[i], d=smokeData[i]; if(d.life<=0){p.visible=false; continue;}
-      d.life-=dt; p.position.addScaledVector(d.vel,dt); p.position.y += dt*0.6; // hafif yükselme
-      const t=d.life/d.max; p.material.opacity=0.35*t; const s=p.scale.x*(1+0.35*dt); p.scale.set(s,s,1);
-      if(d.life<=0) p.visible=false;
-    }
+      const t=d.life/d.max; p.material.opacity=0.15+0.75*t; const s=(0.6+1.8*(1-t)); p.scale.set(s,s,1); if(d.life<=0) p.visible=false; }
+    for(let i=0;i<smokePool.length;i++){ const p=smokePool[i], d=smokeData[i]; if(d.life<=0){p.visible=false; continue;}
+      d.life-=dt; p.position.addScaledVector(d.vel,dt); p.position.y += dt*0.6;
+      const t=d.life/d.max; p.material.opacity=0.35*t; const s=p.scale.x*(1+0.35*dt); p.scale.set(s,s,1); if(d.life<=0) p.visible=false; }
   }
 
   /* ---------- Camera ---------- */
@@ -243,14 +219,13 @@
   camera.position.copy(ship.position).add(camOffsetLocal);
   camera.lookAt(ship.position.clone().add(lookAheadLocal));
 
-  /* ---------- Input ---------- */
+  /* ---------- Input & mouse absolute aim ---------- */
   const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
   helpBox.innerHTML = isTouch
     ? '<b>Mobile</b> — Left joystick: move/turn · Right drag: aim · Up/Down buttons · Tap card near planet: Quick View'
-    : '<b>Desktop</b> — Mouse‑aim + <b>W/S</b> forward/back, <b>A/D</b> turn · <b>E</b> (near) Quick View · <b>Q</b> Close';
+    : '<b>Desktop</b> — Mouse‑aim (absolute) + <b>W/S</b> forward/back, <b>A/D</b> turn · <b>E</b> Quick View · <b>Q</b> Close';
 
   let controlsEnabled = true;
-
   const keyState={KeyW:false,KeyA:false,KeyS:false,KeyD:false,KeyQ:false,KeyE:false};
   function setKey(e,down){
     if(!controlsEnabled) return;
@@ -260,17 +235,19 @@
   }
   if(!isTouch){ addEventListener('keydown',e=>setKey(e,true)); addEventListener('keyup',e=>setKey(e,false)); }
 
-  // Mouse aim
-  let lastX=null,lastY=null,yaw=0,pitch=0,yawVel=0,pitchVel=0;
-  addEventListener('mousemove',e=>{
+  // >>> ABSOLUTE mouse aim (ekran merkezine göre)
+  let mouseNX = 0, mouseNY = 0; // -0.5..+0.5 yerine -1..+1’e yakın normalize
+  function updateMousePos(e){
     if(!controlsEnabled || isTouch) return;
-    if(lastX===null){ lastX=e.clientX; lastY=e.clientY; return; }
-    const dx=e.clientX-lastX, dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY;
-    yawVel   -= dx*0.0012;
-    pitchVel -= dy*0.0012;
-  }, {passive:true});
+    const r = renderer.domElement.getBoundingClientRect();
+    mouseNX = ((e.clientX - r.left)/r.width  - 0.5) * 2;   // -1 .. +1
+    mouseNY = ((e.clientY - r.top )/r.height - 0.5) * 2;   // -1 .. +1
+  }
+  addEventListener('mousemove', updateMousePos, {passive:true});
+  addEventListener('mouseleave', ()=>{ mouseNX=0; mouseNY=0; });
+  addEventListener('blur', ()=>{ mouseNX=0; mouseNY=0; }); // sekme değişince sıfırla
 
-  // Mobile joystick + aim
+  // Mobile joystick + aim (aynı)
   let joyX=0, joyY=0, aimDX=0, aimDY=0, upHeld=false, downHeld=false;
   if(isTouch){ const joy=document.getElementById('joyL'), knob=joy.querySelector('.knob'); const rj=()=>joy.getBoundingClientRect();
     function onJoy(e){ if(!controlsEnabled) return; e.preventDefault();
@@ -289,55 +266,60 @@
   }
 
   /* ---------- Movement with throttle / inertia ---------- */
-  let velF=0, vY=0, turnVel=0, throttle=0, prevThrottle=0;
+  let velF=0, vY=0, turnVel=0, throttle=0, prevThrottle=0, yaw=0, pitch=0;
   function updateShip(dt){
     if(!controlsEnabled){
-      // yumuşakça sönsün
       velF*=Math.pow(0.94,dt*60); turnVel*=Math.pow(0.92,dt*60); vY*=Math.pow(0.92,dt*60);
       updateParticles(dt); return;
     }
 
-    // aim
-    if(!isTouch){ yaw += yawVel; pitch += pitchVel; yawVel*=Math.pow(.9,dt*60); pitchVel*=Math.pow(.9,dt*60); }
-    else{ yaw += aimDX; pitch += aimDY; aimDX*=Math.pow(.92,dt*60); aimDY*=Math.pow(.92,dt*60); }
-    pitch=THREE.MathUtils.clamp(pitch,-Math.PI/3,Math.PI/3);
+    // ABSOLUTE AIM:
+    // Desktop: mouseNX/mouseNY -> hedef dönüş/pitch
+    // Mobile: aimDX/aimDY -> ek katkı (ince nişan)
+    const targetTurnFromMouse = (!isTouch) ? (-mouseNX) : 0;
+    const targetPitchFromMouse = (!isTouch) ? THREE.MathUtils.clamp(-mouseNY*0.9, -Math.PI/3, Math.PI/3) : pitch;
 
-    // inputs
-    let fwd=0, turn=0, updn=0;
-    if(!isTouch){
+    // Mobile ince nişan katkısı
+    if(isTouch){ yaw += aimDX; pitch += aimDY; aimDX*=Math.pow(.92,dt*60); aimDY*=Math.pow(.92,dt*60); }
+
+    // klavye / joystick
+    const isTouchDevice = isTouch;
+    let fwd=0, turnKey=0, updn=0;
+    if(!isTouchDevice){
       if(keyState.KeyW) fwd+=1;
-      if(keyState.KeyS) fwd-=1;       // fren/geri
-      if(keyState.KeyD) turn -= 1;
-      if(keyState.KeyA) turn += 1;
+      if(keyState.KeyS) fwd-=1;
+      if(keyState.KeyD) turnKey -= 1;
+      if(keyState.KeyA) turnKey += 1;
     } else {
-      fwd = joyY;  turn = -joyX;
+      fwd = joyY;  turnKey = -joyX;
       if(upHeld) updn += 1; if(downHeld) updn -= 1;
     }
 
-    // throttle (0..1) — W ile artar, bırakınca yavaşça düşer
-    const targetThrottle = Math.max(0, fwd);
-    throttle += (targetThrottle - throttle) * (1 - Math.pow(0.2, dt*60));
+    // toplam hedef dönüş: mouse + klavye
+    const targetTurn = targetTurnFromMouse + turnKey*0.8;
+    turnVel = THREE.MathUtils.damp(turnVel, targetTurn*1.6, 6, dt);
+    yaw += turnVel * dt * 3.0;
 
-    // hız/ivme — atalet: düşük sürtünme, fren yapınca yüksek sürtünme
+    // pitch’i absolute hedefe doğru dample
+    const targetPitch = (!isTouch) ? targetPitchFromMouse : pitch + updn*0.02;
+    pitch = THREE.MathUtils.damp(pitch, targetPitch, 6, dt);
+    pitch = THREE.MathUtils.clamp(pitch, -Math.PI/3, Math.PI/3);
+
+    // throttle & hız (coasting/fren)
     const ACC = (isTouch? 16 : 26);
     const MAX = (isTouch? 15 : 26);
-    const DRAG_COAST = 0.985;   // coasting sırasında çok az kayıp
-    const DRAG_ACTIVE= 0.96;    // normal drag
-    const DRAG_BRAKE = 0.90;    // S ile fren
+    const DRAG_COAST = 0.985, DRAG_ACTIVE=0.96, DRAG_BRAKE = 0.90;
 
-    // ileri hız
-    velF += throttle * ACC * dt;            // itiş
-    if(fwd < 0) velF += fwd * ACC * dt;     // geri/fren
-    // sürtünme
+    const targetThrottle = Math.max(0, fwd);
+    throttle += (targetThrottle - throttle) * (1 - Math.pow(0.2, dt*60));
+    velF += throttle * ACC * dt;
+    if(fwd < 0) velF += fwd * ACC * dt;
+
     const drag = (fwd < 0) ? DRAG_BRAKE : (throttle>0.02 ? DRAG_ACTIVE : DRAG_COAST);
     velF *= Math.pow(drag, dt*60);
     velF = THREE.MathUtils.clamp(velF, -MAX, MAX);
 
-    // dönme
-    turnVel = THREE.MathUtils.damp(turnVel, (turn*1.6), 6, dt);
-    yaw += turnVel * dt * 3.0;
-
-    // gemi rotasyonu (roll azaltıldı)
+    // roll (hafif)
     const targetRoll = -turnVel*0.25;
     ship.rotation.set(pitch, yaw, THREE.MathUtils.damp(ship.rotation.z, targetRoll, 8, dt));
 
@@ -348,22 +330,18 @@
     ship.position.y += Math.sin(pitch)*velF*.75*dt;
     ship.position.y  = THREE.MathUtils.clamp(ship.position.y, -70, 70);
 
-    // partiküller: alev (throttle & hız), duman (gaz bırakınca / fren)
+    // partiküller
     const speedAbs = Math.abs(velF);
     const flameRate = Math.floor( 6 + 14*THREE.MathUtils.clamp(throttle + speedAbs/20, 0, 1.5) );
     if(throttle>0.01) spawnFlame(flameRate, THREE.MathUtils.clamp(throttle + speedAbs/30, .6, 1.6));
-
-    // throttle düşüşünde burst duman
     if(prevThrottle>0.25 && throttle<=0.02) spawnSmoke(24, 1.4);
-    // coasting veya fren
     if((throttle<=0.02 && speedAbs>2) || fwd<0) spawnSmoke(2, 1.0 + (fwd<0?0.6:0));
-
     prevThrottle = throttle;
 
     updateParticles(dt);
   }
 
-  /* ---------- Overlay & hint ---------- */
+  /* ---------- Overlay & hint (aynı) ---------- */
   function clamp1(v,min,max){return Math.max(min,Math.min(max,v));}
   let nearest=null;
   function updateCardsAndHint(){
@@ -393,11 +371,11 @@
         qvTag=document.getElementById('qvTag'), qvMedia=document.getElementById('qvMedia'),
         qvClose=document.getElementById('qvClose'), qvExit=document.getElementById('qvExit');
   function qvOpenFor(planet){
-    controlsEnabled = false; // kilit
+    controlsEnabled = false;
     const p=planet.userData.project; qvTitle.textContent=p.title; qvTag.textContent=p.tag||''; qvMedia.style.backgroundImage=`url('${p.cover||''}')`;
     qv.classList.add('show');
   }
-  function qvCloseFn(){ qv.classList.remove('show'); controlsEnabled = true; }
+  function qvCloseFn(){ qv.classList.remove('show'); controlsEnabled = true; mouseNX=0; mouseNY=0; }
   qvClose.addEventListener('click', qvCloseFn); qvExit.addEventListener('click', qvCloseFn);
 
   /* ---------- Resize + loop ---------- */

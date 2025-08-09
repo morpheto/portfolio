@@ -10,20 +10,25 @@
   *{box-sizing:border-box} html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
   canvas#scene{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
+
   .hud{position:fixed;top:12px;left:12px;right:12px;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(8,10,18,.45);backdrop-filter:blur(8px) saturate(140%);border:1px solid rgba(255,255,255,.12);border-radius:16px}
   .brand{font-weight:800;letter-spacing:.4px;font-size:16px}
   .nav{display:flex;gap:16px}
   .nav a{color:var(--text);text-decoration:none;opacity:.9;position:relative;font-size:14px}
   .nav a:after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:#2b2d33;transform:scaleX(0);transform-origin:left;transition:transform .25s}
   .nav a:hover{opacity:1}.nav a:hover:after{transform:scaleX(1)}
+
   .help{position:fixed;right:12px;bottom:12px;z-index:20;color:var(--muted);font-size:12px;line-height:1.5;padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.06);backdrop-filter:blur(6px)}
-  .overlay{position:fixed;inset:0;z-index:12;pointer-events:none}     /* container: click alma */
-  .planet-card{position:absolute;transform:translate(-50%,-100%);width:240px;max-width:40vw;border-radius:12px;overflow:hidden;border:1px solid rgba(120,198,255,.28);background:linear-gradient(180deg, rgba(20,24,40,.85), rgba(10,12,20,.9));box-shadow:0 10px 26px rgba(0,0,0,.45);transition:opacity .15s ease, transform .15s ease;opacity:.0; pointer-events:auto}  /* kartlar tıklanabilir */
+  @media (pointer:coarse){ .help{top:64px;right:12px;bottom:auto;font-size:11px;padding:8px 10px} } /* mobil: tepeye taşı */
+
+  .overlay{position:fixed;inset:0;pointer-events:none;z-index:12}
+  .planet-card{position:absolute;transform:translate(-50%,-100%);width:240px;max-width:40vw;border-radius:12px;overflow:hidden;border:1px solid rgba(120,198,255,.28);background:linear-gradient(180deg, rgba(20,24,40,.85), rgba(10,12,20,.9));box-shadow:0 10px 26px rgba(0,0,0,.45);transition:opacity .15s ease, transform .15s ease;opacity:.0; pointer-events:auto}
   .planet-card__media{height:120px;background:#0f1430;background-image:radial-gradient(1200px 300px at 50% -200px, rgba(120,198,255,.35), rgba(120,198,255,0)), radial-gradient(600px 180px at 50% -80px, rgba(170,110,255,.22), rgba(170,110,255,0)); background-size:cover;background-position:center}
   .planet-card__meta{display:flex;justify-content:space-between;align-items:center;padding:8px 10px}
   .title{font-weight:700}.tag{font-size:12px;color:#e5eaf3;opacity:.85}
   .badge{position:absolute;left:8px;top:8px;background:rgba(64,191,255,.12);border:1px solid rgba(64,191,255,.4);backdrop-filter:blur(6px);font-size:11px;padding:6px 8px;border-radius:999px;color:#cfefff}
   .hint{position:absolute;transform:translate(-50%,-120%);padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.10);color:#dff2ff;font-size:12px;pointer-events:none;box-shadow:0 0 16px rgba(64,191,255,.25);z-index:25;display:none}
+
   .popup{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
   .popup.show{display:flex}
   .popup-card{width:min(780px,92vw);border:1px solid rgba(120,198,255,.28);border-radius:16px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
@@ -34,12 +39,13 @@
   .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
   .btn:hover{background:#13203a}.btn.primary{background:#1e5eff;border-color:#2b66ff}.btn.primary:hover{background:#2a6bff}
   .popup-close{position:absolute;top:12px;right:12px;border:1px solid rgba(120,198,255,.3);background:rgba(64,191,255,.08);border-radius:10px;padding:6px 10px;cursor:pointer}
+
   .touch-only{display:none}
   .joystick{position:fixed;z-index:35;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(6px)}
   .joystick .knob{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;background:rgba(200,220,255,.25);border:1px solid rgba(200,220,255,.35)}
   .btn-vert{position:fixed;z-index:35;right:16px;bottom:140px;display:flex;flex-direction:column;gap:10px}
   .btn-vert button{width:60px;height:60px;border-radius:12px;border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.12);color:#e9f4ff;font-weight:700}
-  @media (pointer:coarse){ .touch-only{display:block} .help{right:auto;left:12px;bottom:12px} }
+  @media (pointer:coarse){ .touch-only{display:block} }
 </style>
 </head>
 <body>
@@ -129,38 +135,46 @@
   }
   for(let i=POS.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [POS[i],POS[j]]=[POS[j],POS[i]];}
 
-  // planets
+  // planets + overlay cards
   PROJECTS.forEach((p,i)=>{
     const r=THREE.MathUtils.randFloat(9,16);
     const col=new THREE.Color().setHSL(THREE.MathUtils.randFloat(.55,.72),.45,.58).getHex();
     const m=makePlanet(r,col); const [x,y,z]=POS[i]; m.position.set(x,y,z);
     m.userData.project=p; scene.add(m); planets.push(m);
-  });
-
-  // overlay cards
-  function addCard(p){const el=document.createElement('div'); el.className='planet-card';
+    const el=document.createElement('div'); el.className='planet-card';
     const cover=p.cover?`background-image:url('${p.cover}')`:`background-image:none`;
     el.innerHTML=`<div class="planet-card__media" style="${cover}"></div>
     <div class="badge">${p.tag||''}</div><div class="planet-card__meta"><div class="title">${p.title}</div><div class="tag">${p.tag||''}</div></div>`;
-    overlay.appendChild(el); return el;}
-  PROJECTS.forEach((p,i)=>{ const item={el:addCard(p), obj:planets[i]}; 
-    item.el.addEventListener('click',()=>{ if(nearest===item.obj) qvOpenFor(item.obj); }); // kart tıklaması
-    cardsRef.push(item);
+    overlay.appendChild(el);
+    const item={el, obj:m}; item.el.addEventListener('click',()=>{ if(nearest===m) qvOpenFor(m); }); cardsRef.push(item);
   });
 
-  /* ---------- Ship & camera ---------- */
+  /* ---------- Ship, camera, FX ---------- */
   const ship=new THREE.Group(); scene.add(ship);
   const hull=new THREE.Mesh(new THREE.CapsuleGeometry(.8,3,6,12),
     new THREE.MeshStandardMaterial({color:0x9aa7ff,roughness:.55,metalness:.2,emissive:0x10163a,emissiveIntensity:.2}));
   hull.rotation.z=Math.PI/2; ship.add(hull);
 
-  const camOffsetLocal=new THREE.Vector3(-18,8.2,0);
-  const lookAheadLocal=new THREE.Vector3(7,1.8,0);
+  // Egzoz alevi (koniler)
+  const flameMat = new THREE.MeshBasicMaterial({color:0xffa24d, transparent:true, opacity:0.9});
+  const flame = new THREE.Mesh(new THREE.ConeGeometry(0.28,1.4,14), flameMat);
+  flame.rotation.z = Math.PI/2; // -X yönüne bak
+  flame.position.set(-1.9,0,0);
+  ship.add(flame);
+
+  // Duman (yarı saydam küre)
+  const smokeMat = new THREE.MeshBasicMaterial({color:0x9aa3b2, transparent:true, opacity:0.0});
+  const smoke = new THREE.Mesh(new THREE.SphereGeometry(0.55,16,16), smokeMat);
+  smoke.position.set(-2.2,0,0);
+  ship.add(smoke);
+
+  const camOffsetLocal=new THREE.Vector3(-20,8.8,0);
+  const lookAheadLocal=new THREE.Vector3( 8, 2.0,0);
   const camPos=new THREE.Vector3(), lookAt=new THREE.Vector3();
   function updateCamera(dt){
     const off=camOffsetLocal.clone().applyQuaternion(ship.quaternion);
     camPos.copy(ship.position).add(off);
-    camera.position.lerp(camPos, 1 - Math.pow(0.0025, dt*60));
+    camera.position.lerp(camPos, 1 - Math.pow(0.0028, dt*60));
     const la=lookAheadLocal.clone().applyQuaternion(ship.quaternion);
     lookAt.copy(ship.position).add(la); camera.lookAt(lookAt);
   }
@@ -170,45 +184,56 @@
   /* ---------- Input ---------- */
   const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
   helpBox.innerHTML = isTouch
-    ? '<b>Mobile</b> — Left joystick: move/turn (A/D karşılığı) · Right drag: aim · Up/Down buttons · Tap near planet: Quick View'
-    : '<b>Desktop</b> — Mouse‑aim + <b>W/S</b> forward/back, <b>A/D</b> turn left/right · <b>E</b> (near) Quick View · <b>Q</b> Close';
+    ? '<b>Mobile</b> — Left joystick: move/turn · Right drag: aim · Up/Down buttons · Tap card near planet: Quick View'
+    : '<b>Desktop</b> — Mouse‑aim + <b>W/S</b> forward/back, <b>A/D</b> turn · <b>E</b> (near) Quick View · <b>Q</b> Close';
+
+  let controlsEnabled = true; // popup açıkken false
 
   const keyState={KeyW:false,KeyA:false,KeyS:false,KeyD:false,KeyQ:false,KeyE:false};
-  function setKey(e,down){const c=e.code; if(c in keyState){keyState[c]=down;}
+  function setKey(e,down){
+    if(!controlsEnabled) return;
+    const c=e.code; if(c in keyState){keyState[c]=down;}
     if(down&&c==='KeyE'&&nearest&&!qv.classList.contains('show')) qvOpenFor(nearest);
-    if(down&&c==='KeyQ') qvCloseFn();}
+    if(down&&c==='KeyQ') qvCloseFn();
+  }
   if(!isTouch){ addEventListener('keydown',e=>setKey(e,true)); addEventListener('keyup',e=>setKey(e,false)); }
 
-  // mouse aim — TIKLAMAYA GEREK YOK
+  // Mouse aim — tıklama yok; popup açıkken devre dışı
   let lastX=null,lastY=null,yaw=0,pitch=0,yawVel=0,pitchVel=0;
-  if(!isTouch){
-    addEventListener('mousemove',e=>{
-      if(lastX===null){ lastX=e.clientX; lastY=e.clientY; return; }
-      const dx=e.clientX-lastX, dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY;
-      yawVel   -= dx*0.0011;
-      pitchVel -= dy*0.0011;
-    });
-  }
+  addEventListener('mousemove',e=>{
+    if(!controlsEnabled || isTouch) return;
+    if(lastX===null){ lastX=e.clientX; lastY=e.clientY; return; }
+    const dx=e.clientX-lastX, dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY;
+    yawVel   -= dx*0.0012;
+    pitchVel -= dy*0.0012;
+  }, {passive:true});
 
-  // mobile joystick (soldaki yön: ileri/geri + YAW dönüş); sağ sürükleme: ince nişan
+  // Mobile joystick + aim
   let joyX=0, joyY=0, aimDX=0, aimDY=0, upHeld=false, downHeld=false;
   if(isTouch){ const joy=document.getElementById('joyL'), knob=joy.querySelector('.knob'); const rj=()=>joy.getBoundingClientRect();
-    function onJoy(e){e.preventDefault(); const r=rj(),t=e.touches[0]; let dx=t.clientX-(r.left+r.width/2), dy=t.clientY-(r.top+r.height/2); const max=r.width*.45,len=Math.hypot(dx,dy); if(len>max){dx*=max/len;dy*=max/len;} knob.style.transform=`translate(${dx}px,${dy}px)`; joyX=dx/max; joyY=-dy/max;}
+    function onJoy(e){ if(!controlsEnabled) return; e.preventDefault();
+      const r=rj(),t=e.touches[0]; let dx=t.clientX-(r.left+r.width/2), dy=t.clientY-(r.top+r.height/2);
+      const max=r.width*.45,len=Math.hypot(dx,dy); if(len>max){dx*=max/len;dy*=max/len;} knob.style.transform=`translate(${dx}px,${dy}px)`; joyX=dx/max; joyY=-dy/max;}
     function endJoy(e){e.preventDefault(); knob.style.transform='translate(-50%,-50%)'; joyX=joyY=0;}
     joy.addEventListener('touchstart',onJoy,{passive:false}); joy.addEventListener('touchmove',onJoy,{passive:false}); joy.addEventListener('touchend',endJoy,{passive:false});
-    const aimZ=document.getElementById('aimZone'); let ax=0,ay=0,act=false; function aStart(e){e.preventDefault();act=true;const t=e.touches[0];ax=t.clientX;ay=t.clientY;}
-    function aMove(e){e.preventDefault(); if(!act)return; const t=e.touches[0]; const dx=t.clientX-ax, dy=t.clientY-ay; ax=t.clientX; ay=t.clientY; aimDX-=dx*0.0023; aimDY-=dy*0.0023;}
+    const aimZ=document.getElementById('aimZone'); let ax=0,ay=0,act=false; function aStart(e){ if(!controlsEnabled) return; e.preventDefault();act=true;const t=e.touches[0];ax=t.clientX;ay=t.clientY;}
+    function aMove(e){ if(!controlsEnabled) return; e.preventDefault(); if(!act)return; const t=e.touches[0]; const dx=t.clientX-ax, dy=t.clientY-ay; ax=t.clientX; ay=t.clientY; aimDX-=dx*0.0016; aimDY-=dy*0.0016;}
     function aEnd(e){e.preventDefault();act=false;}
     aimZ.addEventListener('touchstart',aStart,{passive:false}); aimZ.addEventListener('touchmove',aMove,{passive:false}); aimZ.addEventListener('touchend',aEnd,{passive:false});
-    document.getElementById('btnUp').addEventListener('touchstart',e=>{e.preventDefault();upHeld=true;},{passive:false});
+    document.getElementById('btnUp').addEventListener('touchstart',e=>{ if(!controlsEnabled) return; e.preventDefault();upHeld=true;},{passive:false});
     document.getElementById('btnUp').addEventListener('touchend',e=>{e.preventDefault();upHeld=false;},{passive:false});
-    document.getElementById('btnDown').addEventListener('touchstart',e=>{e.preventDefault();downHeld=true;},{passive:false});
+    document.getElementById('btnDown').addEventListener('touchstart',e=>{ if(!controlsEnabled) return; e.preventDefault();downHeld=true;},{passive:false});
     document.getElementById('btnDown').addEventListener('touchend',e=>{e.preventDefault();downHeld=false;},{passive:false});
   }
 
-  /* ---------- Movement (daha hızlı) ---------- */
+  /* ---------- Movement ---------- */
   let velF=0, vY=0, turnVel=0;   // turnVel = yaw için
   function updateShip(dt){
+    if(!controlsEnabled){ // popup açıkken: ivmeleri yumuşat, input yok
+      velF*=Math.pow(0.9,dt*60); turnVel*=Math.pow(0.9,dt*60); vY*=Math.pow(0.9,dt*60);
+      updateFX(0, dt); return;
+    }
+
     // mouse / touch nişan
     if(!isTouch){ yaw += yawVel; pitch += pitchVel; yawVel*=Math.pow(.9,dt*60); pitchVel*=Math.pow(.9,dt*60); }
     else{ yaw += aimDX; pitch += aimDY; aimDX*=Math.pow(.92,dt*60); aimDY*=Math.pow(.92,dt*60); }
@@ -219,34 +244,61 @@
     if(!isTouch){
       if(keyState.KeyW) fwd+=1;
       if(keyState.KeyS) fwd-=1;
-      if(keyState.KeyD) turn -= 1;   // sağa dön
-      if(keyState.KeyA) turn += 1;   // sola dön
+      if(keyState.KeyD) turn -= 1;
+      if(keyState.KeyA) turn += 1;
     } else {
-      fwd = joyY;  turn = -joyX;     // soldaki joystick: ileri/geri + dönüş
+      fwd = joyY;  turn = -joyX;
       if(upHeld) updn += 1; if(downHeld) updn -= 1;
     }
 
-    // hız/ivme
-    const ACC=36.0, DAMP=0.92, MAX=26.0; // ↑ hızlı
+    // hız/ivme (mobil daha yavaş)
+    const ACC = isTouch ? 18.0 : 32.0;
+    const MAX = isTouch ? 16.0 : 26.0;
+    const DAMP=0.92;
+
     velF   = THREE.MathUtils.clamp(velF   + fwd * ACC * dt, -MAX, MAX);
-    turnVel= THREE.MathUtils.clamp(turnVel+ turn* 2.4 * dt, -1.8, 1.8);  // dönüş hızı
+    turnVel= THREE.MathUtils.clamp(turnVel+ turn* 2.0 * dt, -1.5, 1.5);
     vY     = THREE.MathUtils.clamp(vY     + updn* ACC * dt, -MAX*0.6, MAX*0.6);
+
     velF   *= Math.pow(DAMP,dt*60);
-    turnVel*= Math.pow(0.85,dt*60);
+    turnVel*= Math.pow(0.88,dt*60);
     vY     *= Math.pow(0.92,dt*60);
 
-    // yön güncelle (yaw)
+    // yön
     yaw += turnVel;
 
-    // gemi rotasyonu
-    ship.rotation.set(pitch, yaw, THREE.MathUtils.damp(ship.rotation.z, -turnVel*0.8, 10, dt)); // roll sadece görsel
+    // gemi rotasyonu (roll daha az)
+    const targetRoll = -turnVel*0.35;
+    ship.rotation.set(pitch, yaw, THREE.MathUtils.damp(ship.rotation.z, targetRoll, 8, dt));
 
     // hareket
     const forward=new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion);
     ship.position.addScaledVector(forward, velF*dt);
     if(isTouch) ship.position.y += vY*dt;
-    ship.position.y += Math.sin(pitch)*velF*.85*dt;   // doğal tırmanış
+    ship.position.y += Math.sin(pitch)*velF*.8*dt;
     ship.position.y  = THREE.MathUtils.clamp(ship.position.y, -70, 70);
+
+    // FX
+    updateFX(fwd, dt);
+  }
+
+  /* ---------- Exhaust FX (alev + duman) ---------- */
+  function updateFX(inputFwd, dt){
+    // alev: sadece ileri itki varsa
+    const thrust = Math.max(0, inputFwd);
+    const flameScale = 0.6 + thrust*0.9 + Math.abs(velF)*0.02;
+    flame.scale.set(1, flameScale, 1);
+    flame.material.opacity = 0.25 + thrust*0.65;
+
+    // duman: geri itki veya ivmenin azaldığı durum
+    const braking = inputFwd < 0 || (!controlsEnabled && Math.abs(velF) > 0.2);
+    const smokeTargetOpacity = braking ? 0.35 : 0.0;
+    smoke.material.opacity += (smokeTargetOpacity - smoke.material.opacity) * (1-Math.pow(0.1,dt*60));
+    const s = 0.8 + (smoke.material.opacity*0.9);
+    smoke.scale.set(s,s,s);
+    // hafif jitter
+    smoke.position.y = (Math.random()-0.5)*0.05;
+    smoke.position.z = (Math.random()-0.5)*0.05;
   }
 
   /* ---------- Overlay & hint ---------- */
@@ -266,11 +318,10 @@
       const d=ship.position.distanceTo(obj.position); if(d<dmin){ dmin=d; best=obj; }
     }
     const TH=28; nearest=(best&&dmin<TH)?best:null;
-    if(nearest){
+    if(nearest && controlsEnabled){
       tmpV.copy(nearest.position); tmpV.y+=12; tmpV.project(camera);
       if(tmpV.z<1&&tmpV.z>-1){ let x=(tmpV.x*.5+.5)*W, y=(-tmpV.y*.5+.5)*H; x=clamp1(x,18,W-18); y=clamp1(y,60,H-80);
-        hintEl.textContent = (isTouch?'Tap card or E':'Press E or click card');
-        hintEl.style.left=x+'px'; hintEl.style.top=y+'px'; hintEl.style.display='block';
+        hintEl.textContent = (isTouch?'Tap card or E':'Press E or click card'); hintEl.style.left=x+'px'; hintEl.style.top=y+'px'; hintEl.style.display='block';
       } else hintEl.style.display='none';
     } else hintEl.style.display='none';
   }
@@ -279,10 +330,13 @@
   const qv=document.getElementById('quickview'), qvTitle=document.getElementById('qvTitle'),
         qvTag=document.getElementById('qvTag'), qvMedia=document.getElementById('qvMedia'),
         qvClose=document.getElementById('qvClose'), qvExit=document.getElementById('qvExit');
-  function qvOpenFor(planet){const p=planet.userData.project; qvTitle.textContent=p.title; qvTag.textContent=p.tag||''; qvMedia.style.backgroundImage=`url('${p.cover||''}')`; qv.classList.add('show');}
-  function qvCloseFn(){ qv.classList.remove('show'); }
+  function qvOpenFor(planet){
+    controlsEnabled = false; // KİLİTLE
+    const p=planet.userData.project; qvTitle.textContent=p.title; qvTag.textContent=p.tag||''; qvMedia.style.backgroundImage=`url('${p.cover||''}')`;
+    qv.classList.add('show');
+  }
+  function qvCloseFn(){ qv.classList.remove('show'); controlsEnabled = true; }
   qvClose.addEventListener('click', qvCloseFn); qvExit.addEventListener('click', qvCloseFn);
-  // NOT: canvas click ile açma kaldırıldı
 
   /* ---------- Resize + loop ---------- */
   addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();});

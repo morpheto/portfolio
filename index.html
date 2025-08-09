@@ -229,7 +229,7 @@
       model.scale.setScalar(s);
 
       // çoğu GLB +Z ileri → -90° Y ile +X’e çevir
-      model.rotation.set(0, -Math.PI/2, 0);
+      model.rotation.set(0, Math.PI/2, 0);
 
       // center pivot
       const b1 = new THREE.Box3().setFromObject(model);

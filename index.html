@@ -10,14 +10,12 @@
   *{box-sizing:border-box} html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
   canvas#scene{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
-
   .hud{position:fixed;top:12px;left:12px;right:12px;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(8,10,18,.45);backdrop-filter:blur(8px) saturate(140%);border:1px solid rgba(255,255,255,.12);border-radius:16px}
   .brand{font-weight:800;letter-spacing:.4px;font-size:16px}
   .nav{display:flex;gap:16px}
   .nav a{color:var(--text);text-decoration:none;opacity:.9;position:relative;font-size:14px}
   .nav a:after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:#2b2d33;transform:scaleX(0);transform-origin:left;transition:transform .25s}
   .nav a:hover{opacity:1}.nav a:hover:after{transform:scaleX(1)}
-
   .help{position:fixed;right:12px;bottom:12px;z-index:20;color:var(--muted);font-size:12px;line-height:1.5;padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.06);backdrop-filter:blur(6px)}
   .overlay{position:fixed;inset:0;pointer-events:none;z-index:12}
   .planet-card{position:absolute;transform:translate(-50%,-100%);width:240px;max-width:40vw;border-radius:12px;overflow:hidden;border:1px solid rgba(120,198,255,.28);background:linear-gradient(180deg, rgba(20,24,40,.85), rgba(10,12,20,.9));box-shadow:0 10px 26px rgba(0,0,0,.45);transition:opacity .15s ease, transform .15s ease;opacity:.0}
@@ -26,7 +24,6 @@
   .title{font-weight:700}.tag{font-size:12px;color:#e5eaf3;opacity:.85}
   .badge{position:absolute;left:8px;top:8px;background:rgba(64,191,255,.12);border:1px solid rgba(64,191,255,.4);backdrop-filter:blur(6px);font-size:11px;padding:6px 8px;border-radius:999px;color:#cfefff}
   .hint{position:absolute;transform:translate(-50%,-120%);padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.10);color:#dff2ff;font-size:12px;pointer-events:none;box-shadow:0 0 16px rgba(64,191,255,.25);z-index:25;display:none}
-
   .popup{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
   .popup.show{display:flex}
   .popup-card{width:min(780px,92vw);border:1px solid rgba(120,198,255,.28);border-radius:16px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
@@ -37,7 +34,6 @@
   .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
   .btn:hover{background:#13203a}.btn.primary{background:#1e5eff;border-color:#2b66ff}.btn.primary:hover{background:#2a6bff}
   .popup-close{position:absolute;top:12px;right:12px;border:1px solid rgba(120,198,255,.3);background:rgba(64,191,255,.08);border-radius:10px;padding:6px 10px;cursor:pointer}
-
   .touch-only{display:none}
   .joystick{position:fixed;z-index:35;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(6px)}
   .joystick .knob{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;background:rgba(200,220,255,.25);border:1px solid rgba(200,220,255,.35)}
@@ -99,7 +95,7 @@
     scene.add(new THREE.Points(g,new THREE.PointsMaterial({size:1.6,color:0xbfd9ff,sizeAttenuation:true})));
   })();
 
-  /* ---------- Projects / planets ---------- */
+  /* ---------- Projects / data ---------- */
   const PROJECTS=[{id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg'},
   {id:'p2',title:'Odin Pendant Animation',tag:'3D Works',cover:'media/covers/p2.jpg'},
   {id:'p3',title:'MediaPipe + Ableton + PointCloud',tag:'Interactive',cover:'media/covers/p3.jpg'},
@@ -133,7 +129,7 @@
   }
   for(let i=POS.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [POS[i],POS[j]]=[POS[j],POS[i]];}
 
-  // planets FIRST
+  // 1) planets FIRST
   PROJECTS.forEach((p,i)=>{
     const r=THREE.MathUtils.randFloat(9,16);
     const col=new THREE.Color().setHSL(THREE.MathUtils.randFloat(.55,.72),.45,.58).getHex();
@@ -141,7 +137,7 @@
     m.userData.project=p; scene.add(m); planets.push(m);
   });
 
-  // cards AFTER
+  // 2) cards AFTER — single definition of cardsRef
   function addCard(p){const el=document.createElement('div'); el.className='planet-card';
     const cover=p.cover?`background-image:url('${p.cover}')`:`background-image:none`;
     el.innerHTML=`<div class="planet-card__media" style="${cover}"></div>
@@ -155,7 +151,7 @@
     new THREE.MeshStandardMaterial({color:0x9aa7ff,roughness:.55,metalness:.2,emissive:0x10163a,emissiveIntensity:.2}));
   hull.rotation.z=Math.PI/2; ship.add(hull);
 
-  const camOffsetLocal=new THREE.Vector3(-18,8.2,0);  // biraz daha uzak — hız hissi
+  const camOffsetLocal=new THREE.Vector3(-18,8.2,0);
   const lookAheadLocal=new THREE.Vector3(7,1.8,0);
   const camPos=new THREE.Vector3(), lookAt=new THREE.Vector3();
   function updateCamera(dt){
@@ -168,9 +164,8 @@
   camera.position.copy(ship.position).add(camOffsetLocal);
   camera.lookAt(ship.position.clone().add(lookAheadLocal));
 
-  /* ---------- Input (desktop+mobile) ---------- */
+  /* ---------- Input ---------- */
   const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
-  // cihaz bazlı yardım metni
   helpBox.innerHTML = isTouch
     ? '<b>Mobile</b> — Left joystick: move/strafe · Right drag: aim · Up/Down buttons · Tap near planet: Quick View'
     : '<b>Desktop</b> — Mouse‑aim + <b>W/S</b> forward/back, <b>A/D</b> strafe · <b>E</b> (near) Quick View · <b>Q</b> Close';
@@ -181,7 +176,7 @@
   if(!isTouch){ addEventListener('keydown',e=>setKey(e,true),{passive:false}); addEventListener('keyup',e=>setKey(e,false),{passive:false});
     addEventListener('mousedown',()=>{ if(document.activeElement&&document.activeElement!==document.body) document.activeElement.blur(); canvas.focus&&canvas.focus(); },{once:true}); }
 
-  // mouse aim (biraz daha hassas)
+  // mouse aim
   let mouseDown=false,lastX=0,lastY=0,yaw=0,pitch=0,yawVel=0,pitchVel=0;
   if(!isTouch){ renderer.domElement.addEventListener('mousedown',e=>{mouseDown=true;lastX=e.clientX;lastY=e.clientY;});
     addEventListener('mouseup',()=>{mouseDown=false;}); addEventListener('mousemove',e=>{ if(!mouseDown)return; const dx=e.clientX-lastX,dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY; yawVel-=dx*0.0012; pitchVel-=dy*0.0012; }); }
@@ -202,7 +197,7 @@
     document.getElementById('btnDown').addEventListener('touchend',e=>{e.preventDefault();downHeld=false;},{passive:false});
   }
 
-  /* ---------- Movement (daha hızlı, Space/Shift yok) ---------- */
+  /* ---------- Movement ---------- */
   let velF=0,velS=0,vY=0;
   function updateShip(dt){
     if(!isTouch){ yaw+=yawVel; pitch+=pitchVel; yawVel*=Math.pow(.9,dt*60); pitchVel*=Math.pow(.9,dt*60); }
@@ -216,12 +211,11 @@
       if(keyState.KeyS||keyState.ArrowDown) fwd-=1;
       if(keyState.KeyD||keyState.ArrowRight) strafe+=1;
       if(keyState.KeyA||keyState.ArrowLeft)  strafe-=1;
-      // desktop'ta dikey yok — sadece pitch ile tırmanış
     }else{
       fwd=joyLY; strafe=joyLX; if(upHeld) updn+=1; if(downHeld) updn-=1;
     }
 
-    const ACC=22.0, DAMP=0.90, MAX=18.0;  // ↑ daha çevik
+    const ACC=22.0, DAMP=0.90, MAX=18.0;
     velF=THREE.MathUtils.clamp(velF+fwd*ACC*dt,-MAX,MAX);
     velS=THREE.MathUtils.clamp(velS+strafe*ACC*dt,-MAX,MAX);
     vY  =THREE.MathUtils.clamp(vY+updn*ACC*dt,-MAX*0.6,MAX*0.6);
@@ -232,9 +226,8 @@
 
     ship.position.addScaledVector(fwdV,velF*dt);
     ship.position.addScaledVector(rightV,velS*dt);
-
-    if(isTouch){ ship.position.y += vY*dt; }                  // mobilde Up/Down
-    ship.position.y += Math.sin(pitch)*velF*.75*dt;           // doğal tırmanış (daha güçlü)
+    if(isTouch){ ship.position.y += vY*dt; }
+    ship.position.y += Math.sin(pitch)*velF*.75*dt;
     ship.position.y  = THREE.MathUtils.clamp(ship.position.y, -60, 60);
 
     const targetRoll=-velS*.035;
@@ -243,13 +236,6 @@
 
   /* ---------- Overlay & hint ---------- */
   function clamp1(v,min,max){return Math.max(min,Math.min(max,v));}
-  const cardsRef=[]; PROJECTS.forEach((p,i)=>{ /* filled above */ });
-  PROJECTS.forEach((p,i)=>{ const el=document.createElement('div'); el.className='planet-card';
-    const cover=p.cover?`background-image:url('${p.cover}')`:`background-image:none`;
-    el.innerHTML=`<div class="planet-card__media" style="${cover}"></div>
-    <div class="badge">${p.tag||''}</div><div class="planet-card__meta"><div class="title">${p.title}</div><div class="tag">${p.tag||''}</div></div>`;
-    overlay.appendChild(el); cardsRef.push({el, obj: planets[i]}); });
-
   let nearest=null;
   function updateCardsAndHint(){
     const W=innerWidth,H=innerHeight; let best=null,dmin=Infinity;

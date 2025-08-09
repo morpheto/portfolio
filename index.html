@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
 <title>Orhun Ege Eker — Space Portfolio</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
+
+<!-- Import Map: GLTFLoader içindeki 'three' bare import'u buradan çözülecek -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+
 <style>
   :root{ --bg:#05060a; --text:#f6f7fb; --muted:#cbd5e1; }
   *{box-sizing:border-box} html,body{height:100%}
@@ -49,7 +59,6 @@
   .kbd{font-weight:700;border:1px solid rgba(255,255,255,.18);padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.06)}
   .actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;justify-content:center}
   .btn.linklike{background:transparent}
-
 </style>
 </head>
 <body>
@@ -99,12 +108,11 @@
 
   <canvas id="scene"></canvas>
 
-  <!-- Three.js + GLTFLoader (module) -->
+  <!-- Module script: import map sayesinde bare import kullanıyoruz -->
   <script type="module">
-    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+    import * as THREE from 'three';
     import { GLTFLoader } from 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
 
-    // Expose for any inline handlers (we only use modules here though)
     window.THREE = THREE;
 
     const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
@@ -209,35 +217,27 @@
       new THREE.MeshStandardMaterial({color:0x9aa7ff,roughness:.55,metalness:.2,emissive:0x10163a,emissiveIntensity:.2}));
     hull.rotation.z=Math.PI/2; ship.add(hull);
 
-    // Try to load GLB (media/spaceship.glb). If present, replace fallback.
+    // GLB yükle (varsa fallback’i değiştir)
     const loader = new GLTFLoader();
-    let exhaustLocal=new THREE.Vector3(-2,0,0); // will update after GLB fit
+    let exhaustLocal=new THREE.Vector3(-2,0,0);
 
     loader.load('media/spaceship.glb', (gltf)=>{
       const model = gltf.scene || gltf.scenes?.[0];
       if(model){
-        // clear fallback hull
         ship.clear();
-
-        // compute bbox & normalize max size to ~6 units
         const box = new THREE.Box3().setFromObject(model);
         const size = new THREE.Vector3(); box.getSize(size);
         const maxDim = Math.max(size.x,size.y,size.z) || 1;
         const target = 6; const s = target / maxDim;
         model.scale.setScalar(s);
-
-        // center model so pivot ~center, then rotate to face +X (ship forward)
         const center = new THREE.Vector3(); box.getCenter(center);
         model.position.sub(center.multiplyScalar(s));
         model.rotation.y = 0;
-
-        // set exhaust near minX (tail)
         const minX = (box.min.x - center.x) * s;
         exhaustLocal = new THREE.Vector3(minX - 0.6, 0, 0);
-
         ship.add(model);
       }
-    }, undefined, (e)=>{ /* ignore if missing */ });
+    }, undefined, ()=>{} );
 
     function worldFromExhaust(out){return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);} 
     function makeSprite(mat){const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s;}
@@ -341,7 +341,7 @@
       const panelR=panelL.clone(); panelL.position.set(-1.2,0,0); panelR.position.set(1.2,0,0);
       group.add(body,panelL,panelR);
       group.position.set(x,y,z);
-      group.scale.setScalar(3); // 3x büyütme
+      group.scale.setScalar(3);
       group.userData.spin = THREE.MathUtils.randFloat(0.3,0.8);
       scene.add(group);
       satellites.push(group);

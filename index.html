@@ -98,13 +98,11 @@
 
   <canvas id="scene"></canvas>
 
-  <!-- Three.js + GLTFLoader as ES modules (full URLs) -->
-  <script type="module">
-    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-    import { GLTFLoader } from 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+  <!-- THREE (global) + classic GLTFLoader (no ESM, no bare imports) -->
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 
-    window.THREE = THREE;
-
+  <script>
     const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
     const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
@@ -115,8 +113,8 @@
       g.addColorStop(0,inner); g.addColorStop(1,outer); ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
       const t=new THREE.CanvasTexture(c); t.minFilter=THREE.LinearFilter; t.magFilter=THREE.LinearFilter; return t;
     }
-    const flameTex = makeRadialTexture('rgba(120,230,255,1)','rgba(0,170,255,0)');      // turkuaz alev
-    const smokeTex = makeRadialTexture('rgba(160,210,255,0.55)','rgba(90,140,200,0)');   // açık mavi duman
+    const flameTex = makeRadialTexture('rgba(120,230,255,1)','rgba(0,170,255,0)');
+    const smokeTex = makeRadialTexture('rgba(160,210,255,0.55)','rgba(90,140,200,0)');
 
     /* Scene */
     const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('scene'), antialias:true});
@@ -210,11 +208,11 @@
     hull.rotation.z=Math.PI/2; ship.add(hull);
 
     // GLB yükle — yön düzeltmesi: +X'e bak
-    const loader = new GLTFLoader();
+    const loader = new THREE.GLTFLoader();
     let exhaustLocal=new THREE.Vector3(-2,0,0); // egzoz lokali
 
     loader.load('media/spaceship.glb', (gltf)=>{
-      const model = gltf.scene || gltf.scenes?.[0];
+      const model = gltf.scene || (gltf.scenes && gltf.scenes[0]);
       if(!model) return;
 
       ship.clear(); // fallback'i kaldır
@@ -225,7 +223,7 @@
       const maxDim = Math.max(size0.x,size0.y,size0.z) || 1;
       const target = 6; model.scale.setScalar(target/maxDim);
 
-      // yön: bir çok model +Z ileri olur; -90° Y ile +X'e çevir
+      // bir çok GLB +Z ileri kabul eder; -90° Y ile +X'e çevir
       model.rotation.set(0, -Math.PI/2, 0);
 
       // merkezle
@@ -238,7 +236,7 @@
       exhaustLocal = new THREE.Vector3(box2.min.x - 0.6, 0, 0);
 
       ship.add(model);
-    }, undefined, ()=>{/* yoksa sorun değil */});
+    });
 
     function worldFromExhaust(out){return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);}
     function makeSprite(mat){const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s;}
@@ -383,7 +381,7 @@
       const panelR=panelL.clone(); panelL.position.set(-1.2,0,0); panelR.position.set(1.2,0,0);
       group.add(body,panelL,panelR);
       group.position.set(x,y,z);
-      group.scale.setScalar(3); // 3x büyütme
+      group.scale.setScalar(3);
       group.userData.spin = THREE.MathUtils.randFloat(0.3,0.8);
       scene.add(group);
       satellites.push(group);

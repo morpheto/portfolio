@@ -19,7 +19,6 @@
   .nav a:hover{opacity:1}.nav a:hover:after{transform:scaleX(1)}
 
   .help{position:fixed;right:12px;bottom:12px;z-index:20;color:var(--muted);font-size:12px;line-height:1.5;padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.06);backdrop-filter:blur(6px)}
-
   .overlay{position:fixed;inset:0;pointer-events:none;z-index:12}
   .planet-card{position:absolute;transform:translate(-50%,-100%);width:240px;max-width:40vw;border-radius:12px;overflow:hidden;border:1px solid rgba(120,198,255,.28);background:linear-gradient(180deg, rgba(20,24,40,.85), rgba(10,12,20,.9));box-shadow:0 10px 26px rgba(0,0,0,.45);transition:opacity .15s ease, transform .15s ease;opacity:.0}
   .planet-card__media{height:120px;background:#0f1430;background-image:radial-gradient(1200px 300px at 50% -200px, rgba(120,198,255,.35), rgba(120,198,255,0)), radial-gradient(600px 180px at 50% -80px, rgba(170,110,255,.22), rgba(170,110,255,0)); background-size:cover;background-position:center}
@@ -53,10 +52,7 @@
     <div class="nav"><a href="index.html">WORK</a><a href="about.html">ABOUT</a><a href="contact.html">CONTACT</a></div>
   </div>
 
-  <div class="help">
-    <b>Desktop</b> — Mouse‑aim + WASD · Space/Shift: up/down · E (near) = Quick View · Q = Close<br/>
-    <b>Mobile</b> — Left joystick: move/strafe · Drag right: aim · Up/Down buttons
-  </div>
+  <div class="help" id="helpBox">Loading controls…</div>
 
   <div class="overlay" id="overlay"></div>
   <div class="hint" id="hint">Press <b>E</b> to View</div>
@@ -94,7 +90,7 @@
   scene.add(new THREE.HemisphereLight(0x89b4ff, 0x05060a, .55));
   const key = new THREE.DirectionalLight(0xffffff,.85); key.position.set(160,220,120); scene.add(key);
 
-  /* ---------- Stars (simple & visible) ---------- */
+  /* ---------- Stars ---------- */
   (function stars(){
     const g=new THREE.BufferGeometry(), N=3500, pos=new Float32Array(N*3);
     for(let i=0;i<N;i++){const r=800+Math.random()*1500, th=Math.random()*Math.PI*2, u=Math.random()*2-1, s=Math.sqrt(1-u*u);
@@ -104,18 +100,17 @@
   })();
 
   /* ---------- Projects / planets ---------- */
-  const PROJECTS=[
-    {id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg'},
-    {id:'p2',title:'Odin Pendant Animation',tag:'3D Works',cover:'media/covers/p2.jpg'},
-    {id:'p3',title:'MediaPipe + Ableton + PointCloud',tag:'Interactive',cover:'media/covers/p3.jpg'},
-    {id:'p4',title:'Nike Air Jordan CGI',tag:'CGI',cover:'media/covers/p4.jpg'},
-    {id:'p5',title:'Bic Mini Lighter Spider Case',tag:'Product CGI',cover:'media/covers/p5.jpg'},
-    {id:'p6',title:'Space Keycap Animation',tag:'3D Works',cover:'media/covers/p6.jpg'},
-    {id:'p7',title:'Oxidized Silver Jewelry — Maverick',tag:'LookDev',cover:'media/covers/p7.jpg'},
-    {id:'p8',title:'YouTube Channel Intro',tag:'Motion · Audio',cover:'media/covers/p8.jpg'},
-    {id:'p9',title:'AI Visualizer from Image',tag:'AI Visuals',cover:'media/covers/p9.jpg'}
-  ];
-  const overlay=document.getElementById('overlay'), hintEl=document.getElementById('hint');
+  const PROJECTS=[{id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg'},
+  {id:'p2',title:'Odin Pendant Animation',tag:'3D Works',cover:'media/covers/p2.jpg'},
+  {id:'p3',title:'MediaPipe + Ableton + PointCloud',tag:'Interactive',cover:'media/covers/p3.jpg'},
+  {id:'p4',title:'Nike Air Jordan CGI',tag:'CGI',cover:'media/covers/p4.jpg'},
+  {id:'p5',title:'Bic Mini Lighter Spider Case',tag:'Product CGI',cover:'media/covers/p5.jpg'},
+  {id:'p6',title:'Space Keycap Animation',tag:'3D Works',cover:'media/covers/p6.jpg'},
+  {id:'p7',title:'Oxidized Silver Jewelry — Maverick',tag:'LookDev',cover:'media/covers/p7.jpg'},
+  {id:'p8',title:'YouTube Channel Intro',tag:'Motion · Audio',cover:'media/covers/p8.jpg'},
+  {id:'p9',title:'AI Visualizer from Image',tag:'AI Visuals',cover:'media/covers/p9.jpg'}];
+
+  const overlay=document.getElementById('overlay'), hintEl=document.getElementById('hint'), helpBox=document.getElementById('helpBox');
   const planets=[], cardsRef=[], tmpV=new THREE.Vector3();
 
   function makePlanet(r,color){
@@ -138,7 +133,7 @@
   }
   for(let i=POS.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [POS[i],POS[j]]=[POS[j],POS[i]];}
 
-  // 1) planets FIRST
+  // planets FIRST
   PROJECTS.forEach((p,i)=>{
     const r=THREE.MathUtils.randFloat(9,16);
     const col=new THREE.Color().setHSL(THREE.MathUtils.randFloat(.55,.72),.45,.58).getHex();
@@ -146,7 +141,7 @@
     m.userData.project=p; scene.add(m); planets.push(m);
   });
 
-  // 2) cards AFTER, linked to planets[i]
+  // cards AFTER
   function addCard(p){const el=document.createElement('div'); el.className='planet-card';
     const cover=p.cover?`background-image:url('${p.cover}')`:`background-image:none`;
     el.innerHTML=`<div class="planet-card__media" style="${cover}"></div>
@@ -160,12 +155,13 @@
     new THREE.MeshStandardMaterial({color:0x9aa7ff,roughness:.55,metalness:.2,emissive:0x10163a,emissiveIntensity:.2}));
   hull.rotation.z=Math.PI/2; ship.add(hull);
 
-  const camOffsetLocal=new THREE.Vector3(-16,7.5,0), lookAheadLocal=new THREE.Vector3(6,1.6,0);
+  const camOffsetLocal=new THREE.Vector3(-18,8.2,0);  // biraz daha uzak — hız hissi
+  const lookAheadLocal=new THREE.Vector3(7,1.8,0);
   const camPos=new THREE.Vector3(), lookAt=new THREE.Vector3();
   function updateCamera(dt){
     const off=camOffsetLocal.clone().applyQuaternion(ship.quaternion);
     camPos.copy(ship.position).add(off);
-    camera.position.lerp(camPos,1-Math.pow(.002,dt*60));
+    camera.position.lerp(camPos, 1 - Math.pow(0.0025, dt*60));
     const la=lookAheadLocal.clone().applyQuaternion(ship.quaternion);
     lookAt.copy(ship.position).add(la); camera.lookAt(lookAt);
   }
@@ -174,15 +170,22 @@
 
   /* ---------- Input (desktop+mobile) ---------- */
   const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
-  const keyState={KeyW:false,KeyA:false,KeyS:false,KeyD:false,ArrowUp:false,ArrowDown:false,ArrowLeft:false,ArrowRight:false,Space:false,ShiftLeft:false,ShiftRight:false,KeyQ:false,KeyE:false};
-  function setKey(e,down){const c=e.code; if(c in keyState){keyState[c]=down; if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(c)) e.preventDefault();}
+  // cihaz bazlı yardım metni
+  helpBox.innerHTML = isTouch
+    ? '<b>Mobile</b> — Left joystick: move/strafe · Right drag: aim · Up/Down buttons · Tap near planet: Quick View'
+    : '<b>Desktop</b> — Mouse‑aim + <b>W/S</b> forward/back, <b>A/D</b> strafe · <b>E</b> (near) Quick View · <b>Q</b> Close';
+
+  const keyState={KeyW:false,KeyA:false,KeyS:false,KeyD:false,ArrowUp:false,ArrowDown:false,ArrowLeft:false,ArrowRight:false,KeyQ:false,KeyE:false};
+  function setKey(e,down){const c=e.code; if(c in keyState){keyState[c]=down; if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(c)) e.preventDefault();}
     if(down&&c==='KeyE'&&nearest&&!qv.classList.contains('show')) qvOpenFor(nearest); if(down&&c==='KeyQ') qvCloseFn();}
   if(!isTouch){ addEventListener('keydown',e=>setKey(e,true),{passive:false}); addEventListener('keyup',e=>setKey(e,false),{passive:false});
     addEventListener('mousedown',()=>{ if(document.activeElement&&document.activeElement!==document.body) document.activeElement.blur(); canvas.focus&&canvas.focus(); },{once:true}); }
-  // mouse aim
+
+  // mouse aim (biraz daha hassas)
   let mouseDown=false,lastX=0,lastY=0,yaw=0,pitch=0,yawVel=0,pitchVel=0;
   if(!isTouch){ renderer.domElement.addEventListener('mousedown',e=>{mouseDown=true;lastX=e.clientX;lastY=e.clientY;});
-    addEventListener('mouseup',()=>{mouseDown=false;}); addEventListener('mousemove',e=>{ if(!mouseDown)return; const dx=e.clientX-lastX,dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY; yawVel-=dx*0.0008; pitchVel-=dy*0.0008; }); }
+    addEventListener('mouseup',()=>{mouseDown=false;}); addEventListener('mousemove',e=>{ if(!mouseDown)return; const dx=e.clientX-lastX,dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY; yawVel-=dx*0.0012; pitchVel-=dy*0.0012; }); }
+
   // mobile joystick + aim
   let joyLX=0,joyLY=0,aimDX=0,aimDY=0,upHeld=false,downHeld=false;
   if(isTouch){ const joy=document.getElementById('joyL'), knob=joy.querySelector('.knob'); const rj=()=>joy.getBoundingClientRect();
@@ -190,7 +193,7 @@
     function endJoy(e){e.preventDefault(); knob.style.transform='translate(-50%,-50%)'; joyLX=joyLY=0;}
     joy.addEventListener('touchstart',onJoy,{passive:false}); joy.addEventListener('touchmove',onJoy,{passive:false}); joy.addEventListener('touchend',endJoy,{passive:false});
     const aimZ=document.getElementById('aimZone'); let ax=0,ay=0,act=false; function aStart(e){e.preventDefault();act=true;const t=e.touches[0];ax=t.clientX;ay=t.clientY;}
-    function aMove(e){e.preventDefault(); if(!act)return; const t=e.touches[0]; const dx=t.clientX-ax, dy=t.clientY-ay; ax=t.clientX; ay=t.clientY; aimDX-=dx*0.002; aimDY-=dy*0.002;}
+    function aMove(e){e.preventDefault(); if(!act)return; const t=e.touches[0]; const dx=t.clientX-ax, dy=t.clientY-ay; ax=t.clientX; ay=t.clientY; aimDX-=dx*0.0025; aimDY-=dy*0.0025;}
     function aEnd(e){e.preventDefault();act=false;}
     aimZ.addEventListener('touchstart',aStart,{passive:false}); aimZ.addEventListener('touchmove',aMove,{passive:false}); aimZ.addEventListener('touchend',aEnd,{passive:false});
     document.getElementById('btnUp').addEventListener('touchstart',e=>{e.preventDefault();upHeld=true;},{passive:false});
@@ -199,7 +202,7 @@
     document.getElementById('btnDown').addEventListener('touchend',e=>{e.preventDefault();downHeld=false;},{passive:false});
   }
 
-  /* ---------- Movement ---------- */
+  /* ---------- Movement (daha hızlı, Space/Shift yok) ---------- */
   let velF=0,velS=0,vY=0;
   function updateShip(dt){
     if(!isTouch){ yaw+=yawVel; pitch+=pitchVel; yawVel*=Math.pow(.9,dt*60); pitchVel*=Math.pow(.9,dt*60); }
@@ -208,35 +211,50 @@
     ship.rotation.set(pitch,yaw,ship.rotation.z);
 
     let fwd=0,strafe=0,updn=0;
-    if(!isTouch){ if(keyState.KeyW||keyState.ArrowUp) fwd+=1; if(keyState.KeyS||keyState.ArrowDown) fwd-=1;
-      if(keyState.KeyD||keyState.ArrowRight) strafe+=1; if(keyState.KeyA||keyState.ArrowLeft) strafe-=1;
-      if(keyState.Space) updn+=.7; if(keyState.ShiftLeft||keyState.ShiftRight) updn-=.7;
-    }else{ fwd=joyLY; strafe=joyLX; if(upHeld) updn+=1; if(downHeld) updn-=1; }
+    if(!isTouch){
+      if(keyState.KeyW||keyState.ArrowUp) fwd+=1;
+      if(keyState.KeyS||keyState.ArrowDown) fwd-=1;
+      if(keyState.KeyD||keyState.ArrowRight) strafe+=1;
+      if(keyState.KeyA||keyState.ArrowLeft)  strafe-=1;
+      // desktop'ta dikey yok — sadece pitch ile tırmanış
+    }else{
+      fwd=joyLY; strafe=joyLX; if(upHeld) updn+=1; if(downHeld) updn-=1;
+    }
 
-    const ACC=12,DAMP=.88,MAX=10;
+    const ACC=22.0, DAMP=0.90, MAX=18.0;  // ↑ daha çevik
     velF=THREE.MathUtils.clamp(velF+fwd*ACC*dt,-MAX,MAX);
     velS=THREE.MathUtils.clamp(velS+strafe*ACC*dt,-MAX,MAX);
-    vY=THREE.MathUtils.clamp(vY+updn*ACC*dt,-MAX*.7,MAX*.7);
-    velF*=Math.pow(DAMP,dt*60); velS*=Math.pow(DAMP,dt*60); vY*=Math.pow(.92,dt*60);
+    vY  =THREE.MathUtils.clamp(vY+updn*ACC*dt,-MAX*0.6,MAX*0.6);
+    velF*=Math.pow(DAMP,dt*60); velS*=Math.pow(DAMP,dt*60); vY*=Math.pow(0.92,dt*60);
 
     const fwdV=new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion);
     const rightV=new THREE.Vector3(0,0,1).applyQuaternion(ship.quaternion);
+
     ship.position.addScaledVector(fwdV,velF*dt);
     ship.position.addScaledVector(rightV,velS*dt);
-    ship.position.y += vY*dt + Math.sin(pitch)*velF*.6*dt;
-    ship.position.y = THREE.MathUtils.clamp(ship.position.y, -45, 45);
 
-    const targetRoll=-velS*.03;
-    ship.rotation.z += (targetRoll - ship.rotation.z) * (1-Math.pow(.05,dt*60));
+    if(isTouch){ ship.position.y += vY*dt; }                  // mobilde Up/Down
+    ship.position.y += Math.sin(pitch)*velF*.75*dt;           // doğal tırmanış (daha güçlü)
+    ship.position.y  = THREE.MathUtils.clamp(ship.position.y, -60, 60);
+
+    const targetRoll=-velS*.035;
+    ship.rotation.z += (targetRoll - ship.rotation.z) * (1-Math.pow(.06,dt*60));
   }
 
   /* ---------- Overlay & hint ---------- */
   function clamp1(v,min,max){return Math.max(min,Math.min(max,v));}
+  const cardsRef=[]; PROJECTS.forEach((p,i)=>{ /* filled above */ });
+  PROJECTS.forEach((p,i)=>{ const el=document.createElement('div'); el.className='planet-card';
+    const cover=p.cover?`background-image:url('${p.cover}')`:`background-image:none`;
+    el.innerHTML=`<div class="planet-card__media" style="${cover}"></div>
+    <div class="badge">${p.tag||''}</div><div class="planet-card__meta"><div class="title">${p.title}</div><div class="tag">${p.tag||''}</div></div>`;
+    overlay.appendChild(el); cardsRef.push({el, obj: planets[i]}); });
+
   let nearest=null;
   function updateCardsAndHint(){
     const W=innerWidth,H=innerHeight; let best=null,dmin=Infinity;
     for(const {el,obj} of cardsRef){
-      if(!obj) continue; // guard
+      if(!obj) continue;
       tmpV.copy(obj.position); tmpV.y+=10; tmpV.project(camera);
       const on=tmpV.z<1&&tmpV.z>-1; let x=(tmpV.x*.5+.5)*W, y=(-tmpV.y*.5+.5)*H;
       if(on){

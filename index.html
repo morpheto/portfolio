@@ -3,50 +3,47 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Orhun Ege Eker — Space Portfolio</title>
+<title>Orhun Ege Eker — Space (Failsafe)</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{ --bg:#05060a; --text:#f6f7fb; --muted:#cbd5e1; }
-  *{box-sizing:border-box}
-  html,body{height:100%}
+  *{box-sizing:border-box} html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
   canvas#scene{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
-  /* HUD */
+
   .hud{position:fixed;top:12px;left:12px;right:12px;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(8,10,18,.45);backdrop-filter:blur(8px) saturate(140%);border:1px solid rgba(255,255,255,.12);border-radius:16px}
   .brand{font-weight:800;letter-spacing:.4px;font-size:16px}
   .nav{display:flex;gap:16px}
   .nav a{color:var(--text);text-decoration:none;opacity:.9;position:relative;font-size:14px}
   .nav a:after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:#2b2d33;transform:scaleX(0);transform-origin:left;transition:transform .25s}
   .nav a:hover{opacity:1}.nav a:hover:after{transform:scaleX(1)}
+
   .help{position:fixed;right:12px;bottom:12px;z-index:20;color:var(--muted);font-size:12px;line-height:1.5;padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.06);backdrop-filter:blur(6px)}
-  /* Overlay kartlar + hint */
   .overlay{position:fixed;inset:0;pointer-events:none;z-index:12}
-  .planet-card{position:absolute;transform:translate(-50%,-100%);width:260px;max-width:40vw;border-radius:14px;overflow:hidden;border:1px solid rgba(120,198,255,.28);background:linear-gradient(180deg, rgba(20,24,40,.85), rgba(10,12,20,.9));box-shadow:0 10px 26px rgba(0,0,0,.45), 0 0 22px rgba(64,191,255,.18);transition:opacity .18s ease, transform .18s ease;opacity:.0}
-  .planet-card__media{height:140px;background:#0f1430;background-size:cover;background-position:center}
+  .planet-card{position:absolute;transform:translate(-50%,-100%);width:240px;max-width:40vw;border-radius:12px;overflow:hidden;border:1px solid rgba(120,198,255,.28);background:linear-gradient(180deg, rgba(20,24,40,.85), rgba(10,12,20,.9));box-shadow:0 10px 26px rgba(0,0,0,.45);transition:opacity .15s ease, transform .15s ease;opacity:.0}
+  .planet-card__media{height:120px;background:#0f1430;background-size:cover;background-position:center}
   .planet-card__meta{display:flex;justify-content:space-between;align-items:center;padding:8px 10px}
   .title{font-weight:700}.tag{font-size:12px;color:#e5eaf3;opacity:.85}
   .badge{position:absolute;left:8px;top:8px;background:rgba(64,191,255,.12);border:1px solid rgba(64,191,255,.4);backdrop-filter:blur(6px);font-size:11px;padding:6px 8px;border-radius:999px;color:#cfefff}
-  .hint{position:absolute;transform:translate(-50%,-120%);padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.10);color:#dff2ff;font-size:12px;letter-spacing:.2px;pointer-events:none;box-shadow:0 0 16px rgba(64,191,255,.25);z-index:25;display:none}
-  /* Quick View */
+  .hint{position:absolute;transform:translate(-50%,-120%);padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.10);color:#dff2ff;font-size:12px;pointer-events:none;box-shadow:0 0 16px rgba(64,191,255,.25);z-index:25;display:none}
+
   .popup{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
   .popup.show{display:flex}
-  .popup-card{width:min(880px,92vw);border:1px solid rgba(120,198,255,.28);border-radius:18px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
-  .popup-media{height:min(56vh,500px);background:#0e1433;background-size:cover;background-position:center}
-  .popup-body{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .popup-card{width:min(780px,92vw);border:1px solid rgba(120,198,255,.28);border-radius:16px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
+  .popup-media{height:min(52vh,460px);background:#0e1433;background-size:cover;background-position:center}
+  .popup-body{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
   .popup-title{font-weight:800;font-size:18px}.popup-tag{font-size:12px;color:#cfd6e3}
   .popup-actions{display:flex;gap:10px}
-  .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;text-decoration:none;cursor:pointer}
+  .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
   .btn:hover{background:#13203a}.btn.primary{background:#1e5eff;border-color:#2b66ff}.btn.primary:hover{background:#2a6bff}
-  .popup-close{position:absolute;top:14px;right:14px;border:1px solid rgba(120,198,255,.3);background:rgba(64,191,255,.08);border-radius:10px;padding:6px 10px;cursor:pointer}
-  /* Mobil kontroller */
+  .popup-close{position:absolute;top:12px;right:12px;border:1px solid rgba(120,198,255,.3);background:rgba(64,191,255,.08);border-radius:10px;padding:6px 10px;cursor:pointer}
+
   .touch-only{display:none}
   .joystick{position:fixed;z-index:35;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(6px)}
   .joystick .knob{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;background:rgba(200,220,255,.25);border:1px solid rgba(200,220,255,.35)}
   .btn-vert{position:fixed;z-index:35;right:16px;bottom:140px;display:flex;flex-direction:column;gap:10px}
   .btn-vert button{width:60px;height:60px;border-radius:12px;border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.12);color:#e9f4ff;font-weight:700}
   @media (pointer:coarse){ .touch-only{display:block} .help{right:auto;left:12px;bottom:12px} }
-  @media (max-width:640px){ .brand{font-size:14px} .nav a{font-size:13px} .hud{padding:8px 10px}
-    .planet-card{width:200px}.planet-card__media{height:110px}}
 </style>
 </head>
 <body>
@@ -74,82 +71,49 @@
     </div>
   </div>
 
-  <!-- Mobil joystick UI -->
+  <!-- Mobile controls -->
   <div class="touch-only">
-    <div id="joyL" class="joystick" style="left:16px;bottom:24px">
-      <div class="knob"></div>
-    </div>
+    <div id="joyL" class="joystick" style="left:16px;bottom:24px"><div class="knob"></div></div>
     <div id="aimZone" style="position:fixed;right:0;bottom:0;top:0;width:48%;z-index:34;"></div>
-    <div class="btn-vert">
-      <button id="btnUp">UP</button>
-      <button id="btnDown">DOWN</button>
-    </div>
+    <div class="btn-vert"><button id="btnUp">UP</button><button id="btnDown">DOWN</button></div>
   </div>
 
   <canvas id="scene"></canvas>
 
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script>
-  /* ================= Core ================= */
+  /* ===== Basic setup ===== */
   const canvas = document.getElementById('scene');
-  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
-  renderer.setPixelRatio(Math.min(2, devicePixelRatio||1));
-  renderer.setSize(innerWidth, innerHeight);
-  const scene = new THREE.Scene(); scene.fog = new THREE.FogExp2(0x05060a, 0.006);
-  const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 6000);
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio||1));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x05060a); // failsafe: solid bg
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 5000);
 
-  /* ================ Lights ================ */
-  scene.add(new THREE.HemisphereLight(0x89b4ff, 0x05060a, .45));
-  const key = new THREE.DirectionalLight(0xffffff,.9); key.position.set(160,220,120); scene.add(key);
-  const rim = new THREE.DirectionalLight(0x6cb8ff,.6); rim.position.set(-220,160,-120); scene.add(rim);
+  // Lights (simple, no shadows to avoid GPU quirks)
+  scene.add(new THREE.HemisphereLight(0x89b4ff, 0x05060a, 0.6));
+  const dl = new THREE.DirectionalLight(0xffffff, 0.8); dl.position.set(140,200,120); scene.add(dl);
 
-  /* ============ Glowing stars (instanced spheres) ============ */
-  (function addGlowingStars(){
-    const count=2000;
-    const geom=new THREE.SphereGeometry(0.55,8,8);
-    const mat =new THREE.MeshBasicMaterial({color:0xbed9ff});
-    const inst=new THREE.InstancedMesh(geom,mat,count);
-    const m4=new THREE.Matrix4(), v=new THREE.Vector3();
-    for(let i=0;i<count;i++){
-      const r=800+Math.random()*1600, th=Math.random()*Math.PI*2, u=Math.random()*2-1, s=Math.sqrt(1-u*u);
-      v.set(r*s*Math.cos(th), r*u*0.7, r*s*Math.sin(th));
-      m4.setPosition(v); inst.setMatrixAt(i,m4);
+  // Stars (guaranteed visible)
+  (function addStars(){
+    const g = new THREE.BufferGeometry();
+    const N = 4000, pos = new Float32Array(N*3);
+    for(let i=0;i<N;i++){
+      const r = 800 + Math.random()*1600;
+      const th = Math.random()*Math.PI*2, u = Math.random()*2-1, s = Math.sqrt(1-u*u);
+      pos[i*3] = r*s*Math.cos(th);
+      pos[i*3+1] = r*u*0.7;
+      pos[i*3+2] = r*s*Math.sin(th);
     }
-    inst.instanceMatrix.needsUpdate=true; scene.add(inst);
+    g.setAttribute('position', new THREE.BufferAttribute(pos,3));
+    const m = new THREE.PointsMaterial({ size:1.6, color:0xbfd9ff, sizeAttenuation:true });
+    const stars = new THREE.Points(g, m);
+    scene.add(stars);
   })();
 
-  /* ============== Nebula sprites ============== */
-  function radialTex(stops){const c=document.createElement('canvas'); c.width=c.height=512; const x=c.getContext('2d');
-    const g=x.createRadialGradient(256,256,10,256,256,256); stops.forEach(s=>g.addColorStop(s[0],s[1])); x.fillStyle=g;x.fillRect(0,0,512,512);
-    const t=new THREE.CanvasTexture(c); t.needsUpdate=true; return t;}
-  function addNebula(pos,scale,pal){const tex=radialTex(pal);
-    const mat=new THREE.SpriteMaterial({map:tex,depthWrite:false,transparent:true,opacity:.9,blending:THREE.AdditiveBlending});
-    const spr=new THREE.Sprite(mat); spr.position.copy(pos); spr.scale.setScalar(scale); scene.add(spr);}
-  addNebula(new THREE.Vector3(-350,120,-500), 800, [[0,'rgba(80,20,140,1)'],[.25,'rgba(120,40,190,.75)'],[.55,'rgba(40,120,255,.45)'],[1,'rgba(0,0,0,0)']]);
-  addNebula(new THREE.Vector3( 520,-80,-760), 900, [[0,'rgba(30,60,180,1)'],[.25,'rgba(60,140,255,.75)'],[.6,'rgba(170,110,255,.35)'],[1,'rgba(0,0,0,0)']]);
-  addNebula(new THREE.Vector3( 120,260, 680), 700, [[0,'rgba(120,40,200,1)'],[.25,'rgba(190,90,255,.75)'],[.6,'rgba(60,160,255,.35)'],[1,'rgba(0,0,0,0)']]);
-
-  /* ============== Black hole (far) ============== */
-  (function(){
-    const g=new THREE.Group(); g.position.set(-1100, 120, -1700);
-    g.add(new THREE.Mesh(new THREE.SphereGeometry(40,48,32), new THREE.MeshBasicMaterial({color:0x000000})));
-    function ringTex(){const c=document.createElement('canvas'); c.width=c.height=512; const x=c.getContext('2d');
-      const gr=x.createRadialGradient(256,256,120,256,256,256);
-      gr.addColorStop(0,'rgba(0,0,0,0)'); gr.addColorStop(.35,'rgba(80,140,255,.85)'); gr.addColorStop(.6,'rgba(170,80,255,.6)'); gr.addColorStop(1,'rgba(0,0,0,0)');
-      x.fillStyle=gr; x.fillRect(0,0,512,512); return new THREE.CanvasTexture(c);}
-    const disk=new THREE.Mesh(new THREE.RingGeometry(90,220,128),
-      new THREE.MeshBasicMaterial({map:ringTex(),side:THREE.DoubleSide,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));
-    disk.rotation.x=-Math.PI/2; g.add(disk);
-    const pg=new THREE.BufferGeometry(), n=1000, arr=new Float32Array(n*3);
-    for(let i=0;i<n;i++){const r=THREE.MathUtils.randFloat(110,220), a=Math.random()*Math.PI*2;
-      arr[i*3]=r*Math.cos(a); arr[i*3+1]=THREE.MathUtils.randFloatSpread(6); arr[i*3+2]=r*Math.sin(a);}
-    pg.setAttribute('position', new THREE.BufferAttribute(arr,3));
-    const pts=new THREE.Points(pg,new THREE.PointsMaterial({size:2.5,color:0xaed3ff,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false}));
-    g.add(pts); g.userData.spin=()=>{disk.rotation.z+=.0015; pts.rotation.y+=.001;}; scene.add(g); scene.userData.blackHole=g;
-  })();
-
-  /* ============== Projects / Planets ============== */
-  const PROJECTS=[
+  // Planets (simple spheres, some rings)
+  const PROJECTS = [
     {id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg'},
     {id:'p2',title:'Odin Pendant Animation',tag:'3D Works',cover:'media/covers/p2.jpg'},
     {id:'p3',title:'MediaPipe + Ableton + PointCloud',tag:'Interactive',cover:'media/covers/p3.jpg'},
@@ -160,328 +124,236 @@
     {id:'p8',title:'YouTube Channel Intro',tag:'Motion · Audio',cover:'media/covers/p8.jpg'},
     {id:'p9',title:'AI Visualizer from Image',tag:'AI Visuals',cover:'media/covers/p9.jpg'}
   ];
-  const overlay=document.getElementById('overlay'); const hintEl=document.getElementById('hint');
-  const planets=[], cardsRef=[], tmpV=new THREE.Vector3();
+  const overlay = document.getElementById('overlay');
+  const hintEl  = document.getElementById('hint');
+  const cardsRef = [];
+  const planets = [];
+  const tmpV = new THREE.Vector3();
 
-  function makePlanet(radius,type,color){
-    const geo=new THREE.SphereGeometry(radius,64,48);
-    if(type==='crater'){const p=geo.attributes.position;
-      for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i);
-        const r=Math.sqrt(x*x+y*y+z*z), a=Math.atan2(z,x), b=Math.acos(y/r);
-        const n=Math.sin(a*3.7)*Math.sin(b*4.3)*0.35 + Math.sin(a*9.1+b*7.7)*0.12;
-        p.setXYZ(i, x*(1+n*0.12), y*(1+n*0.12), z*(1+n*0.12));}
-      geo.computeVertexNormals();}
-    const mat=new THREE.MeshStandardMaterial({
-      color, roughness:(type==='nebula'?0.5:0.85), metalness:(type==='nebula'?0.35:0.15),
-      emissive:(new THREE.Color(color)).multiplyScalar(type==='nebula'?0.55:0.25), emissiveIntensity:(type==='nebula'?0.6:0.22),
-      transparent: type==='nebula', opacity: type==='nebula'?0.88:1
-    });
-    const m=new THREE.Mesh(geo,mat); m.castShadow=true; m.receiveShadow=true;
-
-    // ring (yarı olasılık, farklı açı)
-    if(Math.random()<0.5){
-      const r1=radius*THREE.MathUtils.randFloat(1.2,1.35), r2=r1*THREE.MathUtils.randFloat(1.15,1.35);
-      const ring=new THREE.Mesh(new THREE.RingGeometry(r1,r2,64),
-        new THREE.MeshBasicMaterial({color:(new THREE.Color(color)).offsetHSL(0.08,0,0).getHex(),transparent:true,opacity:0.16,side:THREE.DoubleSide}));
-      ring.rotation.x = -Math.PI/2 + THREE.MathUtils.randFloatSpread(0.9);
-      ring.rotation.z = THREE.MathUtils.randFloat(0,Math.PI*2);
-      m.add(ring);
-    }
-    // nebula planet: bulut sprite
-    if(type==='nebula'){
-      const cloud=new THREE.Sprite(new THREE.SpriteMaterial({
-        map:(function(){const c=document.createElement('canvas'); c.width=c.height=512; const x=c.getContext('2d');
-          const g=x.createRadialGradient(256,256,80,256,256,256);
-          g.addColorStop(0,'rgba(255,255,255,.35)'); g.addColorStop(.6,'rgba(150,180,255,.15)'); g.addColorStop(1,'rgba(0,0,0,0)');
-          x.fillStyle=g; x.fillRect(0,0,512,512); const t=new THREE.CanvasTexture(c); t.needsUpdate=true; return t;})(),
-        depthWrite:false,transparent:true,blending:THREE.AdditiveBlending,opacity:.6
-      })); cloud.scale.setScalar(radius*2.2); cloud.userData.spin=()=>{cloud.rotation+=0.002}; m.add(cloud); m.userData.cloud=cloud;
-    }
-    return m;
-  }
-  function addCardFor(p){const el=document.createElement('div'); el.className='planet-card';
+  function addCard(p){
+    const el=document.createElement('div'); el.className='planet-card';
     el.innerHTML=`<div class="planet-card__media" style="background-image:url('${p.cover||''}')"></div>
-    <div class="badge">${p.tag||''}</div><div class="planet-card__meta"><div class="title">${p.title}</div><div class="tag">${p.tag||''}</div></div>`;
-    overlay.appendChild(el); return el;}
-
-  // konumlar (dağınık)
-  const POS=[], RMIN=60, RMAX=150;
-  for(let i=0;i<PROJECTS.length;i++){
-    const R=THREE.MathUtils.randFloat(RMIN,RMAX), th=(i/PROJECTS.length)*Math.PI*2 + Math.random()*0.7;
-    POS.push([Math.cos(th)*R + THREE.MathUtils.randFloatSpread(30), THREE.MathUtils.randFloatSpread(22), Math.sin(th)*R + THREE.MathUtils.randFloatSpread(30)]);
+      <div class="badge">${p.tag||''}</div>
+      <div class="planet-card__meta"><div class="title">${p.title}</div><div class="tag">${p.tag||''}</div></div>`;
+    overlay.appendChild(el); return el;
   }
-  for(let i=POS.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [POS[i],POS[j]]=[POS[j],POS[i]];}
 
-  PROJECTS.forEach((proj,i)=>{
-    const radius=THREE.MathUtils.randFloat(8,18);
-    const color=new THREE.Color().setHSL(THREE.MathUtils.randFloat(0.55,0.72),THREE.MathUtils.randFloat(0.35,0.55),THREE.MathUtils.randFloat(0.45,0.65)).getHex();
-    const type=(Math.random()<0.4)?'crater':(Math.random()<0.5?'nebula':'plain');
-    const planet=makePlanet(radius,type,color);
-    const [x,y,z]=POS[i]; planet.position.set(x,y,z);
-    planet.userData.project=proj; scene.add(planet); planets.push(planet);
-    const el=addCardFor(proj); cardsRef.push({el,obj:planet});
+  function makePlanet(r, color, ringChance){
+    const mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(r, 48, 32),
+      new THREE.MeshStandardMaterial({ color, roughness:0.8, metalness:0.1, emissive: new THREE.Color(color).multiplyScalar(0.15) })
+    );
+    if(Math.random() < ringChance){
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(r*1.2, r*1.45, 64),
+        new THREE.MeshBasicMaterial({ color: new THREE.Color(color).offsetHSL(0.08,0,0).getHex(), transparent:true, opacity:0.15, side:THREE.DoubleSide })
+      );
+      ring.rotation.x = -Math.PI/2 + (Math.random()*0.6 - 0.3);
+      ring.rotation.z = Math.random()*Math.PI*2;
+      mesh.add(ring);
+    }
+    return mesh;
+  }
+
+  // positions (ring scatter)
+  const POS=[], RMIN=70, RMAX=150;
+  for(let i=0;i<PROJECTS.length;i++){
+    const R = THREE.MathUtils.randFloat(RMIN, RMAX);
+    const th = (i/PROJECTS.length)*Math.PI*2 + Math.random()*0.6;
+    const x = Math.cos(th)*R + THREE.MathUtils.randFloatSpread(20);
+    const z = Math.sin(th)*R + THREE.MathUtils.randFloatSpread(20);
+    const y = THREE.MathUtils.randFloatSpread(18);
+    POS.push([x,y,z]);
+  }
+  for(let i=POS.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=POS[i]; POS[i]=POS[j]; POS[j]=t; }
+
+  PROJECTS.forEach((p,i)=>{
+    const r   = THREE.MathUtils.randFloat(9,16);
+    const col = new THREE.Color().setHSL(THREE.MathUtils.randFloat(0.55,0.72), 0.45, 0.58).getHex();
+    const m   = makePlanet(r, col, 0.5);
+    const [x,y,z] = POS[i]; m.position.set(x,y,z);
+    m.userData.project = p;
+    scene.add(m); planets.push(m);
+    cardsRef.push({ el: addCard(p), obj: m });
   });
 
-  /* ============== Debris ============== */
-  (function debris(){
-    const group=new THREE.Group(); scene.add(group);
-    const mat=new THREE.MeshStandardMaterial({color:0x9aa7b0, roughness:0.6, metalness:0.5});
-    for(let i=0;i<36;i++){
-      const g=(Math.random()<0.5)?new THREE.BoxGeometry(THREE.MathUtils.randFloat(0.3,1.2),THREE.MathUtils.randFloat(0.1,0.6),THREE.MathUtils.randFloat(0.3,1.0))
-                                 :new THREE.CylinderGeometry(THREE.MathUtils.randFloat(0.05,0.2),THREE.MathUtils.randFloat(0.05,0.2),THREE.MathUtils.randFloat(0.4,1.4),8);
-      const m=new THREE.Mesh(g,mat);
-      const r=THREE.MathUtils.randFloat(80,220), a=Math.random()*Math.PI*2;
-      m.position.set(Math.cos(a)*r,THREE.MathUtils.randFloatSpread(30),Math.sin(a)*r);
-      m.rotation.set(Math.random()*3,Math.random()*3,Math.random()*3);
-      group.add(m);
-    }
-  })();
+  // Ship (capsule)
+  const ship = new THREE.Group(); scene.add(ship);
+  const hull = new THREE.Mesh(
+    new THREE.CapsuleGeometry(0.8, 3.0, 6, 12),
+    new THREE.MeshStandardMaterial({ color:0x9aa7ff, roughness:0.55, metalness:0.2, emissive:0x10163a, emissiveIntensity:0.2 })
+  );
+  hull.rotation.z = Math.PI/2; ship.add(hull); ship.position.set(0,0,0);
 
-  /* ============== Ship (capsule) ============== */
-  const ship=new THREE.Group(); scene.add(ship);
-  const hull=new THREE.Mesh(new THREE.CapsuleGeometry(0.8,3.2,6,12),
-    new THREE.MeshStandardMaterial({color:0x9aa7ff, roughness:0.6, metalness:0.2, emissive:0x10163a, emissiveIntensity:0.2}));
-  hull.rotation.z=Math.PI/2; ship.add(hull); ship.position.set(0,0,0);
-
-  /* ============== Camera follow ============== */
-  const camOffsetLocal=new THREE.Vector3(-16,7.8,0);
-  const lookAheadLocal=new THREE.Vector3(6,1.8,0);
-  const camPos=new THREE.Vector3(), lookAt=new THREE.Vector3();
+  // Camera follow (behind-left-up)
+  const camOffsetLocal = new THREE.Vector3(-16, 7.5, 0);
+  const lookAheadLocal = new THREE.Vector3(  6,  1.6, 0);
+  const camPos = new THREE.Vector3(), lookAt = new THREE.Vector3();
   function updateCamera(dt){
-    const pitchAdj = THREE.MathUtils.clamp(ship.rotation.x, -0.35, 0.35);
-    const dynOffset = camOffsetLocal.clone(); dynOffset.y += pitchAdj * -3.0;
-    const off=dynOffset.applyQuaternion(ship.quaternion);
+    const off = camOffsetLocal.clone().applyQuaternion(ship.quaternion);
     camPos.copy(ship.position).add(off);
     camera.position.lerp(camPos, 1 - Math.pow(0.002, dt*60));
-    const la=lookAheadLocal.clone().applyQuaternion(ship.quaternion);
-    lookAt.copy(ship.position).add(la); camera.lookAt(lookAt);
+    const la = lookAheadLocal.clone().applyQuaternion(ship.quaternion);
+    lookAt.copy(ship.position).add(la);
+    camera.lookAt(lookAt);
   }
   camera.position.copy(ship.position).add(camOffsetLocal);
   camera.lookAt(ship.position.clone().add(lookAheadLocal));
 
-  /* ====== Input detection ====== */
-  const isTouch = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
-
-  /* ====== Desktop keyboard state (code bazlı) ====== */
-  const keyState = { KeyW:false, KeyA:false, KeyS:false, KeyD:false, ArrowUp:false, ArrowDown:false, ArrowLeft:false, ArrowRight:false, KeyQ:false, KeyE:false, Space:false, ShiftLeft:false, ShiftRight:false };
-
-  function setKey(e, down){
-    const code = e.code;
-    if (code in keyState){
-      keyState[code] = down;
-      if (['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(code)) e.preventDefault();
-    }
-    if (down && code === 'KeyE' && nearest && !qv.classList.contains('show')) qvOpenFor(nearest);
-    if (down && code === 'KeyQ') qvCloseFn();
+  // INPUT
+  const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
+  const keyState = { KeyW:false, KeyA:false, KeyS:false, KeyD:false, ArrowUp:false, ArrowDown:false, ArrowLeft:false, ArrowRight:false, Space:false, ShiftLeft:false, ShiftRight:false, KeyQ:false, KeyE:false };
+  function setKey(e,down){
+    const c=e.code; if(c in keyState){ keyState[c]=down; if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(c)) e.preventDefault(); }
+    if(down && c==='KeyE' && nearest && !qv.classList.contains('show')) qvOpenFor(nearest);
+    if(down && c==='KeyQ') qvCloseFn();
   }
-
-  if (!isTouch) {
-    window.addEventListener('keydown', (e)=> setKey(e, true), {passive:false});
-    window.addEventListener('keyup',   (e)=> setKey(e, false), {passive:false});
+  if(!isTouch){
+    window.addEventListener('keydown', e=>setKey(e,true), {passive:false});
+    window.addEventListener('keyup',   e=>setKey(e,false), {passive:false});
     window.addEventListener('mousedown', ()=>{
-      if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
+      if(document.activeElement && document.activeElement!==document.body) document.activeElement.blur();
       canvas.focus && canvas.focus();
     }, {once:true});
   }
 
-  /* ====== Mouse aim (desktop) ====== */
+  // Mouse aim
   let mouseDown=false, lastX=0, lastY=0, yaw=0, pitch=0, yawVel=0, pitchVel=0;
-  if (!isTouch) {
-    renderer.domElement.addEventListener('mousedown', (e)=>{ mouseDown=true; lastX=e.clientX; lastY=e.clientY; });
-    window.addEventListener('mouseup', ()=>{ mouseDown=false; });
-    window.addEventListener('mousemove', (e)=>{
-      if (!mouseDown) return;
-      const dx = e.clientX - lastX, dy = e.clientY - lastY;
-      lastX = e.clientX; lastY = e.clientY;
-      yawVel   -= dx * 0.0008;
-      pitchVel -= dy * 0.0008;
+  if(!isTouch){
+    renderer.domElement.addEventListener('mousedown', e=>{mouseDown=true; lastX=e.clientX; lastY=e.clientY;});
+    window.addEventListener('mouseup', ()=>{mouseDown=false;});
+    window.addEventListener('mousemove', e=>{
+      if(!mouseDown) return;
+      const dx=e.clientX-lastX, dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY;
+      yawVel   -= dx*0.0008;
+      pitchVel -= dy*0.0008;
     });
   }
 
-  /* ====== Mobile touch controls (joystick + drag aim + up/down) ====== */
+  // Mobile joystick + aim
   let joyLX=0, joyLY=0, aimDX=0, aimDY=0, upHeld=false, downHeld=false;
-  if (isTouch) {
-    const joy = document.getElementById('joyL');
-    const knob = joy?.querySelector('.knob');
-    const rectJoy = ()=> joy.getBoundingClientRect();
-
-    function onJoy(e){
-      e.preventDefault();
-      const r = rectJoy(); const t = e.touches[0];
-      const cx = r.left + r.width/2, cy = r.top + r.height/2;
-      let dx = t.clientX - cx, dy = t.clientY - cy;
-      const max = r.width * 0.45; const len = Math.hypot(dx,dy);
-      if (len > max){ dx *= max/len; dy *= max/len; }
-      if (knob) knob.style.transform = `translate(${dx}px,${dy}px)`;
-      joyLX =  dx / max;   // -1..1
-      joyLY = -dy / max;   // -1..1 (up positive)
+  if(isTouch){
+    const joy = document.getElementById('joyL'); const knob=joy.querySelector('.knob');
+    const rectJoy=()=>joy.getBoundingClientRect();
+    function onJoy(e){ e.preventDefault(); const r=rectJoy(); const t=e.touches[0];
+      let dx=t.clientX-(r.left+r.width/2), dy=t.clientY-(r.top+r.height/2);
+      const max=r.width*0.45, len=Math.hypot(dx,dy); if(len>max){ dx*=max/len; dy*=max/len; }
+      knob.style.transform=`translate(${dx}px,${dy}px)`; joyLX=dx/max; joyLY=-dy/max;
     }
-    function endJoy(e){ e && e.preventDefault(); if (knob) knob.style.transform='translate(-50%,-50%)'; joyLX = joyLY = 0; }
-
-    joy.addEventListener('touchstart', onJoy, {passive:false});
-    joy.addEventListener('touchmove',  onJoy, {passive:false});
-    joy.addEventListener('touchend',   endJoy, {passive:false});
-
-    // aim area
-    const aimZ = document.getElementById('aimZone');
-    let lastAX=0, lastAY=0, aimActive=false;
-    function aimStart(e){ e.preventDefault(); aimActive=true; const t=e.touches[0]; lastAX=t.clientX; lastAY=t.clientY; }
-    function aimMove(e){ e.preventDefault(); if(!aimActive) return; const t=e.touches[0];
-      const dx=t.clientX-lastAX, dy=t.clientY-lastAY; lastAX=t.clientX; lastAY=t.clientY;
-      aimDX -= dx*0.002; aimDY -= dy*0.002;
-    }
-    function aimEnd(e){ e && e.preventDefault(); aimActive=false; }
-    aimZ.addEventListener('touchstart',aimStart,{passive:false});
-    aimZ.addEventListener('touchmove', aimMove, {passive:false});
-    aimZ.addEventListener('touchend',  aimEnd,   {passive:false});
-
-    // up/down
-    const upBtn = document.getElementById('btnUp');
-    const dnBtn = document.getElementById('btnDown');
-    upBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); upHeld=true; }, {passive:false});
-    upBtn.addEventListener('touchend',   (e)=>{ e.preventDefault(); upHeld=false;}, {passive:false});
-    dnBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); downHeld=true;}, {passive:false});
-    dnBtn.addEventListener('touchend',   (e)=>{ e.preventDefault(); downHeld=false;}, {passive:false});
+    function endJoy(e){ e.preventDefault(); knob.style.transform='translate(-50%,-50%)'; joyLX=joyLY=0; }
+    joy.addEventListener('touchstart',onJoy,{passive:false}); joy.addEventListener('touchmove',onJoy,{passive:false}); joy.addEventListener('touchend',endJoy,{passive:false});
+    const aimZ=document.getElementById('aimZone'); let lastAX=0,lastAY=0,act=false;
+    function aStart(e){ e.preventDefault(); act=true; const t=e.touches[0]; lastAX=t.clientX; lastAY=t.clientY; }
+    function aMove(e){ e.preventDefault(); if(!act) return; const t=e.touches[0]; const dx=t.clientX-lastAX, dy=t.clientY-lastAY; lastAX=t.clientX; lastAY=t.clientY; aimDX -= dx*0.002; aimDY -= dy*0.002; }
+    function aEnd(e){ e.preventDefault(); act=false; }
+    aimZ.addEventListener('touchstart',aStart,{passive:false}); aimZ.addEventListener('touchmove',aMove,{passive:false}); aimZ.addEventListener('touchend',aEnd,{passive:false});
+    document.getElementById('btnUp').addEventListener('touchstart',e=>{e.preventDefault(); upHeld=true;},{passive:false});
+    document.getElementById('btnUp').addEventListener('touchend',e=>{e.preventDefault(); upHeld=false;},{passive:false});
+    document.getElementById('btnDown').addEventListener('touchstart',e=>{e.preventDefault(); downHeld=true;},{passive:false});
+    document.getElementById('btnDown').addEventListener('touchend',e=>{e.preventDefault(); downHeld=false;},{passive:false});
   }
 
-  /* ====== Movement (ortak) ====== */
-  let velF=0, velStrafe=0, vY=0;
-  function updateShip(dt, t){
-    // AIM
-    if (!isTouch){
-      yaw   += yawVel; pitch += pitchVel;
-      yawVel   *= Math.pow(0.9, dt*60);
-      pitchVel *= Math.pow(0.9, dt*60);
-    } else {
-      yaw   += aimDX;  pitch += aimDY;
-      aimDX *= Math.pow(0.92, dt*60);
-      aimDY *= Math.pow(0.92, dt*60);
-    }
+  // Movement
+  let velF=0, velS=0, vY=0;
+  function updateShip(dt){
+    if(!isTouch){ yaw += yawVel; pitch += pitchVel; yawVel*=Math.pow(0.9,dt*60); pitchVel*=Math.pow(0.9,dt*60); }
+    else { yaw += aimDX; pitch += aimDY; aimDX*=Math.pow(0.92,dt*60); aimDY*=Math.pow(0.92,dt*60); }
     pitch = THREE.MathUtils.clamp(pitch, -Math.PI/3, Math.PI/3);
     ship.rotation.set(pitch, yaw, ship.rotation.z);
 
-    // INPUT: Desktop = WASD, Mobile = joystick
     let fwd=0, strafe=0, updn=0;
-    if (!isTouch){
-      if (keyState.KeyW || keyState.ArrowUp)    fwd += 1;
-      if (keyState.KeyS || keyState.ArrowDown)  fwd -= 1;
-      if (keyState.KeyD || keyState.ArrowRight) strafe += 1;
-      if (keyState.KeyA || keyState.ArrowLeft)  strafe -= 1;
-      // küçük yardımcı: Space/Shift ile ince dikey
-      if (keyState.Space)      updn += 0.7;
-      if (keyState.ShiftLeft || keyState.ShiftRight) updn -= 0.7;
+    if(!isTouch){
+      if(keyState.KeyW||keyState.ArrowUp) fwd+=1;
+      if(keyState.KeyS||keyState.ArrowDown) fwd-=1;
+      if(keyState.KeyD||keyState.ArrowRight) strafe+=1;
+      if(keyState.KeyA||keyState.ArrowLeft) strafe-=1;
+      if(keyState.Space) updn+=0.7;
+      if(keyState.ShiftLeft||keyState.ShiftRight) updn-=0.7;
     }else{
-      fwd = joyLY; strafe = joyLX;
-      if (upHeld) updn += 1;
-      if (downHeld) updn -= 1;
+      fwd=joyLY; strafe=joyLX; if(upHeld) updn+=1; if(downHeld) updn-=1;
     }
 
-    const ACC=10.0, DAMP=0.88, MAX=9.0;
-    velF      = THREE.MathUtils.clamp( velF      + fwd   * ACC * dt, -MAX, MAX );
-    velStrafe = THREE.MathUtils.clamp( velStrafe + strafe* ACC * dt, -MAX, MAX );
-    vY        = THREE.MathUtils.clamp( vY        + updn  * ACC * dt, -MAX*0.7, MAX*0.7 );
-    velF      *= Math.pow(DAMP, dt*60);
-    velStrafe *= Math.pow(DAMP, dt*60);
-    vY        *= Math.pow(0.92, dt*60);
+    const ACC=12.0, DAMP=0.88, MAX=10.0;
+    velF = THREE.MathUtils.clamp(velF + fwd*ACC*dt, -MAX, MAX);
+    velS = THREE.MathUtils.clamp(velS + strafe*ACC*dt, -MAX, MAX);
+    vY   = THREE.MathUtils.clamp(vY   + updn*ACC*dt, -MAX*0.7, MAX*0.7);
+    velF*=Math.pow(DAMP,dt*60); velS*=Math.pow(DAMP,dt*60); vY*=Math.pow(0.92,dt*60);
 
     const forward = new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion);
     const right   = new THREE.Vector3(0,0,1).applyQuaternion(ship.quaternion);
-    const upv     = new THREE.Vector3(0,1,0);
+    ship.position.addScaledVector(forward, velF*dt);
+    ship.position.addScaledVector(right,   velS*dt);
+    ship.position.y += vY*dt + Math.sin(pitch)*velF*0.6*dt; // doğal tırmanış
+    ship.position.y = THREE.MathUtils.clamp(ship.position.y, -45, 45);
 
-    ship.position.addScaledVector(forward, velF * dt);
-    ship.position.addScaledVector(right,   velStrafe * dt);
-    ship.position.addScaledVector(upv,     vY * dt);
-
-    // pitch’e bağlı doğal tırmanış (desktop)
-    if (!isTouch){
-      ship.position.y += Math.sin(pitch) * velF * 0.6 * dt;
-    }
-    ship.position.y = THREE.MathUtils.clamp(ship.position.y, -40, 40);
-
-    // strafe görsel roll
-    const targetRoll = -velStrafe*0.03;
+    // görsel roll
+    const targetRoll = -velS*0.03;
     ship.rotation.z += (targetRoll - ship.rotation.z) * (1 - Math.pow(0.05, dt*60));
   }
 
-  /* ============== Overlay Cards & Hint ============== */
+  // Cards + hint
   function clamp1(v,min,max){return Math.max(min,Math.min(max,v));}
-  const cardsRef=[]; PROJECTS.forEach((p,i)=>{ const el=document.createElement('div'); el.className='planet-card';
-    el.innerHTML=`<div class="planet-card__media" style="background-image:url('${p.cover||''}')"></div>
-    <div class="badge">${p.tag||''}</div><div class="planet-card__meta"><div class="title">${p.title}</div><div class="tag">${p.tag||''}</div></div>`;
-    overlay.appendChild(el); cardsRef.push({el}); });
-
-  const planets=[]; // planet meshes eklenecek
-  // konumlar
-  const POS=[], RMIN=60, RMAX=150;
-  for(let i=0;i<PROJECTS.length;i++){
-    const R=THREE.MathUtils.randFloat(RMIN,RMAX), th=(i/PROJECTS.length)*Math.PI*2 + Math.random()*0.7;
-    POS.push([Math.cos(th)*R + THREE.MathUtils.randFloatSpread(30), THREE.MathUtils.randFloatSpread(22), Math.sin(th)*R + THREE.MathUtils.randFloatSpread(30)]);
-  }
-  for(let i=POS.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [POS[i],POS[j]]=[POS[j],POS[i]];}
-
-  function buildPlanets(){
-    PROJECTS.forEach((proj,i)=>{
-      const radius=THREE.MathUtils.randFloat(8,18);
-      const color=new THREE.Color().setHSL(THREE.MathUtils.randFloat(0.55,0.72),THREE.MathUtils.randFloat(0.35,0.55),THREE.MathUtils.randFloat(0.45,0.65)).getHex();
-      const type=(Math.random()<0.4)?'crater':(Math.random()<0.5?'nebula':'plain');
-      const m=makePlanet(radius,type,color);
-      const [x,y,z]=POS[i]; m.position.set(x,y,z);
-      m.userData.project=PROJECTS[i]; scene.add(m); planets.push(m);
-      cardsRef[i].obj = m;
-    });
-  }
-  buildPlanets();
+  PROJECTS.forEach((p)=> cardsRef.push({el:addCard(p)}));
+  // eşle
+  planets.forEach((m,i)=>{ cardsRef[i].obj = m; });
 
   let nearest=null;
   function updateCardsAndHint(){
-    const W=innerWidth,H=innerHeight; let best=null, dmin=Infinity;
+    const W=window.innerWidth,H=window.innerHeight;
+    let best=null, dmin=Infinity;
     for(const {el,obj} of cardsRef){
       tmpV.copy(obj.position); tmpV.y+=10; tmpV.project(camera);
-      const on=tmpV.z<1 && tmpV.z>-1; let x=(tmpV.x*.5+.5)*W, y=(-tmpV.y*.5+.5)*H;
+      const on = tmpV.z<1 && tmpV.z>-1; let x=(tmpV.x*.5+.5)*W, y=(-tmpV.y*.5+.5)*H;
       if(on){
         x=clamp1(x,18,W-18); y=clamp1(y,80,H-96);
         el.style.left=x+'px'; el.style.top=y+'px';
         const dist=camera.position.distanceTo(obj.position);
         const a=THREE.MathUtils.clamp(1-(dist-60)/220,0,1);
-        el.style.opacity=a; el.style.transform=`translate(-50%,-100%) scale(${0.9+a*0.12})`;
-      } else el.style.opacity=0;
-      const d=ship.position.distanceTo(obj.position); if(d<dmin){ dmin=d; best=obj; }
+        el.style.opacity=a; el.style.transform=`translate(-50%,-100%) scale(${0.92+a*0.1})`;
+      }else el.style.opacity=0;
+
+      const d = ship.position.distanceTo(obj.position);
+      if(d<dmin){ dmin=d; best=obj; }
     }
-    const TH=28; nearest=(best && dmin<TH)? best : null;
+    const TH=28; nearest=(best && dmin<TH)?best:null;
     if(nearest){
       tmpV.copy(nearest.position); tmpV.y+=12; tmpV.project(camera);
       if(tmpV.z<1 && tmpV.z>-1){
         let x=(tmpV.x*.5+.5)*W, y=(-tmpV.y*.5+.5)*H;
         x=clamp1(x,18,W-18); y=clamp1(y,60,H-80);
-        hintEl.textContent = isTouch ? 'Tap to View' : 'Press E to View';
+        hintEl.textContent = (isTouch ? 'Tap to View' : 'Press E to View');
         hintEl.style.left=x+'px'; hintEl.style.top=y+'px'; hintEl.style.display='block';
       } else hintEl.style.display='none';
     } else hintEl.style.display='none';
   }
 
-  /* ============== Quick View ============== */
+  // Quick View
   const qv=document.getElementById('quickview'), qvTitle=document.getElementById('qvTitle'),
         qvTag=document.getElementById('qvTag'), qvMedia=document.getElementById('qvMedia'),
         qvClose=document.getElementById('qvClose'), qvExit=document.getElementById('qvExit'),
         qvEnter=document.getElementById('qvEnter');
   function qvOpenFor(planet){const p=planet.userData.project; qvTitle.textContent=p.title; qvTag.textContent=p.tag||''; qvMedia.style.backgroundImage=`url('${p.cover||''}')`; qv.classList.add('show');}
-  function qvCloseFn(){qv.classList.remove('show');}
-  qvClose.addEventListener('click',qvCloseFn); qvExit.addEventListener('click',qvCloseFn);
-  qvEnter.addEventListener('click',()=>{qv.classList.add('pulse'); setTimeout(()=>qv.classList.remove('pulse'),220);});
-  // click open (near)
-  renderer.domElement.addEventListener('click',()=>{ if(nearest && !qv.classList.contains('show')) qvOpenFor(nearest); });
+  function qvCloseFn(){ qv.classList.remove('show'); }
+  qvClose.addEventListener('click', qvCloseFn); qvExit.addEventListener('click', qvCloseFn);
+  renderer.domElement.addEventListener('click', ()=>{ if(nearest && !qv.classList.contains('show')) qvOpenFor(nearest); });
 
-  /* ============== Loop ============== */
-  const clock=new THREE.Clock();
+  // Resize + loop
+  window.addEventListener('resize', ()=>{
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+  });
+
+  const clock = new THREE.Clock();
   function loop(){
-    const dt=Math.min(0.033, clock.getDelta()), t=clock.getElapsedTime();
-    updateShip(dt,t); updateCamera(dt); updateCardsAndHint();
-    if(scene.userData.blackHole?.userData.spin) scene.userData.blackHole.userData.spin();
-    planets.forEach(p=>{ if(p.userData.cloud) p.userData.cloud.userData?.spin?.(); });
-    renderer.render(scene,camera); requestAnimationFrame(loop);
+    const dt = Math.min(0.033, clock.getDelta());
+    updateShip(dt);
+    updateCamera(dt);
+    updateCardsAndHint();
+    renderer.render(scene, camera);
+    requestAnimationFrame(loop);
   }
   loop();
-
   </script>
 </body>
 </html>

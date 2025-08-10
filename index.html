@@ -11,6 +11,7 @@
   body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
   canvas#scene{position:fixed;inset:0;width:100%;height:100%;display:block}
 
+  /* HUD */
   .hud{position:fixed;top:12px;left:12px;right:12px;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(8,10,18,.45);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px);border-radius:16px}
   .brand{font-weight:800;letter-spacing:.4px;font-size:16px}
   .nav{display:flex;gap:16px}
@@ -18,6 +19,7 @@
 
   .help{position:fixed;right:12px;bottom:12px;z-index:20;color:var(--muted);font-size:12px;padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.06);backdrop-filter:blur(6px)}
 
+  /* Overlay cards */
   .overlay{position:fixed;inset:0;pointer-events:none;z-index:12}
   .planet-card{position:absolute;transform:translate(-50%,-100%);width:240px;max-width:40vw;border-radius:12px;overflow:hidden;border:1px solid rgba(120,198,255,.28);background:linear-gradient(180deg, rgba(20,24,40,.85), rgba(10,12,20,.9));box-shadow:0 10px 26px rgba(0,0,0,.45);transition:opacity .15s ease, transform .15s ease;opacity:.0; pointer-events:auto}
   .planet-card__media{position:relative;height:120px;background:#0f1430;background-size:cover;background-position:center}
@@ -26,14 +28,9 @@
   .badge{position:absolute;left:8px;top:8px;background:rgba(64,191,255,.12);border:1px solid rgba(64,191,255,.4);backdrop-filter:blur(6px);font-size:11px;padding:6px 8px;border-radius:999px;color:#cfefff}
   .enter-pill{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.10);color:#dff2ff;font-size:12px;box-shadow:0 0 16px rgba(64,191,255,.25);opacity:0;transition:opacity .15s ease;pointer-events:none}
 
-  /* Quick View — görünürlük garanti */
-  .popup{
-    position:fixed; inset:0; z-index:60;
-    display:none; align-items:center; justify-content:center;
-    background:rgba(0,0,0,.48); backdrop-filter:blur(4px);
-    opacity:0; transition:opacity .2s ease;
-  }
-  .popup.show{ display:flex; opacity:1; }
+  /* Quick View */
+  .popup{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
+  .popup.show{display:flex}
   .popup-card{width:min(820px,92vw);border:1px solid rgba(120,198,255,.28);border-radius:16px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
   .popup-media{height:min(52vh,460px);background:#0e1433;background-size:cover;background-position:center}
   .popup-body{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -42,20 +39,21 @@
   .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
   .btn.primary{background:#1e5eff;border-color:#2b66ff}
 
-  /* Start — ortada, düz */
+  /* Start */
   .start{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 600px at 50% -20%, rgba(120,170,255,.08), rgba(5,6,10,.95))}
   .start.hide{animation:fade .6s both}@keyframes fade{to{opacity:0;visibility:hidden}}
-  .start-wrap{display:flex;flex-direction:column;gap:14px;align-items:center}
-  .start-card{width:min(520px,82vw);aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.1);background:rgba(20,24,36,.5);backdrop-filter:blur(8px);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.5)}
-  .start-card h1{margin:0;font-size:32px;font-weight:800;letter-spacing:.2px;opacity:.9}
-  .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-  .btn.linklike{background:transparent}
+  .start-card{padding:22px 24px;border:1px solid rgba(255,255,255,.12);background:rgba(10,12,20,.72);backdrop-filter:blur(8px);border-radius:16px;display:flex;flex-direction:column;gap:10px;align-items:center;min-width:260px; transform:translateZ(0)}
+  .start-card h1{margin:0;font-size:18px;font-weight:800;letter-spacing:.2px;text-align:center}
+  .start-sub{margin:0 0 8px;font-size:12px;color:#d0d7e4;opacity:.92;text-align:center}
   .kbd{font-weight:700;border:1px solid rgba(255,255,255,.18);padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.06)}
+  .actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;justify-content:center}
+  .btn.linklike{background:transparent}
 
-  /* Mobile uyarı (daha önceki gibi) */
-  @media (pointer:coarse){
-    .help{display:none}
-  }
+  /* Mobile gate */
+  .mobile-gate{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(6px)}
+  .mobile-card{padding:20px 22px;border:1px solid rgba(255,255,255,.14);background:rgba(10,12,20,.9);border-radius:16px;max-width:360px;text-align:center}
+  .mobile-card h2{margin:0 0 8px;font-size:18px}
+  .mobile-card p{margin:0 0 14px;font-size:14px;color:#d7dbea}
 </style>
 </head>
 <body>
@@ -72,7 +70,8 @@
   <div class="help" id="helpBox">Loading controls…</div>
   <div class="overlay" id="overlay"></div>
 
-  <div class="popup" id="quickview">
+  <!-- Quick View -->
+  <div class="popup" id="quickview" aria-hidden="true">
     <div class="popup-card" role="dialog" aria-modal="true">
       <div class="popup-media" id="qvMedia"></div>
       <div class="popup-body">
@@ -81,8 +80,8 @@
           <div class="popup-tag" id="qvTag">Category</div>
         </div>
         <div class="popup-actions">
-          <button class="btn primary" id="qvEnter">Enter (E)</button>
-          <button class="btn" id="qvExit">Quit (Q)</button>
+          <a class="btn primary" id="qvEnter" href="projects.html">View in Portfolio (E)</a>
+          <button class="btn" id="qvExit" type="button">Quit (Q)</button>
         </div>
       </div>
     </div>
@@ -90,20 +89,31 @@
 
   <!-- Start -->
   <div class="start" id="start">
-    <div class="start-wrap">
-      <div class="start-card" id="startCard"><h1>START</h1></div>
+    <div class="start-card">
+      <h1>Orhun Ege Eker — Space Tour</h1>
+      <div class="start-sub">Explore projects in a tiny galaxy</div>
       <div class="actions">
         <a class="btn linklike" href="projects.html">Basic Portfolio</a>
+        <button id="btnStart" class="btn primary" type="button">Start</button>
       </div>
-      <p style="margin:0;font-size:12px;opacity:.85">
+      <p style="margin:8px 0 0;font-size:12px;opacity:.85">
         <span class="kbd">W/S</span> move · mouse turn · near planet <span class="kbd">E</span> enter
       </p>
     </div>
   </div>
 
+  <!-- Mobile gate -->
+  <div class="mobile-gate" id="mobileGate">
+    <div class="mobile-card">
+      <h2>Heads up!</h2>
+      <p>My space experience isn’t optimized for phones yet. If you want to try it, please switch to a computer. Meanwhile, you can browse the basic portfolio.</p>
+      <a class="btn primary" href="projects.html">Open Basic Portfolio</a>
+    </div>
+  </div>
+
   <canvas id="scene"></canvas>
 
-  <!-- Import map -->
+  <!-- Import map: three & addons -->
   <script type="importmap">
   {
     "imports": {
@@ -113,6 +123,7 @@
   }
   </script>
 
+  <!-- App (module) -->
   <script type="module">
     import * as THREE from 'three';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -120,13 +131,25 @@
     const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
     const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
+    /* ----- Mobile gate ----- */
+    const mobileGate = document.getElementById('mobileGate');
+    if (isTouch) {
+      mobileGate.style.display = 'flex';
+    }
+
+    /* HUD help */
+    const helpBox=document.getElementById('helpBox');
+    helpBox.innerHTML = isTouch
+      ? '<b>Mobile</b> — Space tour is desktop-only for now. Use Basic Portfolio.'
+      : '<b>Desktop</b> — Mouse move: turn · <b>W/S</b> forward/back · <b>A/D</b> turn · Near planet: <b>E</b> enter · In modal: <b>Q</b> exit';
+
+    /* Blue/cyan exhaust textures */
     function makeRadialTexture(inner, outer, size=128){
       const c=document.createElement('canvas'); c.width=c.height=size;
       const ctx=c.getContext('2d'); const g=ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
       g.addColorStop(0,inner); g.addColorStop(1,outer); ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
       const t=new THREE.CanvasTexture(c); t.minFilter=THREE.LinearFilter; t.magFilter=THREE.LinearFilter; return t;
     }
-    // egzost: mavi tonlar
     const flameTex = makeRadialTexture('rgba(120,230,255,1)','rgba(0,170,255,0)');
     const smokeTex = makeRadialTexture('rgba(160,210,255,0.55)','rgba(90,140,200,0)');
 
@@ -134,42 +157,65 @@
     const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('scene'), antialias:true});
     renderer.setPixelRatio(Math.min(2, devicePixelRatio||1)); renderer.setSize(innerWidth, innerHeight);
     const scene = new THREE.Scene(); scene.background = new THREE.Color(0x05060a);
-    const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 8000);
+    const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 6000);
 
     scene.add(new THREE.HemisphereLight(0x89b4ff, 0x05060a, .55));
     const sun = new THREE.DirectionalLight(0xffffff,.85); sun.position.set(160,220,120); scene.add(sun);
 
     /* Stars */
     (function(){
-      const g=new THREE.BufferGeometry(), N=2600, pos=new Float32Array(N*3);
-      for(let i=0;i<N;i++){const R=1200+Math.random()*1800, th=Math.random()*Math.PI*2, u=Math.random()*2-1, s=Math.sqrt(1-u*u);
+      const g=new THREE.BufferGeometry(), N=2500, pos=new Float32Array(N*3);
+      for(let i=0;i<N;i++){const R=900+Math.random()*1400, th=Math.random()*Math.PI*2, u=Math.random()*2-1, s=Math.sqrt(1-u*u);
         pos[i*3]=R*s*Math.cos(th); pos[i*3+1]=R*u*0.7; pos[i*3+2]=R*s*Math.sin(th);} 
       g.setAttribute('position', new THREE.BufferAttribute(pos,3));
       scene.add(new THREE.Points(g,new THREE.PointsMaterial({size:1.6,color:0xbfd9ff,sizeAttenuation:true})));
     })();
 
-    /* Distant galaxies (sprites) */
-    const galaxies=[];
+    /* Galaxies (far sprites) */
     (function(){
-      function galaxyTex(w=256,h=128){
-        const c=document.createElement('canvas'); c.width=w; c.height=h; const x=c.getContext('2d');
-        const g=x.createRadialGradient(w*0.5,h*0.5,2,w*0.5,h*0.5,Math.max(w,h)*0.55);
-        g.addColorStop(0,'rgba(210,225,255,.85)'); g.addColorStop(.4,'rgba(150,190,255,.35)'); g.addColorStop(1,'rgba(120,150,220,0)');
-        x.fillStyle=g; x.fillRect(0,0,w,h);
+      const galaxies = [];
+      function galaxyTexture(){
+        const s=256, c=document.createElement('canvas'); c.width=c.height=s; const ctx=c.getContext('2d');
+        const g=ctx.createRadialGradient(s/2,s/2,4,s/2,s/2,s/2);
+        g.addColorStop(0,'rgba(255,255,255,.9)');
+        g.addColorStop(.3,'rgba(180,210,255,.55)');
+        g.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=g; ctx.fillRect(0,0,s,s);
         return new THREE.CanvasTexture(c);
       }
-      const tex=galaxyTex(); tex.anisotropy=renderer.capabilities.getMaxAnisotropy();
-      for(let i=0;i<5;i++){
-        const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false,opacity:.65}));
-        s.scale.set(180,90,1);
-        const r=800+Math.random()*1200, a=Math.random()*Math.PI*2, y=THREE.MathUtils.randFloatSpread(180);
-        s.position.set(Math.cos(a)*r, y, Math.sin(a)*r);
-        s.material.rotation=Math.random()*Math.PI;
-        galaxies.push(s); scene.add(s);
+      const tex = galaxyTexture();
+      for(let i=0;i<6;i++){
+        const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false,opacity:.9}));
+        const R=800+Math.random()*800, a=Math.random()*Math.PI*2, h=THREE.MathUtils.randFloatSpread(200);
+        sp.position.set(Math.cos(a)*R,h,Math.sin(a)*R); sp.scale.setScalar(120+Math.random()*120);
+        sp.material.opacity = .35 + Math.random()*.25;
+        scene.add(sp); galaxies.push(sp);
       }
     })();
 
-    /* Projects */
+    /* Black hole (accretion disk + event horizon) */
+    (function(){
+      const disk = new THREE.Mesh(
+        new THREE.TorusGeometry(28, 5.2, 2, 100),
+        new THREE.MeshStandardMaterial({color:0x6aa7ff, emissive:0x1534a6, emissiveIntensity:.8, metalness:.2, roughness:.4, side:THREE.DoubleSide, transparent:true, opacity:.5})
+      );
+      disk.rotation.x = Math.PI/2;
+      disk.position.set(-260, -40, -120);
+      scene.add(disk);
+      // event horizon sprite (dark core)
+      const s=256, c=document.createElement('canvas'); c.width=c.height=s; const ctx=c.getContext('2d');
+      const g=ctx.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);
+      g.addColorStop(0,'rgba(0,0,0,1)'); g.addColorStop(.6,'rgba(0,0,0,.8)'); g.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(s/2,s/2,s/2,0,Math.PI*2); ctx.fill();
+      const bhTex=new THREE.CanvasTexture(c);
+      const core=new THREE.Sprite(new THREE.SpriteMaterial({map:bhTex,transparent:true,depthWrite:false,opacity:.9}));
+      core.position.copy(disk.position); core.scale.setScalar(80); scene.add(core);
+
+      // gentle spin
+      const spin = ()=>{ disk.rotation.z += 0.0016; requestAnimationFrame(spin); }; spin();
+    })();
+
+    /* Projects -> planet cards */
     const PROJECTS=[
       {id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg'},
       {id:'p2',title:'Odin Pendant Animation',tag:'3D Works',cover:'media/covers/p2.jpg'},
@@ -184,17 +230,13 @@
     function appearanceFor(p){
       const t=(p.tag||'').toLowerCase(), name=p.title.toLowerCase();
       if(t.includes('cgi') || name.includes('nike')) return {h:0.02,s:0.55,l:0.62,metal:0.45,rough:0.35,ring:true,emiss:0.18};
-      if(t.includes('touchdesigner')||t.includes('interactive')||name.includes('mediapipe')) return {h:0.62,s:0.55,l:0.58,metal:0.2,rough:0.55,ring:Math.random()<0.35,emiss:0.28};
-      if(t.includes('lookdev')||name.includes('maverick')) return {h:0.58,s:0.28,l:0.60,metal:0.35,rough:0.42,ring:Math.random()<0.45,emiss:0.16};
+      if(t.includes('touchdesigner')||t.includes('interactive')||name.includes('mediapipe')) return {h:0.62,s:0.55,l:0.58,metal:0.2,rough:0.55,ring:Math.random()<0.4,emiss:0.28};
+      if(t.includes('lookdev')||name.includes('maverick')) return {h:0.58,s:0.28,l:0.60,metal:0.35,rough:0.42,ring:Math.random()<0.5,emiss:0.16};
       if(t.includes('ai')) return {h:0.76,s:0.45,l:0.64,metal:0.25,rough:0.5,ring:false,emiss:0.26};
-      return {h:0.66,s:0.40,l:0.58,metal:0.22,rough:0.55,ring:Math.random()<0.4,emiss:0.18};
+      return {h:0.66,s:0.40,l:0.58,metal:0.22,rough:0.55,ring:Math.random()<0.5,emiss:0.18};
     }
 
-    const overlay=document.getElementById('overlay'), helpBox=document.getElementById('helpBox');
-    helpBox.innerHTML = isTouch
-      ? `<b>Heads up</b> — This site isn’t optimized for mobile yet. If you want the full experience, try on a computer. You can still browse the <a href="projects.html" style="color:#fff; text-decoration:underline;">Basic Portfolio</a>.`
-      : '<b>Desktop</b> — Mouse move: turn · <b>W/S</b> fwd/back · <b>A/D</b> turn · Near planet: <b>E</b> enter · In modal: <b>Q</b> quit';
-
+    const overlay=document.getElementById('overlay');
     const planets=[], cardsRef=[], tmpV=new THREE.Vector3();
     const sphereGeo=new THREE.SphereGeometry(1,40,28);
     function makePlanet(r,app){
@@ -205,10 +247,10 @@
       }));
       m.rotation.z = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(12));
       if(app.ring){
-        // HALKALAR KÜÇÜK
+        // smaller rings
         const ring=new THREE.Mesh(
-          new THREE.RingGeometry(r*1.02,r*1.10,56),
-          new THREE.MeshBasicMaterial({color:col.clone().offsetHSL(.08,0,0).getHex(),transparent:true,opacity:.09,side:THREE.DoubleSide})
+          new THREE.RingGeometry(r*1.02,r*1.09,64),
+          new THREE.MeshBasicMaterial({color:col.clone().offsetHSL(.08,0,0).getHex(),transparent:true,opacity:.12,side:THREE.DoubleSide})
         );
         ring.rotation.x=-Math.PI/2 + THREE.MathUtils.randFloatSpread(.35);
         ring.rotation.z=Math.random()*Math.PI*2; m.add(ring);
@@ -235,50 +277,43 @@
       const item={el,obj:m,pill}; el.addEventListener('click',()=>{ if(nearest===m) qvOpenFor(m); }); cardsRef.push(item);
     });
 
-    /* Black hole (distant) */
-    const bhGroup=new THREE.Group();
-    (function(){
-      const hole=new THREE.Mesh(new THREE.SphereGeometry(8,48,32), new THREE.MeshBasicMaterial({color:0x000000}));
-      hole.scale.set(1,1,1);
-      // accretion disk sprite
-      const tex=makeRadialTexture('rgba(255,240,180,.75)','rgba(255,160,40,0)');
-      const disk=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false,opacity:.65}));
-      disk.scale.set(55,55,1); disk.material.rotation=Math.PI/8;
-      bhGroup.add(hole,disk);
-      bhGroup.position.set(-220, 14, 180);
-      scene.add(bhGroup);
-    })();
-
     /* Ship & particles */
     const ship=new THREE.Group(); scene.add(ship);
 
-    // fallback
+    // Fallback hull
     const hull=new THREE.Mesh(new THREE.CapsuleGeometry(.8,3,6,12),
       new THREE.MeshStandardMaterial({color:0x9aa7ff,roughness:.55,metalness:.2,emissive:0x10163a,emissiveIntensity:.2}));
     hull.rotation.z=Math.PI/2; ship.add(hull);
 
-    // GLB
+    // GLB (media/spaceship.glb) — turn to +X
     const loader = new GLTFLoader();
     let exhaustLocal=new THREE.Vector3(-2,0,0);
+
     loader.load('media/spaceship.glb', (gltf)=>{
-      const model = gltf.scene || gltf.scenes?.[0]; if(!model) return;
+      const model = gltf.scene || gltf.scenes?.[0];
+      if(!model) return;
       ship.clear();
 
+      // scale to ~6 units
       const box0 = new THREE.Box3().setFromObject(model);
       const size0 = new THREE.Vector3(); box0.getSize(size0);
       const s = 6 / Math.max(size0.x,size0.y,size0.z || 1);
       model.scale.setScalar(s);
+
+      // Most GLBs face +Z -> rotate to +X
       model.rotation.set(0, -Math.PI/2, 0);
 
+      // center pivot
       const b1 = new THREE.Box3().setFromObject(model);
       const c1 = new THREE.Vector3(); b1.getCenter(c1);
       model.position.sub(c1);
 
+      // exhaust near minX
       const b2 = new THREE.Box3().setFromObject(model);
       exhaustLocal = new THREE.Vector3(b2.min.x - 0.6, 0, 0);
 
       ship.add(model);
-    }, undefined, ()=>{ /* yoksa fallback kalır */ });
+    }, undefined, ()=>{/* keep fallback if missing */});
 
     function worldFromExhaust(out){return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);}
     function makeSprite(mat){const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s;}
@@ -375,6 +410,8 @@
     }
 
     /* Overlay & hint */
+    const qv=document.getElementById('quickview'), qvTitle=document.getElementById('qvTitle'),
+          qvTag=document.getElementById('qvTag'), qvMedia=document.getElementById('qvMedia');
     let nearest=null;
     function updateCardsAndHint(){
       const W=innerWidth,H=innerHeight; let best=null,dmin=Infinity;
@@ -394,13 +431,94 @@
       }
     }
 
-    /* Quick View (sağlam) */
-    const qv=document.getElementById('quickview');
-    const qvTitle=document.getElementById('qvTitle');
-    const qvTag=document.getElementById('qvTag');
-    const qvMedia=document.getElementById('qvMedia');
-
     function qvOpenFor(pl){
-      const p=pl.userData.project;
       controlsEnabled=false;
-      qvTitle.textContent
+      const p=pl.userData.project;
+      qvTitle.textContent=p.title; qvTag.textContent=p.tag||'';
+      qvMedia.style.backgroundImage=`url('${p.cover||''}')`;
+      qv.style.display='flex';
+      qv.classList.add('show');
+      qv.setAttribute('aria-hidden','false');
+    }
+    function qvCloseFn(){
+      qv.classList.remove('show');
+      qv.style.display='none';
+      qv.setAttribute('aria-hidden','true');
+      controlsEnabled=true;
+    }
+    document.getElementById('qvExit').addEventListener('click',qvCloseFn);
+    addEventListener('keydown',e=>{
+      if(e.code==='KeyQ' && qv.classList.contains('show')){ qvCloseFn(); return; }
+      if(e.code==='KeyE'){
+        if(qv.classList.contains('show')){ window.location.href='projects.html'; }
+        else if(controlsEnabled && nearest){ qvOpenFor(nearest); }
+      }
+    });
+
+    /* Planet spin */
+    function spinPlanets(dt){ for(const pl of planets){ pl.rotation.y += (pl.userData.spin||0.03)*dt; } }
+
+    /* Satellites + debris */
+    const satellites=[], debrisPool=[];
+    function makeSatellite(x,y,z){
+      const group=new THREE.Group();
+      const body=new THREE.Mesh(new THREE.BoxGeometry(1.2,0.8,0.8), new THREE.MeshStandardMaterial({color:0xd0d6e5,metalness:.4,roughness:.6}));
+      const panelMat=new THREE.MeshStandardMaterial({color:0x6aa7ff,emissive:0x0e1a44,emissiveIntensity:.4,roughness:.4});
+      const panelL=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.15,0.6), panelMat);
+      const panelR=panelL.clone(); panelL.position.set(-1.2,0,0); panelR.position.set(1.2,0,0);
+      group.add(body,panelL,panelR);
+      group.position.set(x,y,z);
+      group.scale.setScalar(3);
+      group.userData.spin = THREE.MathUtils.randFloat(0.3,0.8);
+      scene.add(group);
+      satellites.push(group);
+    }
+    for(let i=0;i<5;i++){
+      const a=Math.random()*Math.PI*2, r=THREE.MathUtils.randFloat(50,120);
+      makeSatellite(Math.cos(a)*r, THREE.MathUtils.randFloatSpread(12), Math.sin(a)*r);
+    }
+    function spawnDebris(at){
+      for(let i=0;i<12;i++){
+        const cube=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.12,0.12), new THREE.MeshStandardMaterial({color:0x9fb4ff,metalness:.3,roughness:.4,transparent:true,opacity:1}));
+        cube.position.copy(at);
+        const vel=new THREE.Vector3(THREE.MathUtils.randFloatSpread(6), THREE.MathUtils.randFloatSpread(4)+1.2, THREE.MathUtils.randFloatSpread(6));
+        const life=1.6+Math.random()*0.9;
+        debrisPool.push({mesh:cube, vel, life, max:life});
+        scene.add(cube);
+      }
+    }
+    function updateSatellites(dt){
+      for(const s of satellites){ s.rotation.y += s.userData.spin*dt; }
+      for(let i=satellites.length-1;i>=0;i--){
+        const s=satellites[i];
+        if(ship.position.distanceTo(s.position) < 3.0){
+          spawnDebris(s.position); scene.remove(s); satellites.splice(i,1);
+        }
+      }
+      for(let i=debrisPool.length-1;i>=0;i--){
+        const d=debrisPool[i]; d.life-=dt;
+        d.mesh.position.addScaledVector(d.vel,dt); d.vel.multiplyScalar(0.985); d.mesh.rotation.x+=dt*2; d.mesh.rotation.y+=dt*2.4;
+        const t=Math.max(0,d.life/d.max); d.mesh.material.opacity = t;
+        if(d.life<=0){ scene.remove(d.mesh); debrisPool.splice(i,1); }
+      }
+    }
+
+    /* Start */
+    const startEl=document.getElementById('start');
+    document.getElementById('btnStart').addEventListener('click',()=>{
+      startEl.classList.add('hide');
+      setTimeout(()=>{ controlsEnabled=true; },550);
+    });
+
+    /* Resize & loop */
+    addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();});
+    const clock=new THREE.Clock();
+    function loop(){
+      const dt=Math.min(.033,clock.getDelta());
+      updateShip(dt); updateCamera(dt); updateParticles(dt); spinPlanets(dt*0.5); updateSatellites(dt); updateCardsAndHint();
+      renderer.render(scene,camera); requestAnimationFrame(loop);
+    }
+    loop();
+  </script>
+</body>
+</html>

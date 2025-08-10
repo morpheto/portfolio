@@ -24,47 +24,31 @@
   .planet-card__meta{display:flex;justify-content:space-between;align-items:center;padding:8px 10px}
   .title{font-weight:700}
   .badge{position:absolute;left:8px;top:8px;background:rgba(64,191,255,.12);border:1px solid rgba(64,191,255,.4);backdrop-filter:blur(6px);font-size:11px;padding:6px 8px;border-radius:999px;color:#cfefff}
-  .enter-pill{
-    position:absolute;left:50%;top:50%;transform:translate(-50%, -50%);
-    padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);
-    background:rgba(64,191,255,.10);color:#dff2ff;font-size:12px;
-    box-shadow:0 0 16px rgba(64,191,255,.25);opacity:0;transition:opacity .15s ease;pointer-events:none
-  }
+  .enter-pill{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.10);color:#dff2ff;font-size:12px;box-shadow:0 0 16px rgba(64,191,255,.25);opacity:0;transition:opacity .15s ease;pointer-events:none}
 
-  /* Popup */
-  .popup{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
-  .popup.show{display:flex}
-  .popup-card{width:min(820px,92vw);border:1px solid rgba(120,198,255,.28);border-radius:16px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
-  .popup-media{height:min(52vh,460px);background:#0e1433;background-size:cover;background-position:center}
-  .popup-body{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .popup-title{font-weight:800;font-size:18px}.popup-tag{font-size:12px;color:#cfd6e3}
-  .popup-actions{display:flex;gap:10px}
-  .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
-  .btn.primary{background:#1e5eff;border-color:#2b66ff}
-
-  /* Start screen (tilted card + basic link) */
+  /* Start (centered small card) */
   .start{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 600px at 50% -20%, rgba(120,170,255,.08), rgba(5,6,10,.95))}
   .start.hide{animation:fade .6s both}@keyframes fade{to{opacity:0;visibility:hidden}}
-  .start-wrap{display:flex;align-items:center;gap:28px;flex-wrap:wrap;max-width:1000px;padding:0 16px}
-  .card-tilted{
-    border:1px solid rgba(255,255,255,.12); background:rgba(10,12,20,.72); backdrop-filter:blur(8px);
-    width:min(56vw,520px); height:min(30vw,280px); border-radius:18px; box-shadow:0 40px 90px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.08);
-    transform:rotate(-18deg); display:flex; align-items:center; justify-content:center; cursor:pointer;
+  .start-center{display:flex; flex-direction:column; align-items:center; gap:14px; padding:0 16px}
+  .start-card{
+    width:320px;height:180px;border-radius:18px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(10,12,20,.72); backdrop-filter:blur(8px);
+    box-shadow:0 30px 80px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.08);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; transform:none;
   }
-  .card-tilted:focus-visible{ outline:2px solid rgba(127,215,255,.7); outline-offset:4px; }
-  .card-tilted:hover{ box-shadow:0 40px 90px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.12); }
-  .card-tilted .label{font-size:28px; letter-spacing:.22em; font-weight:800; color:#e9eefb; opacity:.9}
-  .start-col{display:flex;flex-direction:column;gap:12px}
-  .start-actions{display:flex;gap:12px;flex-wrap:wrap}
+  .start-card:hover{box-shadow:0 30px 80px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.12);}
+  .start-card .label{font-size:26px; letter-spacing:.22em; font-weight:800; color:#e9eefb; opacity:.95}
+  .start-actions{display:flex; gap:12px}
+  .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
   .btn.hollow{background:transparent;border:1px solid rgba(255,255,255,.35);color:#e9eefb}
   .start-note{color:#cfd6e3;font-size:13px}
   .kbd{font-weight:800;border:1px solid rgba(255,255,255,.18);padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.06)}
 
-  /* Mobile-only overlay */
-  .mobile-blocker{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(7,9,14,.96);color:#dfe6f7;padding:24px}
-  .mobile-card{max-width:560px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:#0b0f1c;padding:20px 22px;box-shadow:0 20px 60px rgba(0,0,0,.55)}
-  .mobile-card h2{margin:0 0 8px;font-size:20px}
-  .mobile-card p{margin:0 0 12px;color:#cdd6e9}
+  /* Mobile gate */
+  .mobile-gate{max-width:520px;text-align:center;padding:22px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(10,12,20,.72);backdrop-filter:blur(8px)}
+  .mobile-gate h2{margin:0 0 8px;font-size:18px;font-weight:800}
+  .mobile-gate p{margin:0 0 12px;color:#cfd6e3;font-size:14px}
 </style>
 </head>
 <body>
@@ -81,7 +65,6 @@
   <div class="help" id="helpBox">Loading controls…</div>
   <div class="overlay" id="overlay"></div>
 
-  <!-- Quick View -->
   <div class="popup" id="quickview">
     <div class="popup-card" role="dialog" aria-modal="true">
       <div class="popup-media" id="qvMedia"></div>
@@ -91,7 +74,6 @@
           <div class="popup-tag" id="qvTag">Category</div>
         </div>
         <div class="popup-actions">
-          <button class="btn primary" id="qvEnter">Enter (E)</button>
           <button class="btn" id="qvExit">Quit (Q)</button>
         </div>
       </div>
@@ -100,52 +82,65 @@
 
   <!-- Start -->
   <div class="start" id="start">
-    <div class="start-wrap">
-      <button class="card-tilted" id="startCard" aria-label="Start space tour">
+    <div class="start-center" id="startCenter">
+      <!-- desktop: click card to start -->
+      <button class="start-card" id="startCard" aria-label="Start space tour">
         <div class="label">START</div>
       </button>
-      <div class="start-col">
-        <div class="start-actions">
-          <a class="btn hollow" href="projects.html">Basic Portfolio</a>
-        </div>
-        <div class="start-note">
-          <span class="kbd">W/S</span> move · mouse turn · near planet <span class="kbd">E</span> enter
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Mobile-only friendly blocker -->
-  <div class="mobile-blocker" id="mobileBlock">
-    <div class="mobile-card">
-      <h2>Hey! 👋</h2>
-      <p>This space tour isn’t optimized for mobile yet. If you want the full experience, please try from a computer.</p>
-      <p>In the meantime, you can browse the basic portfolio below.</p>
-      <p><a class="btn hollow" href="projects.html">Go to Basic Portfolio</a></p>
+      <div class="start-actions">
+        <a class="btn hollow" href="projects.html">Basic Portfolio</a>
+      </div>
+
+      <div class="start-note">
+        <span class="kbd">W/S</span> move · mouse turn · near planet <span class="kbd">E</span> enter
+      </div>
     </div>
   </div>
 
   <canvas id="scene"></canvas>
 
-  <!-- Three.js (non-module) + GLTFLoader (non-module) -->
-  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-  <script src="https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+  <!-- Import map: three & addons -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
 
-  <script>
-  (function(){
+  <!-- App (module) -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
     const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
-    function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+    const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+    // Mobile gate — only show friendly message + basic portfolio
+    if(isTouch){
+      const center=document.getElementById('startCenter');
+      center.innerHTML = `
+        <div class="mobile-gate">
+          <h2>Heads up!</h2>
+          <p>My space experience isn’t optimized for mobile yet. If you want the full ride, please try on a computer.</p>
+          <p style="margin-top:8px">Meanwhile, you can check the basic portfolio:</p>
+          <p><a class="btn hollow" href="projects.html">Open Basic Portfolio</a></p>
+        </div>
+      `;
+      document.getElementById('helpBox').style.display='none';
+    }
+
+    // Blue/cyan exhaust textures
     function makeRadialTexture(inner, outer, size=128){
       const c=document.createElement('canvas'); c.width=c.height=size;
       const ctx=c.getContext('2d'); const g=ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
       g.addColorStop(0,inner); g.addColorStop(1,outer); ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
       const t=new THREE.CanvasTexture(c); t.minFilter=THREE.LinearFilter; t.magFilter=THREE.LinearFilter; return t;
     }
-
-    /* Mobile block */
-    if(isTouch){
-      document.getElementById('mobileBlock').style.display='flex';
-    }
+    const flameTex = makeRadialTexture('rgba(120,230,255,1)','rgba(0,170,255,0)');
+    const smokeTex = makeRadialTexture('rgba(160,210,255,0.55)','rgba(90,140,200,0)');
 
     /* Scene */
     const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('scene'), antialias:true});
@@ -165,7 +160,7 @@
       scene.add(new THREE.Points(g,new THREE.PointsMaterial({size:1.6,color:0xbfd9ff,sizeAttenuation:true})));
     })();
 
-    /* Projects */
+    /* Projects (cards) */
     const PROJECTS=[
       {id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg'},
       {id:'p2',title:'Odin Pendant Animation',tag:'3D Works',cover:'media/covers/p2.jpg'},
@@ -188,8 +183,8 @@
 
     const overlay=document.getElementById('overlay'), helpBox=document.getElementById('helpBox');
     helpBox.innerHTML = isTouch
-      ? '<b>Mobile</b> — Space tour disabled • Use Basic Portfolio'
-      : '<b>Desktop</b> — Mouse move: turn · <b>W/S</b> forward/back · <b>A/D</b> turn · Near planet: <b>E</b> enter · In modal: <b>Q</b> exit';
+      ? '<b>Mobile</b> — Space tour disabled · Use Basic Portfolio.'
+      : '<b>Desktop</b> — Mouse turn · <b>W/S</b> forward/back · <b>A/D</b> turn · Near planet: <b>E</b> enter · In modal: <b>Q</b> exit';
 
     const planets=[], cardsRef=[], tmpV=new THREE.Vector3();
     const sphereGeo=new THREE.SphereGeometry(1,40,28);
@@ -230,59 +225,96 @@
       const item={el,obj:m,pill}; el.addEventListener('click',()=>{ if(nearest===m) qvOpenFor(m); }); cardsRef.push(item);
     });
 
-    /* Ship & particles (blue exhaust) */
-    const flameTex = makeRadialTexture('rgba(80,220,255,1)','rgba(0,160,220,0)');
-    const smokeTex = makeRadialTexture('rgba(180,210,240,0.45)','rgba(120,140,170,0.0)');
+    /* Ship & particles */
     const ship=new THREE.Group(); scene.add(ship);
 
-    // Fallback hull (aligned to +X)
+    // Fallback hull (if GLB missing)
     const hull=new THREE.Mesh(new THREE.CapsuleGeometry(.8,3,6,12),
       new THREE.MeshStandardMaterial({color:0x9aa7ff,roughness:.55,metalness:.2,emissive:0x10163a,emissiveIntensity:.2}));
     hull.rotation.z=Math.PI/2; ship.add(hull);
 
-    // Try to load GLB (media/spaceship.glb). If present, replace fallback.
-    const LoaderCtor = (window.THREE && THREE.GLTFLoader) || window.GLTFLoader;
-    let exhaustLocal=new THREE.Vector3(-2,0,0); // will update after GLB fit
+    // GLB load — face +X, blue exhaust position
+    const loader = new GLTFLoader();
+    let exhaustLocal=new THREE.Vector3(-2,0,0);
 
-    if(LoaderCtor){
-      const loader = new LoaderCtor();
-      loader.load('media/spaceship.glb', (gltf)=>{
-        const model = gltf.scene || (gltf.scenes && gltf.scenes[0]);
-        if(model){
-          ship.clear();
-          // Normalize size ~ 6 units and center
-          const box = new THREE.Box3().setFromObject(model);
-          const size = new THREE.Vector3(); box.getSize(size);
-          const maxDim = Math.max(size.x,size.y,size.z) || 1;
-          const s = 6 / maxDim; model.scale.setScalar(s);
-          const center = new THREE.Vector3(); box.getCenter(center);
-          model.position.sub(center.multiplyScalar(s));
-          // Face +X (most GLBs face +Z, yaw +90°)
-          model.rotation.y = Math.PI/2;
-          // Exhaust near tail (minX)
-          const minX = (box.min.x - center.x) * s;
-          exhaustLocal = new THREE.Vector3(minX - 0.6, 0, 0);
-          ship.add(model);
-        }
-      }, undefined, ()=>{/* ignore if missing */});
-    }
+    loader.load('media/spaceship.glb', (gltf)=>{
+      const model = gltf.scene || gltf.scenes?.[0];
+      if(!model) return;
 
-    function worldFromExhaust(out){return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);} 
+      ship.clear();
+
+      const box0 = new THREE.Box3().setFromObject(model);
+      const size0 = new THREE.Vector3(); box0.getSize(size0);
+      const s = 6 / Math.max(size0.x,size0.y,size0.z || 1);
+      model.scale.setScalar(s);
+
+      // çoğu GLB +Z ileri → -90° Y ile +X'e çevir
+      model.rotation.set(0, -Math.PI/2, 0);
+
+      // pivotu merkeze al
+      const b1 = new THREE.Box3().setFromObject(model);
+      const c1 = new THREE.Vector3(); b1.getCenter(c1);
+      model.position.sub(c1);
+
+      // egzoz X min tarafında
+      const b2 = new THREE.Box3().setFromObject(model);
+      exhaustLocal = new THREE.Vector3(b2.min.x - 0.6, 0, 0);
+
+      ship.add(model);
+    }, undefined, ()=>{/* yoksa fallback kalsın */});
+
+    function worldFromExhaust(out){return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);}
     function makeSprite(mat){const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s;}
     const flameMat=new THREE.SpriteMaterial({map:flameTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.95});
     const smokeMat=new THREE.SpriteMaterial({map:smokeTex,transparent:true,depthWrite:false,opacity:.0});
     const flamePool=[...Array(140)].map(()=>makeSprite(flameMat)), smokePool=[...Array(100)].map(()=>makeSprite(smokeMat));
     const flameData=flamePool.map(()=>({life:0,max:0,vel:new THREE.Vector3()})), smokeData=smokePool.map(()=>({life:0,max:0,vel:new THREE.Vector3()}));
-    function spawnFlame(n,intensity=1){for(let i=0;i<flamePool.length&&n>0;i++){if(flameData[i].life>0)continue;n--;const sp=flamePool[i],d=flameData[i];const pos=new THREE.Vector3();worldFromExhaust(pos);sp.position.copy(pos);sp.scale.setScalar(1.0+Math.random()*1.6*intensity);d.max=.35+Math.random()*.25;d.life=d.max;const dir=new THREE.Vector3(-1,THREE.MathUtils.randFloatSpread(.35),THREE.MathUtils.randFloatSpread(.35)).applyQuaternion(ship.quaternion);d.vel.copy(dir.multiplyScalar(12+18*intensity));sp.material.opacity=.95;sp.visible=true;}}
-    function spawnSmoke(n,boost=1){for(let i=0;i<smokePool.length&&n>0;i++){if(smokeData[i].life>0)continue;n--;const sp=smokePool[i],d=smokeData[i];const pos=new THREE.Vector3();worldFromExhaust(pos);sp.position.copy(pos);const s=1.2+Math.random()*2.2*boost;sp.scale.set(s,s,1);d.max=.9+Math.random()*.8;d.life=d.max;const dir=new THREE.Vector3(-1,THREE.MathUtils.randFloatSpread(.25),THREE.MathUtils.randFloatSpread(.25)).applyQuaternion(ship.quaternion);d.vel.copy(dir.multiplyScalar(3+2*boost));sp.material.opacity=.35;sp.visible=true;}}
+    function spawnFlame(n,intensity=1){
+      for(let i=0;i<flamePool.length&&n>0;i++){
+        if(flameData[i].life>0)continue; n--;
+        const sp=flamePool[i],d=flameData[i]; const pos=new THREE.Vector3(); worldFromExhaust(pos);
+        sp.position.copy(pos); sp.scale.setScalar(1.0+Math.random()*1.6*intensity);
+        d.max=.38+Math.random()*.28; d.life=d.max;
+        const dir=new THREE.Vector3(-1,THREE.MathUtils.randFloatSpread(.35),THREE.MathUtils.randFloatSpread(.35)).applyQuaternion(ship.quaternion);
+        d.vel.copy(dir.multiplyScalar(13+20*intensity)); sp.material.opacity=.95; sp.visible=true;
+      }
+    }
+    function spawnSmoke(n,boost=1){
+      for(let i=0;i<smokePool.length&&n>0;i++){
+        if(smokeData[i].life>0)continue; n--;
+        const sp=smokePool[i],d=smokeData[i]; const pos=new THREE.Vector3(); worldFromExhaust(pos);
+        sp.position.copy(pos); const s=1.4+Math.random()*2.4*boost; sp.scale.set(s,s,1);
+        d.max=1.0+Math.random()*.9; d.life=d.max;
+        const dir=new THREE.Vector3(-1,THREE.MathUtils.randFloatSpread(.25),THREE.MathUtils.randFloatSpread(.25)).applyQuaternion(ship.quaternion);
+        d.vel.copy(dir.multiplyScalar(3+2.2*boost)); sp.material.opacity=.35; sp.visible=true;
+      }
+    }
     function updateParticles(dt){
-      for(let i=0;i<flamePool.length;i++){const p=flamePool[i],d=flameData[i];if(d.life<=0){p.visible=false;continue;}d.life-=dt;p.position.addScaledVector(d.vel,dt);const t=d.life/d.max;p.material.opacity=.2+.8*t;const s=(.7+1.9*(1-t));p.scale.set(s,s,1);if(d.life<=0)p.visible=false;}
-      for(let i=0;i<smokePool.length;i++){const p=smokePool[i],d=smokeData[i];if(d.life<=0){p.visible=false;continue;}d.life-=dt;p.position.addScaledVector(d.vel,dt);p.position.y+=dt*.6;const t=d.life/d.max;p.material.opacity=.35*t;const s=p.scale.x*(1+.35*dt);p.scale.set(s,s,1);if(d.life<=0)p.visible=false;}
+      for(let i=0;i<flamePool.length;i++){
+        const p=flamePool[i],d=flameData[i]; if(d.life<=0){p.visible=false;continue;}
+        d.life-=dt; p.position.addScaledVector(d.vel,dt);
+        const t=d.life/d.max; p.material.opacity=.18+.77*t;
+        const s=(.7+1.9*(1-t)); p.scale.set(s,s,1);
+        if(d.life<=0)p.visible=false;
+      }
+      for(let i=0;i<smokePool.length;i++){
+        const p=smokePool[i],d=smokeData[i]; if(d.life<=0){p.visible=false;continue;}
+        d.life-=dt; p.position.addScaledVector(d.vel,dt); p.position.y+=dt*.6;
+        const t=d.life/d.max; p.material.opacity=.35*t;
+        const s=p.scale.x*(1+.35*dt); p.scale.set(s,s,1);
+        if(d.life<=0)p.visible=false;
+      }
     }
 
     /* Camera */
     const camOff=new THREE.Vector3(-20,8.8,0), lookAhead=new THREE.Vector3(8,2,0), camPos=new THREE.Vector3(), lookAt=new THREE.Vector3();
-    function updateCamera(dt){const off=camOff.clone().applyQuaternion(ship.quaternion);camPos.copy(ship.position).add(off);camera.position.lerp(camPos,1-Math.pow(.0028,dt*60));const la=lookAhead.clone().applyQuaternion(ship.quaternion);lookAt.copy(ship.position).add(la);camera.lookAt(lookAt);} 
+    function updateCamera(dt){
+      const off=camOff.clone().applyQuaternion(ship.quaternion);
+      camPos.copy(ship.position).add(off);
+      camera.position.lerp(camPos,1-Math.pow(.0028,dt*60));
+      const la=lookAhead.clone().applyQuaternion(ship.quaternion);
+      lookAt.copy(ship.position).add(la); camera.lookAt(lookAt);
+    }
     camera.position.copy(ship.position).add(camOff); camera.lookAt(ship.position.clone().add(lookAhead));
 
     /* Input */
@@ -315,8 +347,13 @@
       const forward=new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion); ship.position.addScaledVector(forward,velF*dt);
       ship.position.y += Math.sin(pitch)*velF*.75*dt; ship.position.y=clamp(ship.position.y,-70,70);
 
-      const speedAbs=Math.abs(velF); const rate=Math.floor(6+14*clamp(throttle+speedAbs/20,0,1.5)); if(throttle>.01) spawnFlame(rate,clamp(throttle+speedAbs/30,.6,1.6));
-      if(prevThrottle>.25 && throttle<=.02) spawnSmoke(24,1.4); if((throttle<=.02 && speedAbs>2) || fwd<0) spawnSmoke(2,1.0+(fwd<0?.6:0)); prevThrottle=throttle;
+      const speedAbs=Math.abs(velF);
+      const rate=Math.floor(6+14*clamp(throttle+speedAbs/20,0,1.5));
+      if(throttle>.01) spawnFlame(rate,clamp(throttle+speedAbs/30,.6,1.6));
+      if(prevThrottle>.25 && throttle<=.02) spawnSmoke(24,1.4);
+      if((throttle<=.02 && speedAbs>2) || fwd<0) spawnSmoke(2,1.0+(fwd<0?.6:0));
+      prevThrottle=throttle;
+
       updateParticles(dt);
     }
 
@@ -346,12 +383,11 @@
           qvTag=document.getElementById('qvTag'), qvMedia=document.getElementById('qvMedia');
     function qvOpenFor(pl){ controlsEnabled=false; const p=pl.userData.project; qvTitle.textContent=p.title; qvTag.textContent=p.tag||''; qvMedia.style.backgroundImage=`url('${p.cover||''}')`; qv.classList.add('show'); }
     function qvCloseFn(){ qv.classList.remove('show'); controlsEnabled=true; }
-    document.getElementById('qvEnter').addEventListener('click',()=>alert('Full Project — coming soon'));
     document.getElementById('qvExit').addEventListener('click',qvCloseFn);
     addEventListener('keydown',e=>{
       if(e.code==='KeyQ' && qv.classList.contains('show')){ qvCloseFn(); return; }
       if(e.code==='KeyE'){
-        if(qv.classList.contains('show')){ alert('Full Project — coming soon'); }
+        if(qv.classList.contains('show')){ /* future: enter full project */ }
         else if(controlsEnabled && nearest){ qvOpenFor(nearest); }
       }
     });
@@ -359,7 +395,7 @@
     /* Planet spin */
     function spinPlanets(dt){ for(const pl of planets){ pl.rotation.y += (pl.userData.spin||0.03)*dt; } }
 
-    /* Satellites (3x size) + debris */
+    /* Satellites (3x) + debris */
     const satellites=[], debrisPool=[];
     function makeSatellite(x,y,z){
       const group=new THREE.Group();
@@ -369,7 +405,7 @@
       const panelR=panelL.clone(); panelL.position.set(-1.2,0,0); panelR.position.set(1.2,0,0);
       group.add(body,panelL,panelR);
       group.position.set(x,y,z);
-      group.scale.setScalar(3); // 3x büyütme
+      group.scale.setScalar(3);
       group.userData.spin = THREE.MathUtils.randFloat(0.3,0.8);
       scene.add(group);
       satellites.push(group);
@@ -404,12 +440,12 @@
       }
     }
 
-    /* Start: click on tilted card */
+    /* Start */
     const startEl=document.getElementById('start');
     const startCard=document.getElementById('startCard');
     if(startCard){
       startCard.addEventListener('click', ()=>{
-        if(isTouch) return; // mobile blocked
+        if(isTouch) return; // mobile kapalı
         startEl.classList.add('hide');
         setTimeout(()=>{ controlsEnabled=true; },550);
       });
@@ -424,7 +460,6 @@
       renderer.render(scene,camera); requestAnimationFrame(loop);
     }
     loop();
-  })();
   </script>
 </body>
 </html>

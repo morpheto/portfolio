@@ -26,29 +26,36 @@
   .badge{position:absolute;left:8px;top:8px;background:rgba(64,191,255,.12);border:1px solid rgba(64,191,255,.4);backdrop-filter:blur(6px);font-size:11px;padding:6px 8px;border-radius:999px;color:#cfefff}
   .enter-pill{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.10);color:#dff2ff;font-size:12px;box-shadow:0 0 16px rgba(64,191,255,.25);opacity:0;transition:opacity .15s ease;pointer-events:none}
 
-  /* Start (centered small card) */
+  /* Quick View — görünürlük garanti */
+  .popup{
+    position:fixed; inset:0; z-index:60;
+    display:none; align-items:center; justify-content:center;
+    background:rgba(0,0,0,.48); backdrop-filter:blur(4px);
+    opacity:0; transition:opacity .2s ease;
+  }
+  .popup.show{ display:flex; opacity:1; }
+  .popup-card{width:min(820px,92vw);border:1px solid rgba(120,198,255,.28);border-radius:16px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
+  .popup-media{height:min(52vh,460px);background:#0e1433;background-size:cover;background-position:center}
+  .popup-body{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .popup-title{font-weight:800;font-size:18px}.popup-tag{font-size:12px;color:#cfd6e3}
+  .popup-actions{display:flex;gap:10px}
+  .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
+  .btn.primary{background:#1e5eff;border-color:#2b66ff}
+
+  /* Start — ortada, düz */
   .start{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 600px at 50% -20%, rgba(120,170,255,.08), rgba(5,6,10,.95))}
   .start.hide{animation:fade .6s both}@keyframes fade{to{opacity:0;visibility:hidden}}
-  .start-center{display:flex; flex-direction:column; align-items:center; gap:14px; padding:0 16px}
-  .start-card{
-    width:320px;height:180px;border-radius:18px;
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(10,12,20,.72); backdrop-filter:blur(8px);
-    box-shadow:0 30px 80px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.08);
-    display:flex; align-items:center; justify-content:center; cursor:pointer; transform:none;
-  }
-  .start-card:hover{box-shadow:0 30px 80px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.12);}
-  .start-card .label{font-size:26px; letter-spacing:.22em; font-weight:800; color:#e9eefb; opacity:.95}
-  .start-actions{display:flex; gap:12px}
-  .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
-  .btn.hollow{background:transparent;border:1px solid rgba(255,255,255,.35);color:#e9eefb}
-  .start-note{color:#cfd6e3;font-size:13px}
-  .kbd{font-weight:800;border:1px solid rgba(255,255,255,.18);padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.06)}
+  .start-wrap{display:flex;flex-direction:column;gap:14px;align-items:center}
+  .start-card{width:min(520px,82vw);aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.1);background:rgba(20,24,36,.5);backdrop-filter:blur(8px);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+  .start-card h1{margin:0;font-size:32px;font-weight:800;letter-spacing:.2px;opacity:.9}
+  .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  .btn.linklike{background:transparent}
+  .kbd{font-weight:700;border:1px solid rgba(255,255,255,.18);padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.06)}
 
-  /* Mobile gate */
-  .mobile-gate{max-width:520px;text-align:center;padding:22px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(10,12,20,.72);backdrop-filter:blur(8px)}
-  .mobile-gate h2{margin:0 0 8px;font-size:18px;font-weight:800}
-  .mobile-gate p{margin:0 0 12px;color:#cfd6e3;font-size:14px}
+  /* Mobile uyarı (daha önceki gibi) */
+  @media (pointer:coarse){
+    .help{display:none}
+  }
 </style>
 </head>
 <body>
@@ -74,6 +81,7 @@
           <div class="popup-tag" id="qvTag">Category</div>
         </div>
         <div class="popup-actions">
+          <button class="btn primary" id="qvEnter">Enter (E)</button>
           <button class="btn" id="qvExit">Quit (Q)</button>
         </div>
       </div>
@@ -82,25 +90,20 @@
 
   <!-- Start -->
   <div class="start" id="start">
-    <div class="start-center" id="startCenter">
-      <!-- desktop: click card to start -->
-      <button class="start-card" id="startCard" aria-label="Start space tour">
-        <div class="label">START</div>
-      </button>
-
-      <div class="start-actions">
-        <a class="btn hollow" href="projects.html">Basic Portfolio</a>
+    <div class="start-wrap">
+      <div class="start-card" id="startCard"><h1>START</h1></div>
+      <div class="actions">
+        <a class="btn linklike" href="projects.html">Basic Portfolio</a>
       </div>
-
-      <div class="start-note">
+      <p style="margin:0;font-size:12px;opacity:.85">
         <span class="kbd">W/S</span> move · mouse turn · near planet <span class="kbd">E</span> enter
-      </div>
+      </p>
     </div>
   </div>
 
   <canvas id="scene"></canvas>
 
-  <!-- Import map: three & addons -->
+  <!-- Import map -->
   <script type="importmap">
   {
     "imports": {
@@ -110,7 +113,6 @@
   }
   </script>
 
-  <!-- App (module) -->
   <script type="module">
     import * as THREE from 'three';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -118,27 +120,13 @@
     const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
     const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
-    // Mobile gate — only show friendly message + basic portfolio
-    if(isTouch){
-      const center=document.getElementById('startCenter');
-      center.innerHTML = `
-        <div class="mobile-gate">
-          <h2>Heads up!</h2>
-          <p>My space experience isn’t optimized for mobile yet. If you want the full ride, please try on a computer.</p>
-          <p style="margin-top:8px">Meanwhile, you can check the basic portfolio:</p>
-          <p><a class="btn hollow" href="projects.html">Open Basic Portfolio</a></p>
-        </div>
-      `;
-      document.getElementById('helpBox').style.display='none';
-    }
-
-    // Blue/cyan exhaust textures
     function makeRadialTexture(inner, outer, size=128){
       const c=document.createElement('canvas'); c.width=c.height=size;
       const ctx=c.getContext('2d'); const g=ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
       g.addColorStop(0,inner); g.addColorStop(1,outer); ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
       const t=new THREE.CanvasTexture(c); t.minFilter=THREE.LinearFilter; t.magFilter=THREE.LinearFilter; return t;
     }
+    // egzost: mavi tonlar
     const flameTex = makeRadialTexture('rgba(120,230,255,1)','rgba(0,170,255,0)');
     const smokeTex = makeRadialTexture('rgba(160,210,255,0.55)','rgba(90,140,200,0)');
 
@@ -146,21 +134,42 @@
     const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('scene'), antialias:true});
     renderer.setPixelRatio(Math.min(2, devicePixelRatio||1)); renderer.setSize(innerWidth, innerHeight);
     const scene = new THREE.Scene(); scene.background = new THREE.Color(0x05060a);
-    const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 6000);
+    const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 8000);
 
     scene.add(new THREE.HemisphereLight(0x89b4ff, 0x05060a, .55));
     const sun = new THREE.DirectionalLight(0xffffff,.85); sun.position.set(160,220,120); scene.add(sun);
 
     /* Stars */
     (function(){
-      const g=new THREE.BufferGeometry(), N=2500, pos=new Float32Array(N*3);
-      for(let i=0;i<N;i++){const R=900+Math.random()*1400, th=Math.random()*Math.PI*2, u=Math.random()*2-1, s=Math.sqrt(1-u*u);
+      const g=new THREE.BufferGeometry(), N=2600, pos=new Float32Array(N*3);
+      for(let i=0;i<N;i++){const R=1200+Math.random()*1800, th=Math.random()*Math.PI*2, u=Math.random()*2-1, s=Math.sqrt(1-u*u);
         pos[i*3]=R*s*Math.cos(th); pos[i*3+1]=R*u*0.7; pos[i*3+2]=R*s*Math.sin(th);} 
       g.setAttribute('position', new THREE.BufferAttribute(pos,3));
       scene.add(new THREE.Points(g,new THREE.PointsMaterial({size:1.6,color:0xbfd9ff,sizeAttenuation:true})));
     })();
 
-    /* Projects (cards) */
+    /* Distant galaxies (sprites) */
+    const galaxies=[];
+    (function(){
+      function galaxyTex(w=256,h=128){
+        const c=document.createElement('canvas'); c.width=w; c.height=h; const x=c.getContext('2d');
+        const g=x.createRadialGradient(w*0.5,h*0.5,2,w*0.5,h*0.5,Math.max(w,h)*0.55);
+        g.addColorStop(0,'rgba(210,225,255,.85)'); g.addColorStop(.4,'rgba(150,190,255,.35)'); g.addColorStop(1,'rgba(120,150,220,0)');
+        x.fillStyle=g; x.fillRect(0,0,w,h);
+        return new THREE.CanvasTexture(c);
+      }
+      const tex=galaxyTex(); tex.anisotropy=renderer.capabilities.getMaxAnisotropy();
+      for(let i=0;i<5;i++){
+        const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false,opacity:.65}));
+        s.scale.set(180,90,1);
+        const r=800+Math.random()*1200, a=Math.random()*Math.PI*2, y=THREE.MathUtils.randFloatSpread(180);
+        s.position.set(Math.cos(a)*r, y, Math.sin(a)*r);
+        s.material.rotation=Math.random()*Math.PI;
+        galaxies.push(s); scene.add(s);
+      }
+    })();
+
+    /* Projects */
     const PROJECTS=[
       {id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg'},
       {id:'p2',title:'Odin Pendant Animation',tag:'3D Works',cover:'media/covers/p2.jpg'},
@@ -175,16 +184,16 @@
     function appearanceFor(p){
       const t=(p.tag||'').toLowerCase(), name=p.title.toLowerCase();
       if(t.includes('cgi') || name.includes('nike')) return {h:0.02,s:0.55,l:0.62,metal:0.45,rough:0.35,ring:true,emiss:0.18};
-      if(t.includes('touchdesigner')||t.includes('interactive')||name.includes('mediapipe')) return {h:0.62,s:0.55,l:0.58,metal:0.2,rough:0.55,ring:Math.random()<0.4,emiss:0.28};
-      if(t.includes('lookdev')||name.includes('maverick')) return {h:0.58,s:0.28,l:0.60,metal:0.35,rough:0.42,ring:Math.random()<0.5,emiss:0.16};
+      if(t.includes('touchdesigner')||t.includes('interactive')||name.includes('mediapipe')) return {h:0.62,s:0.55,l:0.58,metal:0.2,rough:0.55,ring:Math.random()<0.35,emiss:0.28};
+      if(t.includes('lookdev')||name.includes('maverick')) return {h:0.58,s:0.28,l:0.60,metal:0.35,rough:0.42,ring:Math.random()<0.45,emiss:0.16};
       if(t.includes('ai')) return {h:0.76,s:0.45,l:0.64,metal:0.25,rough:0.5,ring:false,emiss:0.26};
-      return {h:0.66,s:0.40,l:0.58,metal:0.22,rough:0.55,ring:Math.random()<0.5,emiss:0.18};
+      return {h:0.66,s:0.40,l:0.58,metal:0.22,rough:0.55,ring:Math.random()<0.4,emiss:0.18};
     }
 
     const overlay=document.getElementById('overlay'), helpBox=document.getElementById('helpBox');
     helpBox.innerHTML = isTouch
-      ? '<b>Mobile</b> — Space tour disabled · Use Basic Portfolio.'
-      : '<b>Desktop</b> — Mouse turn · <b>W/S</b> forward/back · <b>A/D</b> turn · Near planet: <b>E</b> enter · In modal: <b>Q</b> exit';
+      ? `<b>Heads up</b> — This site isn’t optimized for mobile yet. If you want the full experience, try on a computer. You can still browse the <a href="projects.html" style="color:#fff; text-decoration:underline;">Basic Portfolio</a>.`
+      : '<b>Desktop</b> — Mouse move: turn · <b>W/S</b> fwd/back · <b>A/D</b> turn · Near planet: <b>E</b> enter · In modal: <b>Q</b> quit';
 
     const planets=[], cardsRef=[], tmpV=new THREE.Vector3();
     const sphereGeo=new THREE.SphereGeometry(1,40,28);
@@ -196,11 +205,12 @@
       }));
       m.rotation.z = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(12));
       if(app.ring){
+        // HALKALAR KÜÇÜK
         const ring=new THREE.Mesh(
-          new THREE.RingGeometry(r*1.05,r*1.18,56),
-          new THREE.MeshBasicMaterial({color:col.clone().offsetHSL(.08,0,0).getHex(),transparent:true,opacity:.12,side:THREE.DoubleSide})
+          new THREE.RingGeometry(r*1.02,r*1.10,56),
+          new THREE.MeshBasicMaterial({color:col.clone().offsetHSL(.08,0,0).getHex(),transparent:true,opacity:.09,side:THREE.DoubleSide})
         );
-        ring.rotation.x=-Math.PI/2 + THREE.MathUtils.randFloatSpread(.45);
+        ring.rotation.x=-Math.PI/2 + THREE.MathUtils.randFloatSpread(.35);
         ring.rotation.z=Math.random()*Math.PI*2; m.add(ring);
       }
       m.scale.setScalar(r); m.userData.spin=THREE.MathUtils.randFloat(0.02,0.05);
@@ -225,43 +235,50 @@
       const item={el,obj:m,pill}; el.addEventListener('click',()=>{ if(nearest===m) qvOpenFor(m); }); cardsRef.push(item);
     });
 
+    /* Black hole (distant) */
+    const bhGroup=new THREE.Group();
+    (function(){
+      const hole=new THREE.Mesh(new THREE.SphereGeometry(8,48,32), new THREE.MeshBasicMaterial({color:0x000000}));
+      hole.scale.set(1,1,1);
+      // accretion disk sprite
+      const tex=makeRadialTexture('rgba(255,240,180,.75)','rgba(255,160,40,0)');
+      const disk=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false,opacity:.65}));
+      disk.scale.set(55,55,1); disk.material.rotation=Math.PI/8;
+      bhGroup.add(hole,disk);
+      bhGroup.position.set(-220, 14, 180);
+      scene.add(bhGroup);
+    })();
+
     /* Ship & particles */
     const ship=new THREE.Group(); scene.add(ship);
 
-    // Fallback hull (if GLB missing)
+    // fallback
     const hull=new THREE.Mesh(new THREE.CapsuleGeometry(.8,3,6,12),
       new THREE.MeshStandardMaterial({color:0x9aa7ff,roughness:.55,metalness:.2,emissive:0x10163a,emissiveIntensity:.2}));
     hull.rotation.z=Math.PI/2; ship.add(hull);
 
-    // GLB load — face +X, blue exhaust position
+    // GLB
     const loader = new GLTFLoader();
     let exhaustLocal=new THREE.Vector3(-2,0,0);
-
     loader.load('media/spaceship.glb', (gltf)=>{
-      const model = gltf.scene || gltf.scenes?.[0];
-      if(!model) return;
-
+      const model = gltf.scene || gltf.scenes?.[0]; if(!model) return;
       ship.clear();
 
       const box0 = new THREE.Box3().setFromObject(model);
       const size0 = new THREE.Vector3(); box0.getSize(size0);
       const s = 6 / Math.max(size0.x,size0.y,size0.z || 1);
       model.scale.setScalar(s);
+      model.rotation.set(0, -Math.PI/2, 0);
 
-      // çoğu GLB +Z ileri → -90° Y ile +X'e çevir
-      model.rotation.set(0, Math.PI/2, 0);
-
-      // pivotu merkeze al
       const b1 = new THREE.Box3().setFromObject(model);
       const c1 = new THREE.Vector3(); b1.getCenter(c1);
       model.position.sub(c1);
 
-      // egzoz X min tarafında
       const b2 = new THREE.Box3().setFromObject(model);
       exhaustLocal = new THREE.Vector3(b2.min.x - 0.6, 0, 0);
 
       ship.add(model);
-    }, undefined, ()=>{/* yoksa fallback kalsın */});
+    }, undefined, ()=>{ /* yoksa fallback kalır */ });
 
     function worldFromExhaust(out){return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);}
     function makeSprite(mat){const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s;}
@@ -372,94 +389,18 @@
         if(pill) pill.style.opacity=0;
       }
       const TH=28; nearest=(best&&dmin<TH)?best:null;
-      const qv=document.getElementById('quickview');
       if(nearest && controlsEnabled && !qv.classList.contains('show')){
         const ref=cardsRef.find(c=>c.obj===nearest); if(ref&&ref.pill){ ref.pill.style.opacity=1; }
       }
     }
 
-    /* Quick View */
-    const qv=document.getElementById('quickview'), qvTitle=document.getElementById('qvTitle'),
-          qvTag=document.getElementById('qvTag'), qvMedia=document.getElementById('qvMedia');
-    function qvOpenFor(pl){ controlsEnabled=false; const p=pl.userData.project; qvTitle.textContent=p.title; qvTag.textContent=p.tag||''; qvMedia.style.backgroundImage=`url('${p.cover||''}')`; qv.classList.add('show'); }
-    function qvCloseFn(){ qv.classList.remove('show'); controlsEnabled=true; }
-    document.getElementById('qvExit').addEventListener('click',qvCloseFn);
-    addEventListener('keydown',e=>{
-      if(e.code==='KeyQ' && qv.classList.contains('show')){ qvCloseFn(); return; }
-      if(e.code==='KeyE'){
-        if(qv.classList.contains('show')){ /* future: enter full project */ }
-        else if(controlsEnabled && nearest){ qvOpenFor(nearest); }
-      }
-    });
+    /* Quick View (sağlam) */
+    const qv=document.getElementById('quickview');
+    const qvTitle=document.getElementById('qvTitle');
+    const qvTag=document.getElementById('qvTag');
+    const qvMedia=document.getElementById('qvMedia');
 
-    /* Planet spin */
-    function spinPlanets(dt){ for(const pl of planets){ pl.rotation.y += (pl.userData.spin||0.03)*dt; } }
-
-    /* Satellites (3x) + debris */
-    const satellites=[], debrisPool=[];
-    function makeSatellite(x,y,z){
-      const group=new THREE.Group();
-      const body=new THREE.Mesh(new THREE.BoxGeometry(1.2,0.8,0.8), new THREE.MeshStandardMaterial({color:0xd0d6e5,metalness:.4,roughness:.6}));
-      const panelMat=new THREE.MeshStandardMaterial({color:0x6aa7ff,emissive:0x0e1a44,emissiveIntensity:.4,roughness:.4});
-      const panelL=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.15,0.6), panelMat);
-      const panelR=panelL.clone(); panelL.position.set(-1.2,0,0); panelR.position.set(1.2,0,0);
-      group.add(body,panelL,panelR);
-      group.position.set(x,y,z);
-      group.scale.setScalar(3);
-      group.userData.spin = THREE.MathUtils.randFloat(0.3,0.8);
-      scene.add(group);
-      satellites.push(group);
-    }
-    for(let i=0;i<5;i++){
-      const a=Math.random()*Math.PI*2, r=THREE.MathUtils.randFloat(50,120);
-      makeSatellite(Math.cos(a)*r, THREE.MathUtils.randFloatSpread(12), Math.sin(a)*r);
-    }
-    function spawnDebris(at){
-      for(let i=0;i<12;i++){
-        const cube=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.12,0.12), new THREE.MeshStandardMaterial({color:0x9fb4ff,metalness:.3,roughness:.4}));
-        cube.position.copy(at);
-        const vel=new THREE.Vector3(THREE.MathUtils.randFloatSpread(6), THREE.MathUtils.randFloatSpread(4)+1.2, THREE.MathUtils.randFloatSpread(6));
-        const life=1.6+Math.random()*0.9;
-        debrisPool.push({mesh:cube, vel, life, max:life});
-        scene.add(cube);
-      }
-    }
-    function updateSatellites(dt){
-      for(const s of satellites){ s.rotation.y += s.userData.spin*dt; }
-      for(let i=satellites.length-1;i>=0;i--){
-        const s=satellites[i];
-        if(ship.position.distanceTo(s.position) < 3.0){
-          spawnDebris(s.position); scene.remove(s); satellites.splice(i,1);
-        }
-      }
-      for(let i=debrisPool.length-1;i>=0;i--){
-        const d=debrisPool[i]; d.life-=dt;
-        d.mesh.position.addScaledVector(d.vel,dt); d.vel.multiplyScalar(0.985); d.mesh.rotation.x+=dt*2; d.mesh.rotation.y+=dt*2.4;
-        const t=Math.max(0,d.life/d.max); d.mesh.material.opacity = t; d.mesh.material.transparent=true;
-        if(d.life<=0){ scene.remove(d.mesh); debrisPool.splice(i,1); }
-      }
-    }
-
-    /* Start */
-    const startEl=document.getElementById('start');
-    const startCard=document.getElementById('startCard');
-    if(startCard){
-      startCard.addEventListener('click', ()=>{
-        if(isTouch) return; // mobile kapalı
-        startEl.classList.add('hide');
-        setTimeout(()=>{ controlsEnabled=true; },550);
-      });
-    }
-
-    /* Resize & loop */
-    addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();});
-    const clock=new THREE.Clock();
-    function loop(){
-      const dt=Math.min(.033,clock.getDelta());
-      updateShip(dt); updateCamera(dt); updateParticles(dt); spinPlanets(dt*0.5); updateSatellites(dt); updateCardsAndHint();
-      renderer.render(scene,camera); requestAnimationFrame(loop);
-    }
-    loop();
-  </script>
-</body>
-</html>
+    function qvOpenFor(pl){
+      const p=pl.userData.project;
+      controlsEnabled=false;
+      qvTitle.textContent

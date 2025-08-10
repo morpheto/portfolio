@@ -6,11 +6,12 @@
 <title>Orhun Ege Eker — Space Portfolio</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
-  :root{ --bg:#05060a; --text:#f6f7fb; --muted:#cbd5e1; }
+  :root{ --bg:#05060a; --text:#f6f7fb; --muted:#cbd5e1; --accent:#7fd7ff; }
   *{box-sizing:border-box} html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
   canvas#scene{position:fixed;inset:0;width:100%;height:100%;display:block}
 
+  /* HUD */
   .hud{position:fixed;top:12px;left:12px;right:12px;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(8,10,18,.45);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px);border-radius:16px}
   .brand{font-weight:800;letter-spacing:.4px;font-size:16px}
   .nav{display:flex;gap:16px}
@@ -18,14 +19,21 @@
 
   .help{position:fixed;right:12px;bottom:12px;z-index:20;color:var(--muted);font-size:12px;padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.06);backdrop-filter:blur(6px)}
 
+  /* Overlay cards near planets */
   .overlay{position:fixed;inset:0;pointer-events:none;z-index:12}
   .planet-card{position:absolute;transform:translate(-50%,-100%);width:240px;max-width:40vw;border-radius:12px;overflow:hidden;border:1px solid rgba(120,198,255,.28);background:linear-gradient(180deg, rgba(20,24,40,.85), rgba(10,12,20,.9));box-shadow:0 10px 26px rgba(0,0,0,.45);transition:opacity .15s ease, transform .15s ease;opacity:.0; pointer-events:auto}
   .planet-card__media{position:relative;height:120px;background:#0f1430;background-size:cover;background-position:center}
   .planet-card__meta{display:flex;justify-content:space-between;align-items:center;padding:8px 10px}
   .title{font-weight:700}
   .badge{position:absolute;left:8px;top:8px;background:rgba(64,191,255,.12);border:1px solid rgba(64,191,255,.4);backdrop-filter:blur(6px);font-size:11px;padding:6px 8px;border-radius:999px;color:#cfefff}
-  .enter-pill{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.10);color:#dff2ff;font-size:12px;box-shadow:0 0 16px rgba(64,191,255,.25);opacity:0;transition:opacity .15s ease;pointer-events:none}
+  .enter-pill{
+    position:absolute;left:50%;top:50%;transform:translate(-50%, -50%);
+    padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);
+    background:rgba(64,191,255,.10);color:#dff2ff;font-size:12px;
+    box-shadow:0 0 16px rgba(64,191,255,.25);opacity:0;transition:opacity .15s ease;pointer-events:none
+  }
 
+  /* Quick View modal */
   .popup{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
   .popup.show{display:flex}
   .popup-card{width:min(820px,92vw);border:1px solid rgba(120,198,255,.28);border-radius:16px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
@@ -36,14 +44,29 @@
   .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
   .btn.primary{background:#1e5eff;border-color:#2b66ff}
 
-  .start{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 600px at 50% -20%, rgba(120,170,255,.08), rgba(5,6,10,.95))}
+  /* DESKTOP START — angled card UI */
+  .start{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:
+    radial-gradient(1200px 600px at 50% -20%, rgba(120,170,255,.08), rgba(5,6,10,.95))}
   .start.hide{animation:fade .6s both}@keyframes fade{to{opacity:0;visibility:hidden}}
-  .start-card{padding:28px 32px;border:1px solid rgba(255,255,255,.12);background:rgba(10,12,20,.72);backdrop-filter:blur(8px);border-radius:16px;display:flex;flex-direction:column;gap:10px;align-items:center;min-width:280px}
-  .start-card h1{margin:0;font-size:20px;font-weight:800;letter-spacing:.2px}
-  .start-sub{margin:2px 0 8px;font-size:13px;color:#d0d7e4;opacity:.92}
+  .start-wrap{display:flex;gap:28px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .card-tilted{
+    position:relative;width:320px;height:180px;border:2px solid rgba(255,255,255,.2);
+    transform:perspective(800px) rotateX(12deg) rotateZ(-18deg) translateY(-6px);
+    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    display:grid;place-items:center;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.06)
+  }
+  .card-tilted .label{font-weight:800;letter-spacing:2px}
+  .start-col{display:flex;flex-direction:column;gap:10px;align-items:center}
+  .start-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .btn.hollow{background:transparent;border:2px solid rgba(255,255,255,.35)}
+  .start-note{font-size:12px;opacity:.85;color:#d0d7e4}
   .kbd{font-weight:700;border:1px solid rgba(255,255,255,.18);padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.06)}
-  .actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;justify-content:center}
-  .btn.linklike{background:transparent}
+
+  /* MOBILE notice */
+  .mobile-gate{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(5,6,10,.96);padding:24px}
+  .mobile-card{max-width:520px;width:100%;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(15,17,26,.8);backdrop-filter:blur(8px);padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .mobile-card h2{margin:0 0 8px;font-size:18px}
+  .mobile-card p{margin:0 0 14px;font-size:14px;color:#d6dbe7}
 </style>
 </head>
 <body>
@@ -60,6 +83,7 @@
   <div class="help" id="helpBox">Loading controls…</div>
   <div class="overlay" id="overlay"></div>
 
+  <!-- Quick View -->
   <div class="popup" id="quickview">
     <div class="popup-card" role="dialog" aria-modal="true">
       <div class="popup-media" id="qvMedia"></div>
@@ -76,52 +100,63 @@
     </div>
   </div>
 
-  <!-- Start -->
+  <!-- DESKTOP START -->
   <div class="start" id="start">
-    <div class="start-card">
-      <h1>Orhun Ege Eker — Portfolio</h1>
-      <div class="start-sub">If you choose the basic way</div>
-      <div class="actions">
-        <a class="btn linklike" href="projects.html">Basic Portfolio</a>
-        <button id="btnStart" class="btn primary">Start Space Tour</button>
+    <div class="start-wrap">
+      <div class="card-tilted">
+        <div class="label">START</div>
       </div>
-      <p style="margin:8px 0 0;font-size:12px;opacity:.85">
-        <span class="kbd">W/S</span> move · mouse turn · near planet <span class="kbd">E</span> enter
-      </p>
+      <div class="start-col">
+        <div class="start-actions">
+          <button id="btnStart" class="btn primary">Start Space Tour</button>
+          <a class="btn hollow" href="projects.html">Basic Portfolio</a>
+        </div>
+        <div class="start-note">
+          <span class="kbd">W/S</span> move · mouse turn · near planet <span class="kbd">E</span> enter
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE GATE -->
+  <div class="mobile-gate" id="mobileGate" aria-live="polite">
+    <div class="mobile-card">
+      <h2>Hey there 👋</h2>
+      <p>This site isn’t fully optimized for mobile yet. For the best experience, please check it on a computer.</p>
+      <p>If you still want to browse now, you can open the basic portfolio below.</p>
+      <a class="btn hollow" href="projects.html">Open Basic Portfolio</a>
     </div>
   </div>
 
   <canvas id="scene"></canvas>
 
-  <!-- Import map: three & addons -->
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-    }
+  <!-- Three.js (no module) -->
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script>
+  /* ----------- Setup & helpers ----------- */
+  const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
+  const mobileGate = document.getElementById('mobileGate');
+  const startEl = document.getElementById('start');
+
+  // Mobile: block space scene, show friendly message + Basic Portfolio
+  if (isTouch || innerWidth < 760) {
+    mobileGate.style.display = 'flex';
+    // Also hide HUD help text
+    document.getElementById('helpBox').style.display = 'none';
   }
-  </script>
 
-  <!-- App (module) -->
-  <script type="module">
-    import * as THREE from 'three';
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+  function makeRadialTexture(inner, outer, size=128){
+    const c=document.createElement('canvas'); c.width=c.height=size;
+    const ctx=c.getContext('2d'); const g=ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
+    g.addColorStop(0,inner); g.addColorStop(1,outer); ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
+    const t=new THREE.CanvasTexture(c); t.minFilter=THREE.LinearFilter; t.magFilter=THREE.LinearFilter; return t;
+  }
 
-    const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
-    const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-
-    // Blue/cyan exhaust textures
-    function makeRadialTexture(inner, outer, size=128){
-      const c=document.createElement('canvas'); c.width=c.height=size;
-      const ctx=c.getContext('2d'); const g=ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
-      g.addColorStop(0,inner); g.addColorStop(1,outer); ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
-      const t=new THREE.CanvasTexture(c); t.minFilter=THREE.LinearFilter; t.magFilter=THREE.LinearFilter; return t;
-    }
-    const flameTex = makeRadialTexture('rgba(120,230,255,1)','rgba(0,170,255,0)');
-    const smokeTex = makeRadialTexture('rgba(160,210,255,0.55)','rgba(90,140,200,0)');
-
-    /* Scene */
+  // If mobile gate is visible, don’t initialize heavy scene
+  if (!(isTouch || innerWidth < 760)) {
+    /* ----------- Scene ----------- */
     const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('scene'), antialias:true});
     renderer.setPixelRatio(Math.min(2, devicePixelRatio||1)); renderer.setSize(innerWidth, innerHeight);
     const scene = new THREE.Scene(); scene.background = new THREE.Color(0x05060a);
@@ -139,7 +174,7 @@
       scene.add(new THREE.Points(g,new THREE.PointsMaterial({size:1.6,color:0xbfd9ff,sizeAttenuation:true})));
     })();
 
-    /* Projects (cards) */
+    /* Projects & planet look */
     const PROJECTS=[
       {id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg'},
       {id:'p2',title:'Odin Pendant Animation',tag:'3D Works',cover:'media/covers/p2.jpg'},
@@ -161,9 +196,7 @@
     }
 
     const overlay=document.getElementById('overlay'), helpBox=document.getElementById('helpBox');
-    helpBox.innerHTML = isTouch
-      ? '<b>Mobile</b> — Joystick move/turn · Tap near planet → Quick View'
-      : '<b>Desktop</b> — Mouse move: turn · <b>W/S</b> forward/back · <b>A/D</b> turn · Near planet: <b>E</b> enter · In modal: <b>Q</b> exit';
+    helpBox.innerHTML = '<b>Desktop</b> — Mouse move: turn · <b>W/S</b> forward/back · <b>A/D</b> turn · Near planet: <b>E</b> enter · In modal: <b>Q</b> exit';
 
     const planets=[], cardsRef=[], tmpV=new THREE.Vector3();
     const sphereGeo=new THREE.SphereGeometry(1,40,28);
@@ -204,97 +237,63 @@
       const item={el,obj:m,pill}; el.addEventListener('click',()=>{ if(nearest===m) qvOpenFor(m); }); cardsRef.push(item);
     });
 
-    /* Ship & particles */
+    /* Ship & blue particles */
+    const flameTex = makeRadialTexture('rgba(120,220,255,1)','rgba(30,140,220,0)');
+    const smokeTex = makeRadialTexture('rgba(200,230,255,0.55)','rgba(130,150,170,0.0)');
     const ship=new THREE.Group(); scene.add(ship);
 
-    // Fallback hull
+    // Fallback hull facing +X (right)
     const hull=new THREE.Mesh(new THREE.CapsuleGeometry(.8,3,6,12),
       new THREE.MeshStandardMaterial({color:0x9aa7ff,roughness:.55,metalness:.2,emissive:0x10163a,emissiveIntensity:.2}));
-    hull.rotation.z=Math.PI/2; ship.add(hull);
+    hull.rotation.z=Math.PI/2; // points +X
+    ship.add(hull);
 
-    // GLB yükle — yönü +X (sağ)
-    const loader = new GLTFLoader();
-    let exhaustLocal=new THREE.Vector3(-2,0,0);
+    // Try to load GLB (media/spaceship.glb). If present, replace fallback.
+    const loader = new THREE.GLTFLoader();
+    let exhaustLocal=new THREE.Vector3(-2,0,0); // tail side (negative X)
 
     loader.load('media/spaceship.glb', (gltf)=>{
-      const model = gltf.scene || gltf.scenes?.[0];
-      if(!model) return;
+      const model = gltf.scene || (gltf.scenes && gltf.scenes[0]);
+      if(model){
+        ship.clear();
 
-      ship.clear();
+        // Normalize & center
+        const box = new THREE.Box3().setFromObject(model);
+        const size = new THREE.Vector3(); box.getSize(size);
+        const maxDim = Math.max(size.x,size.y,size.z) || 1;
+        const target = 6; const s = target / maxDim;
+        model.scale.setScalar(s);
 
-      // scale to max ~6 units
-      const box0 = new THREE.Box3().setFromObject(model);
-      const size0 = new THREE.Vector3(); box0.getSize(size0);
-      const s = 6 / Math.max(size0.x,size0.y,size0.z || 1);
-      model.scale.setScalar(s);
+        const center = new THREE.Vector3(); box.getCenter(center);
+        model.position.sub(center.multiplyScalar(s));
 
-      // çoğu GLB +Z ileri → -90° Y ile +X’e çevir
-      model.rotation.set(0, Math.PI/2, 0);
+        // Ensure facing +X
+        model.rotation.set(0, 0, 0);
 
-      // center pivot
-      const b1 = new THREE.Box3().setFromObject(model);
-      const c1 = new THREE.Vector3(); b1.getCenter(c1);
-      model.position.sub(c1);
+        // Tail point for exhaust (minX after scale/center)
+        const minX = (box.min.x - center.x) * s;
+        exhaustLocal = new THREE.Vector3(minX - 0.6, 0, 0);
 
-      // exhaust near minX
-      const b2 = new THREE.Box3().setFromObject(model);
-      exhaustLocal = new THREE.Vector3(b2.min.x - 0.6, 0, 0);
+        ship.add(model);
+      }
+    }, undefined, ()=>{/* ignore errors */});
 
-      ship.add(model);
-    }, undefined, ()=>{/* yoksa fallback kalır */});
-
-    function worldFromExhaust(out){return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);}
+    function worldFromExhaust(out){return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);} 
     function makeSprite(mat){const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s;}
-    const flameMat=new THREE.SpriteMaterial({map:flameTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.95});
+    const flameMat=new THREE.SpriteMaterial({map:flameTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.9});
     const smokeMat=new THREE.SpriteMaterial({map:smokeTex,transparent:true,depthWrite:false,opacity:.0});
     const flamePool=[...Array(140)].map(()=>makeSprite(flameMat)), smokePool=[...Array(100)].map(()=>makeSprite(smokeMat));
     const flameData=flamePool.map(()=>({life:0,max:0,vel:new THREE.Vector3()})), smokeData=smokePool.map(()=>({life:0,max:0,vel:new THREE.Vector3()}));
-    function spawnFlame(n,intensity=1){
-      for(let i=0;i<flamePool.length&&n>0;i++){
-        if(flameData[i].life>0)continue; n--;
-        const sp=flamePool[i],d=flameData[i]; const pos=new THREE.Vector3(); worldFromExhaust(pos);
-        sp.position.copy(pos); sp.scale.setScalar(1.0+Math.random()*1.6*intensity);
-        d.max=.38+Math.random()*.28; d.life=d.max;
-        const dir=new THREE.Vector3(-1,THREE.MathUtils.randFloatSpread(.35),THREE.MathUtils.randFloatSpread(.35)).applyQuaternion(ship.quaternion);
-        d.vel.copy(dir.multiplyScalar(13+20*intensity)); sp.material.opacity=.95; sp.visible=true;
-      }
-    }
-    function spawnSmoke(n,boost=1){
-      for(let i=0;i<smokePool.length&&n>0;i++){
-        if(smokeData[i].life>0)continue; n--;
-        const sp=smokePool[i],d=smokeData[i]; const pos=new THREE.Vector3(); worldFromExhaust(pos);
-        sp.position.copy(pos); const s=1.4+Math.random()*2.4*boost; sp.scale.set(s,s,1);
-        d.max=1.0+Math.random()*.9; d.life=d.max;
-        const dir=new THREE.Vector3(-1,THREE.MathUtils.randFloatSpread(.25),THREE.MathUtils.randFloatSpread(.25)).applyQuaternion(ship.quaternion);
-        d.vel.copy(dir.multiplyScalar(3+2.2*boost)); sp.material.opacity=.35; sp.visible=true;
-      }
-    }
+    function spawnFlame(n,intensity=1){for(let i=0;i<flamePool.length&&n>0;i++){if(flameData[i].life>0)continue;n--;const sp=flamePool[i],d=flameData[i];const pos=new THREE.Vector3();worldFromExhaust(pos);sp.position.copy(pos);sp.scale.setScalar(.9+Math.random()*1.4*intensity);d.max=.35+Math.random()*.25;d.life=d.max;const dir=new THREE.Vector3(-1,THREE.MathUtils.randFloatSpread(.35),THREE.MathUtils.randFloatSpread(.35)).applyQuaternion(ship.quaternion);d.vel.copy(dir.multiplyScalar(12+18*intensity));sp.material.opacity=.85;sp.visible=true;}}
+    function spawnSmoke(n,boost=1){for(let i=0;i<smokePool.length&&n>0;i++){if(smokeData[i].life>0)continue;n--;const sp=smokePool[i],d=smokeData[i];const pos=new THREE.Vector3();worldFromExhaust(pos);sp.position.copy(pos);const s=1.2+Math.random()*2.2*boost;sp.scale.set(s,s,1);d.max=.9+Math.random()*.8;d.life=d.max;const dir=new THREE.Vector3(-1,THREE.MathUtils.randFloatSpread(.25),THREE.MathUtils.randFloatSpread(.25)).applyQuaternion(ship.quaternion);d.vel.copy(dir.multiplyScalar(3+2*boost));sp.material.opacity=.3;sp.visible=true;}}
     function updateParticles(dt){
-      for(let i=0;i<flamePool.length;i++){
-        const p=flamePool[i],d=flameData[i]; if(d.life<=0){p.visible=false;continue;}
-        d.life-=dt; p.position.addScaledVector(d.vel,dt);
-        const t=d.life/d.max; p.material.opacity=.18+.77*t;
-        const s=(.7+1.9*(1-t)); p.scale.set(s,s,1);
-        if(d.life<=0)p.visible=false;
-      }
-      for(let i=0;i<smokePool.length;i++){
-        const p=smokePool[i],d=smokeData[i]; if(d.life<=0){p.visible=false;continue;}
-        d.life-=dt; p.position.addScaledVector(d.vel,dt); p.position.y+=dt*.6;
-        const t=d.life/d.max; p.material.opacity=.35*t;
-        const s=p.scale.x*(1+.35*dt); p.scale.set(s,s,1);
-        if(d.life<=0)p.visible=false;
-      }
+      for(let i=0;i<flamePool.length;i++){const p=flamePool[i],d=flameData[i];if(d.life<=0){p.visible=false;continue;}d.life-=dt;p.position.addScaledVector(d.vel,dt);const t=d.life/d.max;p.material.opacity=.15+.75*t;const s=(.6+1.8*(1-t));p.scale.set(s,s,1);if(d.life<=0)p.visible=false;}
+      for(let i=0;i<smokePool.length;i++){const p=smokePool[i],d=smokeData[i];if(d.life<=0){p.visible=false;continue;}d.life-=dt;p.position.addScaledVector(d.vel,dt);p.position.y+=dt*.6;const t=d.life/d.max;p.material.opacity=.35*t;const s=p.scale.x*(1+.35*dt);p.scale.set(s,s,1);if(d.life<=0)p.visible=false;}
     }
 
-    /* Camera */
+    /* Camera follow */
     const camOff=new THREE.Vector3(-20,8.8,0), lookAhead=new THREE.Vector3(8,2,0), camPos=new THREE.Vector3(), lookAt=new THREE.Vector3();
-    function updateCamera(dt){
-      const off=camOff.clone().applyQuaternion(ship.quaternion);
-      camPos.copy(ship.position).add(off);
-      camera.position.lerp(camPos,1-Math.pow(.0028,dt*60));
-      const la=lookAhead.clone().applyQuaternion(ship.quaternion);
-      lookAt.copy(ship.position).add(la); camera.lookAt(lookAt);
-    }
+    function updateCamera(dt){const off=camOff.clone().applyQuaternion(ship.quaternion);camPos.copy(ship.position).add(off);camera.position.lerp(camPos,1-Math.pow(.0028,dt*60));const la=lookAhead.clone().applyQuaternion(ship.quaternion);lookAt.copy(ship.position).add(la);camera.lookAt(lookAt);} 
     camera.position.copy(ship.position).add(camOff); camera.lookAt(ship.position.clone().add(lookAhead));
 
     /* Input */
@@ -305,7 +304,7 @@
 
     let lastX=null,lastY=null,yawVel=0,pitchVel=0; 
     const M_SENS_X=.0016,M_SENS_Y=.0014, YAW_D=.90, PITCH_D=.90, MAX_YAW=2.8;
-    addEventListener('mousemove',e=>{ if(!controlsEnabled||isTouch) return; if(lastX===null){lastX=e.clientX;lastY=e.clientY;return;} const dx=e.clientX-lastX,dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY; yawVel+=dx*M_SENS_X; pitchVel+=-dy*M_SENS_Y; }, {passive:true});
+    addEventListener('mousemove',e=>{ if(!controlsEnabled) return; if(lastX===null){lastX=e.clientX;lastY=e.clientY;return;} const dx=e.clientX-lastX,dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY; yawVel+=dx*M_SENS_X; pitchVel+=-dy*M_SENS_Y; }, {passive:true});
     addEventListener('mouseleave',()=>{lastX=lastY=null;}); addEventListener('blur',()=>{lastX=lastY=null;});
 
     /* Movement */
@@ -313,7 +312,7 @@
     function updateShip(dt){
       if(!controlsEnabled){ velF*=Math.pow(.94,dt*60); yawVel*=Math.pow(.92,dt*60); pitchVel*=Math.pow(.92,dt*60); updateParticles(dt); return; }
       let fwd=0, turnKey=0;
-      if(!isTouch){ if(keys.KeyW)fwd+=1; if(keys.KeyS)fwd-=1; if(keys.KeyD)turnKey-=1; if(keys.KeyA)turnKey+=1; }
+      if(keys.KeyW)fwd+=1; if(keys.KeyS)fwd-=1; if(keys.KeyD)turnKey-=1; if(keys.KeyA)turnKey+=1;
 
       yawVel*=Math.pow(YAW_D,dt*60); pitchVel*=Math.pow(PITCH_D,dt*60); turnKeyVel=THREE.MathUtils.damp(turnKeyVel,turnKey*1.2,6,dt);
       const yawRate=THREE.MathUtils.clamp((yawVel+turnKeyVel)*3.0,-MAX_YAW,MAX_YAW), pitchRate=THREE.MathUtils.clamp(pitchVel*3.0,-1.6,1.6);
@@ -327,13 +326,8 @@
       const forward=new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion); ship.position.addScaledVector(forward,velF*dt);
       ship.position.y += Math.sin(pitch)*velF*.75*dt; ship.position.y=clamp(ship.position.y,-70,70);
 
-      const speedAbs=Math.abs(velF);
-      const rate=Math.floor(6+14*clamp(throttle+speedAbs/20,0,1.5));
-      if(throttle>.01) spawnFlame(rate,clamp(throttle+speedAbs/30,.6,1.6));
-      if(prevThrottle>.25 && throttle<=.02) spawnSmoke(24,1.4);
-      if((throttle<=.02 && speedAbs>2) || fwd<0) spawnSmoke(2,1.0+(fwd<0?.6:0));
-      prevThrottle=throttle;
-
+      const speedAbs=Math.abs(velF); const rate=Math.floor(6+14*clamp(throttle+speedAbs/20,0,1.5)); if(throttle>.01) spawnFlame(rate,clamp(throttle+speedAbs/30,.6,1.6));
+      if(prevThrottle>.25 && throttle<=.02) spawnSmoke(24,1.4); if((throttle<=.02 && speedAbs>2) || fwd<0) spawnSmoke(2,1.0+(fwd<0?.6:0)); prevThrottle=throttle;
       updateParticles(dt);
     }
 
@@ -376,7 +370,7 @@
     /* Planet spin */
     function spinPlanets(dt){ for(const pl of planets){ pl.rotation.y += (pl.userData.spin||0.03)*dt; } }
 
-    /* Satellites (3x) + debris */
+    /* Satellites (3×) + debris */
     const satellites=[], debrisPool=[];
     function makeSatellite(x,y,z){
       const group=new THREE.Group();
@@ -386,7 +380,7 @@
       const panelR=panelL.clone(); panelL.position.set(-1.2,0,0); panelR.position.set(1.2,0,0);
       group.add(body,panelL,panelR);
       group.position.set(x,y,z);
-      group.scale.setScalar(3);
+      group.scale.setScalar(3); // 3x büyütme
       group.userData.spin = THREE.MathUtils.randFloat(0.3,0.8);
       scene.add(group);
       satellites.push(group);
@@ -421,8 +415,7 @@
       }
     }
 
-    /* Start */
-    const startEl=document.getElementById('start');
+    /* Start (desktop) */
     document.getElementById('btnStart').addEventListener('click',()=>{
       startEl.classList.add('hide');
       setTimeout(()=>{ controlsEnabled=true; },550);
@@ -437,6 +430,7 @@
       renderer.render(scene,camera); requestAnimationFrame(loop);
     }
     loop();
+  } // end desktop-only init
   </script>
 </body>
 </html>

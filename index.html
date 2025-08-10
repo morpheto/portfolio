@@ -134,6 +134,14 @@
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
 
+    const TAU = Math.PI * 2;
+    const angleDelta = (from, to) => {
+      let d = (to - from) % TAU;
+      if (d > Math.PI) d -= TAU;
+      if (d < -Math.PI) d += TAU;
+      return d; // [-PI, PI]
+    };
+
     const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
     const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
     const rand=(a,b)=>a+Math.random()*(b-a);
@@ -323,15 +331,13 @@
         exhaustLocal.copy(info.exhaustLocal);
         ship.add(m);
       }
-      // model geldiyse AI’ları oluştur
-      spawnAIShips();
+      spawnAIShips(); // GLB geldiyse klonlarla; gelmezse fallback gövdeyle
     });
 
-    /* Particles util */
+    /* Particle pools */
     function makeSprite(mat){const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s;}
     const flameMat=new THREE.SpriteMaterial({map:flameTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.95});
     const smokeMat=new THREE.SpriteMaterial({map:smokeTex,transparent:true,depthWrite:false,opacity:.0});
-
     function makeParticlePools(flames=80, smokes=40){
       const fPool=[...Array(flames)].map(()=>makeSprite(flameMat));
       const sPool=[...Array(smokes)].map(()=>makeSprite(smokeMat));
@@ -340,9 +346,7 @@
       return {fPool,sPool,fData,sData};
     }
     const playerPools = makeParticlePools(140,100);
-
     function worldFromExhaust(group, exhaust, out){return out.copy(exhaust).applyQuaternion(group.quaternion).add(group.position);}
-
     function spawnFlameAt(group, exhaust, pools, n,intensity=1){
       const {fPool,fData}=pools;
       for(let i=0;i<fPool.length&&n>0;i++){
@@ -383,7 +387,7 @@
       }
     }
 
-    /* Camera — eski açı (yukarıdan bakış) */
+    /* Camera — eski açı */
     const camOff=new THREE.Vector3(-20,8.8,0);
     const lookAhead=new THREE.Vector3(8,2,0);
     const camPos=new THREE.Vector3(), lookAt=new THREE.Vector3();
@@ -409,8 +413,8 @@
       if(lastX===null){lastX=e.clientX;lastY=e.clientY;return;}
       const dx=e.clientX-lastX, dy=e.clientY-lastY;
       lastX=e.clientX; lastY=e.clientY;
-      yawVel  -=  dx * M_SENS_X;
-      pitchVel += -dy * M_SENS_Y;
+      yawVel  -=  dx * M_SENS_X;  // sağ -> yaw azalt (kamera açısından doğru his)
+      pitchVel += -dy * M_SENS_Y; // yukarı -> pitch artı
     }, {passive:true});
     addEventListener('mouseleave',()=>{lastX=lastY=null;}); addEventListener('blur',()=>{lastX=lastY=null;});
 
@@ -510,21 +514,15 @@
     });
 
     /* AI SHIPS */
-    const AI_COUNT = 12; // 10–15 arası
+    const AI_COUNT = 12;
     const aiShips=[];
     function invertMaterialColors(obj){
       obj.traverse(n=>{
         if(n.isMesh && n.material){
           const mats = Array.isArray(n.material)? n.material : [n.material];
           mats.forEach(m=>{
-            if(m.color){
-              // invert base color
-              m.color.setRGB(1-m.color.r, 1-m.color.g, 1-m.color.b);
-            }
-            if(m.emissive){
-              m.emissive.setRGB(1-m.emissive.r, 1-m.emissive.g, 1-m.emissive.b);
-              m.emissiveIntensity = Math.max(0.5, (m.emissiveIntensity||0.2)*1.4);
-            }
+            if(m.color){ m.color.setRGB(1-m.color.r, 1-m.color.g, 1-m.color.b); }
+            if(m.emissive){ m.emissive.setRGB(1-m.emissive.r, 1-m.emissive.g, 1-m.emissive.b); m.emissiveIntensity = Math.max(0.5, (m.emissiveIntensity||0.2)*1.4); }
           });
         }
       });
@@ -546,23 +544,12 @@
       group.position.copy(position);
       scene.add(group);
 
-      // basit gezinti kontrolü
       const pools=makeParticlePools(70,36);
-      const state={
-        group, exhaust,
-        speed: rand(8,16),
-        target: null,
-        throttle: 0,
-        velF: 0,
-        yaw: rand(-Math.PI,Math.PI),
-        pitch: rand(-0.25,0.25),
-        turnVel: 0
-      };
+      const state={ group, exhaust, speed: rand(8,16), target: null, throttle: 0, velF: 0, yaw: rand(-Math.PI,Math.PI), pitch: rand(-0.25,0.25) };
       pickNextTarget(state, true);
       aiShips.push({...state, pools});
     }
     function pickNextTarget(s, first=false){
-      // bazen gezegen çevresine uğrasın, bazen boş uzay noktası
       let targetPos;
       if(Math.random()<0.7 && planets.length){
         const pl = planets[Math.floor(Math.random()*planets.length)];
@@ -581,43 +568,38 @@
       const dir = s.target.clone().sub(s.group.position);
       const dist = dir.length();
       dir.normalize();
-      // mevcut yön
-      const forward = new THREE.Vector3(1,0,0).applyQuaternion(s.group.quaternion);
-      // yaw/pitch farklarını projekte et
-      const targetYaw = Math.atan2(dir.z, dir.x);
-      const targetPitch = Math.asin(dir.y);
 
-      let dYaw = THREE.MathUtils.angleDifference(s.yaw, targetYaw);
+      const targetYaw = Math.atan2(dir.z, dir.x);
+      const targetPitch = Math.asin(clamp(dir.y, -0.99, 0.99));
+
+      let dYaw   = angleDelta(s.yaw,   targetYaw);
       let dPitch = targetPitch - s.pitch;
-      // küçük sarsıntı
-      dYaw += THREE.MathUtils.randFloatSpread(0.05);
+
+      dYaw   += THREE.MathUtils.randFloatSpread(0.05);
       dPitch += THREE.MathUtils.randFloatSpread(0.03);
 
-      s.yaw   = THREE.MathUtils.damp(s.yaw,   s.yaw   - dYaw,  4, dt);
-      s.pitch = THREE.MathUtils.damp(s.pitch, s.pitch - dPitch,4, dt);
+      s.yaw   = THREE.MathUtils.damp(s.yaw,   s.yaw   + dYaw,  4, dt);
+      s.pitch = THREE.MathUtils.damp(s.pitch, s.pitch + dPitch,4, dt);
+      s.pitch = clamp(s.pitch, -Math.PI/3, Math.PI/3);
 
       s.group.rotation.set(s.pitch, s.yaw, THREE.MathUtils.damp(s.group.rotation.z, -dYaw*0.15, 6, dt));
-      // hız kontrolü: hedefe yaklaşırken yavaşla
-      const targetThrottle = dist>25 ? 1 : (dist<10 ? 0 : (dist-10)/15);
-      s.throttle = THREE.MathUtils.damp(s.throttle, targetThrottle, 3, dt);
-      // ivme/sürüklenme
+
+      const forward = new THREE.Vector3(1,0,0).applyQuaternion(s.group.quaternion);
       const ACC=18, MAX=18, DRAG=0.97;
+      s.throttle = THREE.MathUtils.damp(s.throttle, dist>25 ? 1 : (dist<10 ? 0 : (dist-10)/15), 3, dt);
       s.velF += s.throttle*ACC*dt;
       s.velF *= Math.pow(DRAG, dt*60);
       s.velF = clamp(s.velF, -MAX, MAX);
       s.group.position.addScaledVector(forward, s.velF*dt);
       s.group.position.y = clamp(s.group.position.y, -70, 70);
 
-      // çarpışmadan sıyır
       if(handleCollisions(s.group) && s.velF>0){ s.velF*=0.2; }
 
-      // hedefe ulaştıysa yeni hedef
       if(dist<8) pickNextTarget(s);
     }
     function updateAI(dt){
       for(const s of aiShips){
         steerToward(s, dt);
-        // parçacıklar
         const rate = Math.floor(4+12*clamp(s.throttle + Math.abs(s.velF)/20, 0, 1.5));
         if(s.throttle>.02) spawnFlameAt(s.group, s.exhaust, s.pools, rate, clamp(s.throttle + Math.abs(s.velF)/30, .6,1.4));
         if(s.throttle<=.01 && Math.abs(s.velF)>2) spawnSmokeAt(s.group, s.exhaust, s.pools, 2, 1.0);
@@ -625,7 +607,7 @@
       }
     }
     function spawnAIShips(){
-      const N = AI_COUNT;
+      const N = 12;
       for(let i=0;i<N;i++){
         const a = rand(0,Math.PI*2), R=rand(60,160), h=rand(-30,30);
         createAIShip(new THREE.Vector3(Math.cos(a)*R, h, Math.sin(a)*R));

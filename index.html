@@ -6,7 +6,7 @@
 <title>Orhun Ege Eker — Space Portfolio</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
-  :root{ --bg:#05060a; --text:#f6f7fb; --muted:#cbd5e1; }
+  :root{ --bg:#05060a; --text:#f6f7fb; --muted:#cbd5e1; --accent:#1e5eff; }
   *{box-sizing:border-box} html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
   canvas#scene{position:fixed;inset:0;width:100%;height:100%;display:block}
@@ -37,7 +37,7 @@
   .popup-title{font-weight:800;font-size:18px}.popup-tag{font-size:12px;color:#cfd6e3}
   .popup-actions{display:flex;gap:10px}
   .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
-  .btn.primary{background:#1e5eff;border-color:#2b66ff}
+  .btn.primary{background:var(--accent);border-color:#2b66ff}
 
   /* Start */
   .start{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 600px at 50% -20%, rgba(120,170,255,.08), rgba(5,6,10,.95))}
@@ -50,10 +50,11 @@
   .btn.linklike{background:transparent}
 
   /* Mobile gate */
-  .mobile-gate{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(6px)}
-  .mobile-card{padding:20px 22px;border:1px solid rgba(255,255,255,.14);background:rgba(10,12,20,.9);border-radius:16px;max-width:360px;text-align:center}
-  .mobile-card h2{margin:0 0 8px;font-size:18px}
-  .mobile-card p{margin:0 0 14px;font-size:14px;color:#d7dbea}
+  .mobile-gate{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:radial-gradient(800px 400px at 50% 50%, rgba(120,170,255,.12), rgba(5,6,10,.95));backdrop-filter:blur(6px)}
+  .mobile-card{padding:24px 28px;border:1px solid rgba(255,255,255,.18);background:linear-gradient(180deg, rgba(20,24,40,.9), rgba(10,12,20,.95));border-radius:20px;max-width:360px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .mobile-card h2{margin:0 0 10px;font-size:20px;font-weight:700;color:#e0e7ff}
+  .mobile-card p{margin:0 0 16px;font-size:15px;color:#d0d7e4;line-height:1.5}
+  .mobile-card .btn.primary{padding:12px 20px;font-size:15px;border-radius:12px}
 </style>
 </head>
 <body>
@@ -105,9 +106,9 @@
   <!-- Mobile gate -->
   <div class="mobile-gate" id="mobileGate">
     <div class="mobile-card">
-      <h2>Heads up!</h2>
-      <p>My space experience isn’t optimized for phones yet. If you want to try it, please switch to a computer. Meanwhile, you can browse the basic portfolio.</p>
-      <a class="btn primary" href="projects.html">Open Basic Portfolio</a>
+      <h2>Hey there!</h2>
+      <p>This space adventure is best enjoyed on a computer for now. Want to check out my projects? Hop over to the basic portfolio instead!</p>
+      <a class="btn primary" href="projects.html">Explore Basic Portfolio</a>
     </div>
   </div>
 
@@ -140,7 +141,7 @@
     /* HUD help */
     const helpBox=document.getElementById('helpBox');
     helpBox.innerHTML = isTouch
-      ? '<b>Mobile</b> — Space tour is desktop-only for now. Use Basic Portfolio.'
+      ? '<b>Mobile</b> — This space tour shines on desktop! Try the Basic Portfolio for now.'
       : '<b>Desktop</b> — Mouse move: turn · <b>W/S</b> forward/back · <b>A/D</b> turn · Near planet: <b>E</b> enter · In modal: <b>Q</b> exit';
 
     /* Blue/cyan exhaust textures */
@@ -215,25 +216,67 @@
       const spin = ()=>{ disk.rotation.z += 0.0016; requestAnimationFrame(spin); }; spin();
     })();
 
+    /* Planet textures */
+    function createMoonTexture(){
+      const size=512, c=document.createElement('canvas'); c.width=c.height=size;
+      const ctx=c.getContext('2d');
+      ctx.fillStyle='#333';
+      ctx.fillRect(0,0,size,size);
+      for(let i=0;i<50;i++){
+        const x=Math.random()*size, y=Math.random()*size, r=10+Math.random()*30;
+        const g=ctx.createRadialGradient(x,y,0,x,y,r);
+        g.addColorStop(0,'#555'); g.addColorStop(1,'rgba(50,50,50,0.3)');
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+      }
+      return new THREE.CanvasTexture(c);
+    }
+    function createRockyTexture(){
+      const size=512, c=document.createElement('canvas'); c.width=c.height=size;
+      const ctx=c.getContext('2d');
+      ctx.fillStyle='#8b4513';
+      ctx.fillRect(0,0,size,size);
+      for(let i=0;i<30;i++){
+        const x=Math.random()*size, y=Math.random()*size, r=15+Math.random()*25;
+        const g=ctx.createRadialGradient(x,y,0,x,y,r);
+        g.addColorStop(0,'#a0522d'); g.addColorStop(1,'rgba(139,69,19,0.2)');
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+      }
+      return new THREE.CanvasTexture(c);
+    }
+    function createGasTexture(){
+      const size=512, c=document.createElement('canvas'); c.width=c.height=size;
+      const ctx=c.getContext('2d');
+      const g=ctx.createLinearGradient(0,0,0,size);
+      g.addColorStop(0,'#4682b4'); g.addColorStop(0.5,'#87ceeb'); g.addColorStop(1,'#4682b4');
+      ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
+      for(let i=0;i<20;i++){
+        const x=Math.random()*size, y=Math.random()*size, r=20+Math.random()*40;
+        ctx.fillStyle='rgba(255,255,255,0.1)'; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+      }
+      return new THREE.CanvasTexture(c);
+    }
+    const moonTex=createMoonTexture(), moonBump=createMoonTexture();
+    const rockyTex=createRockyTexture(), rockyBump=createRockyTexture();
+    const gasTex=createGasTexture();
+
     /* Projects -> planet cards */
     const PROJECTS=[
-      {id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg'},
-      {id:'p2',title:'Odin Pendant Animation',tag:'3D Works',cover:'media/covers/p2.jpg'},
-      {id:'p3',title:'MediaPipe + Ableton + PointCloud',tag:'Interactive',cover:'media/covers/p3.jpg'},
-      {id:'p4',title:'Nike Air Jordan CGI',tag:'CGI',cover:'media/covers/p4.jpg'},
-      {id:'p5',title:'Bic Mini Lighter Spider Case',tag:'Product CGI',cover:'media/covers/p5.jpg'},
-      {id:'p6',title:'Space Keycap Animation',tag:'3D Works',cover:'media/covers/p6.jpg'},
-      {id:'p7',title:'Oxidized Silver Jewelry — Maverick',tag:'LookDev',cover:'media/covers/p7.jpg'},
-      {id:'p8',title:'YouTube Channel Intro',tag:'Motion · Audio',cover:'media/covers/p8.jpg'},
-      {id:'p9',title:'AI Visualizer from Image',tag:'AI Visuals',cover:'media/covers/p9.jpg'}
+      {id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg',type:'moon'},
+      {id:'p2',title:'Odin Pendant Animation',tag:'3D Works',cover:'media/covers/p2.jpg',type:'rocky'},
+      {id:'p3',title:'MediaPipe + Ableton + PointCloud',tag:'Interactive',cover:'media/covers/p3.jpg',type:'gas'},
+      {id:'p4',title:'Nike Air Jordan CGI',tag:'CGI',cover:'media/covers/p4.jpg',type:'rocky'},
+      {id:'p5',title:'Bic Mini Lighter Spider Case',tag:'Product CGI',cover:'media/covers/p5.jpg',type:'moon'},
+      {id:'p6',title:'Space Keycap Animation',tag:'3D Works',cover:'media/covers/p6.jpg',type:'gas'},
+      {id:'p7',title:'Oxidized Silver Jewelry — Maverick',tag:'LookDev',cover:'media/covers/p7.jpg',type:'rocky'},
+      {id:'p8',title:'YouTube Channel Intro',tag:'Motion · Audio',cover:'media/covers/p8.jpg',type:'moon'},
+      {id:'p9',title:'AI Visualizer from Image',tag:'AI Visuals',cover:'media/covers/p9.jpg',type:'gas'}
     ];
     function appearanceFor(p){
       const t=(p.tag||'').toLowerCase(), name=p.title.toLowerCase();
-      if(t.includes('cgi') || name.includes('nike')) return {h:0.02,s:0.55,l:0.62,metal:0.45,rough:0.35,ring:true,emiss:0.18};
-      if(t.includes('touchdesigner')||t.includes('interactive')||name.includes('mediapipe')) return {h:0.62,s:0.55,l:0.58,metal:0.2,rough:0.55,ring:Math.random()<0.4,emiss:0.28};
-      if(t.includes('lookdev')||name.includes('maverick')) return {h:0.58,s:0.28,l:0.60,metal:0.35,rough:0.42,ring:Math.random()<0.5,emiss:0.16};
-      if(t.includes('ai')) return {h:0.76,s:0.45,l:0.64,metal:0.25,rough:0.5,ring:false,emiss:0.26};
-      return {h:0.66,s:0.40,l:0.58,metal:0.22,rough:0.55,ring:Math.random()<0.5,emiss:0.18};
+      if(p.type==='moon') return {h:0.0,s:0.1,l:0.4,metal:0.2,rough:0.8,ring:false,emiss:0.1,texture:moonTex,bump:moonBump};
+      if(p.type==='rocky') return {h:0.08,s:0.5,l:0.3,metal:0.3,rough:0.7,ring:Math.random()<0.3,emiss:0.1,texture:rockyTex,bump:rockyBump};
+      if(p.type==='gas') return {h:0.58,s:0.6,l:0.5,metal:0.1,rough:0.9,ring:Math.random()<0.5,emiss:0.3,texture:gasTex,bump:null};
+      return {h:0.66,s:0.40,l:0.58,metal:0.22,rough:0.55,ring:Math.random()<0.5,emiss:0.18,texture:null,bump:null};
     }
 
     const overlay=document.getElementById('overlay');
@@ -243,11 +286,11 @@
       const col=new THREE.Color().setHSL(app.h,app.s,app.l);
       const m=new THREE.Mesh(sphereGeo,new THREE.MeshStandardMaterial({
         color:col.getHex(), roughness:app.rough, metalness:app.metal,
-        emissive:col.clone().multiplyScalar(app.emiss).getHex(), emissiveIntensity:1
+        emissive:col.clone().multiplyScalar(app.emiss).getHex(), emissiveIntensity:1,
+        map:app.texture, bumpMap:app.bump, bumpScale:0.5
       }));
       m.rotation.z = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(12));
       if(app.ring){
-        // smaller rings
         const ring=new THREE.Mesh(
           new THREE.RingGeometry(r*1.02,r*1.09,64),
           new THREE.MeshBasicMaterial({color:col.clone().offsetHSL(.08,0,0).getHex(),transparent:true,opacity:.12,side:THREE.DoubleSide})
@@ -462,11 +505,25 @@
     const satellites=[], debrisPool=[];
     function makeSatellite(x,y,z){
       const group=new THREE.Group();
-      const body=new THREE.Mesh(new THREE.BoxGeometry(1.2,0.8,0.8), new THREE.MeshStandardMaterial({color:0xd0d6e5,metalness:.4,roughness:.6}));
+      // Main body (more detailed)
+      const body=new THREE.Mesh(
+        new THREE.BoxGeometry(1.0,0.8,0.6),
+        new THREE.MeshStandardMaterial({color:0xd0d6e5,metalness:.4,roughness:.6})
+      );
+      // Solar panels
       const panelMat=new THREE.MeshStandardMaterial({color:0x6aa7ff,emissive:0x0e1a44,emissiveIntensity:.4,roughness:.4});
-      const panelL=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.15,0.6), panelMat);
-      const panelR=panelL.clone(); panelL.position.set(-1.2,0,0); panelR.position.set(1.2,0,0);
-      group.add(body,panelL,panelR);
+      const panelL=new THREE.Mesh(new THREE.BoxGeometry(2.0,0.1,1.0), panelMat);
+      const panelR=panelL.clone(); 
+      panelL.position.set(-1.5,0,0); panelR.position.set(1.5,0,0);
+      // Antenna
+      const antennaGeo=new THREE.CylinderGeometry(0.05,0.05,2.0,8);
+      const antenna=new THREE.Mesh(antennaGeo, new THREE.MeshStandardMaterial({color:0xaaaaaa,metalness:.5,roughness:.5}));
+      antenna.position.set(0,0.8,0); antenna.rotation.x=Math.PI/2;
+      // Dish
+      const dishGeo=new THREE.SphereGeometry(0.5,16,16,0,Math.PI*2,0,Math.PI/2);
+      const dish=new THREE.Mesh(dishGeo, new THREE.MeshStandardMaterial({color:0xcccccc,metalness:.6,roughness:.4}));
+      dish.position.set(0,-0.8,0); dish.rotation.x=-Math.PI/2;
+      group.add(body,panelL,panelR,antenna,dish);
       group.position.set(x,y,z);
       group.scale.setScalar(3);
       group.userData.spin = THREE.MathUtils.randFloat(0.3,0.8);

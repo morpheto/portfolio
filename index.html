@@ -301,7 +301,7 @@
       model.scale.setScalar(s);
 
       // Most GLBs face +Z -> rotate to +X
-      model.rotation.set(0, -Math.PI/2, 0);
+      model.rotation.set(0, Math.PI/2, 0);
 
       // center pivot
       const b1 = new THREE.Box3().setFromObject(model);

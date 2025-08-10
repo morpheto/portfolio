@@ -11,7 +11,6 @@
   body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
   canvas#scene{position:fixed;inset:0;width:100%;height:100%;display:block}
 
-  /* HUD */
   .hud{position:fixed;top:12px;left:12px;right:12px;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(8,10,18,.45);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px);border-radius:16px}
   .brand{font-weight:800;letter-spacing:.4px;font-size:16px}
   .nav{display:flex;gap:16px}
@@ -19,7 +18,6 @@
 
   .help{position:fixed;right:12px;bottom:12px;z-index:20;color:var(--muted);font-size:12px;padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.06);backdrop-filter:blur(6px)}
 
-  /* Overlay cards */
   .overlay{position:fixed;inset:0;pointer-events:none;z-index:12}
   .planet-card{position:absolute;transform:translate(-50%,-100%);width:240px;max-width:40vw;border-radius:12px;overflow:hidden;border:1px solid rgba(120,198,255,.28);background:linear-gradient(180deg, rgba(20,24,40,.85), rgba(10,12,20,.9));box-shadow:0 10px 26px rgba(0,0,0,.45);transition:opacity .15s ease, transform .15s ease;opacity:.0; pointer-events:auto}
   .planet-card__media{position:relative;height:120px;background:#0f1430;background-size:cover;background-position:center}
@@ -28,7 +26,6 @@
   .badge{position:absolute;left:8px;top:8px;background:rgba(64,191,255,.12);border:1px solid rgba(64,191,255,.4);backdrop-filter:blur(6px);font-size:11px;padding:6px 8px;border-radius:999px;color:#cfefff}
   .enter-pill{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.10);color:#dff2ff;font-size:12px;box-shadow:0 0 16px rgba(64,191,255,.25);opacity:0;transition:opacity .15s ease;pointer-events:none}
 
-  /* Quick View */
   .popup{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
   .popup.show{display:flex}
   .popup-card{width:min(820px,92vw);border:1px solid rgba(120,198,255,.28);border-radius:16px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
@@ -39,17 +36,15 @@
   .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
   .btn.primary{background:var(--accent);border-color:#2b66ff}
 
-  /* Start */
   .start{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 600px at 50% -20%, rgba(120,170,255,.08), rgba(5,6,10,.95))}
   .start.hide{animation:fade .6s both}@keyframes fade{to{opacity:0;visibility:hidden}}
-  .start-card{padding:22px 24px;border:1px solid rgba(255,255,255,.12);background:rgba(10,12,20,.72);backdrop-filter:blur(8px);border-radius:16px;display:flex;flex-direction:column;gap:10px;align-items:center;min-width:260px; transform:translateZ(0)}
+  .start-card{padding:22px 24px;border:1px solid rgba(255,255,255,.12);background:rgba(10,12,20,.72);backdrop-filter:blur(8px);border-radius:16px;display:flex;flex-direction:column;gap:10px;align-items:center;min-width:260px}
   .start-card h1{margin:0;font-size:18px;font-weight:800;letter-spacing:.2px;text-align:center}
   .start-sub{margin:0 0 8px;font-size:12px;color:#d0d7e4;opacity:.92;text-align:center}
   .kbd{font-weight:700;border:1px solid rgba(255,255,255,.18);padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.06)}
   .actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;justify-content:center}
   .btn.linklike{background:transparent}
 
-  /* Mobile gate */
   .mobile-gate{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:radial-gradient(800px 400px at 50% 50%, rgba(120,170,255,.12), rgba(5,6,10,.95));backdrop-filter:blur(6px)}
   .mobile-card{padding:24px 28px;border:1px solid rgba(255,255,255,.18);background:linear-gradient(180deg, rgba(20,24,40,.9), rgba(10,12,20,.95));border-radius:20px;max-width:360px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4)}
   .mobile-card h2{margin:0 0 10px;font-size:20px;font-weight:700;color:#e0e7ff}
@@ -71,7 +66,6 @@
   <div class="help" id="helpBox">Loading controls…</div>
   <div class="overlay" id="overlay"></div>
 
-  <!-- Quick View -->
   <div class="popup" id="quickview" aria-hidden="true">
     <div class="popup-card" role="dialog" aria-modal="true">
       <div class="popup-media" id="qvMedia"></div>
@@ -88,7 +82,6 @@
     </div>
   </div>
 
-  <!-- Start -->
   <div class="start" id="start">
     <div class="start-card">
       <h1>Orhun Ege Eker — Space Tour</h1>
@@ -103,7 +96,6 @@
     </div>
   </div>
 
-  <!-- Mobile gate -->
   <div class="mobile-gate" id="mobileGate">
     <div class="mobile-card">
       <h2>Hey there!</h2>
@@ -114,7 +106,6 @@
 
   <canvas id="scene"></canvas>
 
-  <!-- Import map: three & addons -->
   <script type="importmap">
   {
     "imports": {
@@ -124,32 +115,24 @@
   }
   </script>
 
-  <!-- App (module) -->
   <script type="module">
     import * as THREE from 'three';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
     const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
     const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-    const lerp=(a,b,t)=>a+(b-a)*t;
-    const angleDiff=(a,b)=>{
-      let d = (a-b) % (Math.PI*2);
-      if(d<-Math.PI) d+=Math.PI*2;
-      if(d> Math.PI) d-=Math.PI*2;
-      return d;
-    };
 
     /* ----- Mobile gate ----- */
     const mobileGate = document.getElementById('mobileGate');
-    if (isTouch) { mobileGate.style.display = 'flex'; }
+    if (isTouch) mobileGate.style.display = 'flex';
 
     /* HUD help */
     const helpBox=document.getElementById('helpBox');
     helpBox.innerHTML = isTouch
       ? '<b>Mobile</b> — This space tour shines on desktop! Try the Basic Portfolio for now.'
-      : '<b>Desktop</b> — Mouse move: turn · <b>W/S</b> forward/back · <b>A/D</b> turn · Near planet: <b>E</b> enter · In modal: <b>Q</b> exit';
+      : '<b>Desktop</b> — Mouse: turn · <b>W/S</b> forward/back · <b>A/D</b> yaw · Near planet: <b>E</b> quick view · In modal: <b>Q</b> close';
 
-    /* Blue/cyan exhaust textures */
+    /* Textures for exhaust */
     function makeRadialTexture(inner, outer, size=128){
       const c=document.createElement('canvas'); c.width=c.height=size;
       const ctx=c.getContext('2d'); const g=ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
@@ -177,7 +160,7 @@
       scene.add(new THREE.Points(g,new THREE.PointsMaterial({size:1.6,color:0xbfd9ff,sizeAttenuation:true})));
     })();
 
-    /* Galaxies (far sprites) */
+    /* Galaxies (far sprites) + Black hole */
     (function(){
       const galaxies = [];
       function galaxyTexture(){
@@ -197,10 +180,6 @@
         sp.material.opacity = .35 + Math.random()*.25;
         scene.add(sp); galaxies.push(sp);
       }
-    })();
-
-    /* Black hole (simple) */
-    (function(){
       const disk = new THREE.Mesh(
         new THREE.TorusGeometry(28, 5.2, 2, 100),
         new THREE.MeshStandardMaterial({color:0x6aa7ff, emissive:0x1534a6, emissiveIntensity:.8, metalness:.2, roughness:.4, side:THREE.DoubleSide, transparent:true, opacity:.5})
@@ -218,65 +197,35 @@
       const spin = ()=>{ disk.rotation.z += 0.0016; requestAnimationFrame(spin); }; spin();
     })();
 
-    /* Planet textures (procedural) */
-    function createMoonTexture(){ const size=1024, c=document.createElement('canvas'); c.width=c.height=size; const ctx=c.getContext('2d');
-      ctx.fillStyle='#777'; ctx.fillRect(0,0,size,size);
-      for(let i=0;i<200;i++){const x=Math.random()*size, y=Math.random()*size, r=8+Math.random()*40;
-        const g=ctx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'#555'); g.addColorStop(0.6,'#666'); g.addColorStop(1,'rgba(100,100,100,0.4)');
-        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();}
-      for(let i=0;i<50;i++){const x=Math.random()*size, y=Math.random()*size, r=20+Math.random()*60;
-        const g=ctx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'#444'); g.addColorStop(1,'rgba(50,50,50,0.3)');
+    /* Planet materials (textured + displacement) */
+    function noiseTex(base='#777', dots=200){
+      const size=1024, c=document.createElement('canvas'); c.width=c.height=size; const ctx=c.getContext('2d');
+      ctx.fillStyle=base; ctx.fillRect(0,0,size,size);
+      for(let i=0;i<dots;i++){ const x=Math.random()*size,y=Math.random()*size,r=8+Math.random()*40;
+        const g=ctx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'#555'); g.addColorStop(.6,'#666'); g.addColorStop(1,'rgba(100,100,100,.4)');
         ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();}
       return new THREE.CanvasTexture(c);
     }
-    function createMoonHeight(){ const size=1024, c=document.createElement('canvas'); c.width=c.height=size; const ctx=c.getContext('2d');
+    function dispTex(level=1){
+      const size=1024, c=document.createElement('canvas'); c.width=c.height=size; const ctx=c.getContext('2d');
       ctx.fillStyle='#000'; ctx.fillRect(0,0,size,size);
-      for(let i=0;i<200;i++){const x=Math.random()*size, y=Math.random()*size, r=8+Math.random()*40;
-        const g=ctx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'#fff'); g.addColorStop(0.6,'#aaa'); g.addColorStop(1,'rgba(0,0,0,0)');
+      for(let i=0;i<180;i++){ const x=Math.random()*size,y=Math.random()*size,r=(8+Math.random()*40)*level;
+        const g=ctx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'#fff'); g.addColorStop(.6,'#aaa'); g.addColorStop(1,'rgba(0,0,0,0)');
         ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();}
       return new THREE.CanvasTexture(c);
     }
-    function createRockyTexture(){ const size=1024, c=document.createElement('canvas'); c.width=c.height=size; const ctx=c.getContext('2d');
-      ctx.fillStyle='#8b4513'; ctx.fillRect(0,0,size,size);
-      for(let i=0;i<150;i++){const x=Math.random()*size, y=Math.random()*size, r=10+Math.random()*30;
-        const g=ctx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'#a0522d'); g.addColorStop(1,'rgba(139,69,19,0.3)');
-        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();}
-      for(let i=0;i<50;i++){const x=Math.random()*size, y=Math.random()*size, r=15+Math.random()*50;
-        const g=ctx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'#cd853f'); g.addColorStop(1,'rgba(205,133,63,0.2)');
-        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();}
-      return new THREE.CanvasTexture(c);
-    }
-    function createRockyHeight(){ const size=1024, c=document.createElement('canvas'); c.width=c.height=size; const ctx=c.getContext('2d');
-      ctx.fillStyle='#000'; ctx.fillRect(0,0,size,size);
-      for(let i=0;i<150;i++){const x=Math.random()*size, y=Math.random()*size, r=10+Math.random()*30;
-        const g=ctx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'#fff'); g.addColorStop(1,'rgba(0,0,0,0)');
-        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();}
-      return new THREE.CanvasTexture(c);
-    }
-    function createGasTexture(){ const size=1024, c=document.createElement('canvas'); c.width=c.height=size; const ctx=c.getContext('2d');
+    const moonTex=noiseTex('#777',200), moonDisp=dispTex(1);
+    const rockyTex=noiseTex('#8b4513',160), rockyDisp=dispTex(1);
+    function gasTex(){
+      const size=1024, c=document.createElement('canvas'); c.width=c.height=size; const ctx=c.getContext('2d');
       const g=ctx.createLinearGradient(0,0,0,size);
       g.addColorStop(0,'#4682b4'); g.addColorStop(0.3,'#87ceeb'); g.addColorStop(0.7,'#4682b4'); g.addColorStop(1,'#20b2aa');
       ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
-      for(let i=0;i<80;i++){const x=Math.random()*size, y=Math.random()*size, r=30+Math.random()*60;
-        ctx.fillStyle='rgba(255,255,255,0.15)'; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();}
-      for(let i=0;i<40;i++){const x=Math.random()*size, y=Math.random()*size, r=20+Math.random()*40;
-        ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();}
       return new THREE.CanvasTexture(c);
     }
-    function createGasHeight(){ const size=1024, c=document.createElement('canvas'); c.width=c.height=size; const ctx=c.getContext('2d');
-      ctx.fillStyle='#000'; ctx.fillRect(0,0,size,size);
-      const g=ctx.createLinearGradient(0,0,0,size);
-      g.addColorStop(0,'#888'); g.addColorStop(0.5,'#ccc'); g.addColorStop(1,'#888');
-      ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
-      for(let i=0;i<80;i++){const x=Math.random()*size, y=Math.random()*size, r=30+Math.random()*60;
-        ctx.fillStyle='rgba(255,255,255,0.2)'; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();}
-      return new THREE.CanvasTexture(c);
-    }
-    const moonTex=createMoonTexture(), moonDisp=createMoonHeight();
-    const rockyTex=createRockyTexture(), rockyDisp=createRockyHeight();
-    const gasTex=createGasTexture(), gasDisp=createGasHeight();
+    const gasTexT=gasTex(), gasDisp=dispTex(0.6);
 
-    /* Projects -> planet cards */
+    /* Projects -> planets */
     const PROJECTS=[
       {id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg',type:'moon'},
       {id:'p2',title:'Odin Pendant Animation',tag:'3D Works',cover:'media/covers/p2.jpg',type:'rocky'},
@@ -291,33 +240,31 @@
     function appearanceFor(p){
       if(p.type==='moon') return {h:0.0,s:0.1,l:0.4,metal:0.2,rough:0.8,ring:false,emiss:0.1,texture:moonTex,disp:moonDisp};
       if(p.type==='rocky') return {h:0.08,s:0.5,l:0.3,metal:0.3,rough:0.7,ring:Math.random()<0.25,emiss:0.1,texture:rockyTex,disp:rockyDisp};
-      if(p.type==='gas') return {h:0.58,s:0.6,l:0.5,metal:0.1,rough:0.9,ring:Math.random()<0.35,emiss:0.3,texture:gasTex,disp:gasDisp};
+      if(p.type==='gas') return {h:0.58,s:0.6,l:0.5,metal:0.1,rough:0.9,ring:Math.random()<0.4,emiss:0.25,texture:gasTexT,disp:gasDisp};
       return {h:0.66,s:0.40,l:0.58,metal:0.22,rough:0.55,ring:Math.random()<0.5,emiss:0.18,texture:null,disp:null};
     }
 
     const overlay=document.getElementById('overlay');
     const planets=[], cardsRef=[], tmpV=new THREE.Vector3();
-    const sphereGeo=new THREE.SphereGeometry(1,64,48); // yüksek subdiv.
+    const sphereGeo=new THREE.SphereGeometry(1,64,48);
     function makePlanet(r,app){
       const col=new THREE.Color().setHSL(app.h,app.s,app.l);
       const m=new THREE.Mesh(sphereGeo,new THREE.MeshStandardMaterial({
         color:col.getHex(), roughness:app.rough, metalness:app.metal,
         emissive:col.clone().multiplyScalar(app.emiss).getHex(), emissiveIntensity:1,
-        map:app.texture,
-        displacementMap:app.disp, displacementScale:0.15,
+        map:app.texture, displacementMap:app.disp, displacementScale:0.15,
         normalMap:app.disp, normalScale: new THREE.Vector2(0.8,0.8)
       }));
       m.rotation.z = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(12));
       if(app.ring){
         const ring=new THREE.Mesh(
-          new THREE.RingGeometry(r*1.02,r*1.08,64),
-          new THREE.MeshBasicMaterial({color:col.clone().offsetHSL(.08,0,0).getHex(),transparent:true,opacity:.10,side:THREE.DoubleSide})
+          new THREE.RingGeometry(r*1.015,r*1.07,64), /* daha küçük halka */
+          new THREE.MeshBasicMaterial({color:col.clone().offsetHSL(.08,0,0).getHex(),transparent:true,opacity:.12,side:THREE.DoubleSide})
         );
-        ring.rotation.x=-Math.PI/2 + THREE.MathUtils.randFloatSpread(.28);
+        ring.rotation.x=-Math.PI/2 + THREE.MathUtils.randFloatSpread(.3);
         ring.rotation.z=Math.random()*Math.PI*2; m.add(ring);
       }
       m.scale.setScalar(r); m.userData.spin=THREE.MathUtils.randFloat(0.02,0.05);
-      m.userData.radius=r; // çarpışma için
       return m;
     }
     const POS=[], RMIN=70, RMAX=150;
@@ -339,57 +286,30 @@
       const item={el,obj:m,pill}; el.addEventListener('click',()=>{ if(nearest===m) qvOpenFor(m); }); cardsRef.push(item);
     });
 
-    /* Ship & particles (player) */
+    /* Player ship + particles */
     const ship=new THREE.Group(); scene.add(ship);
-    const SHIP_RADIUS=2.4; // çarpışma kabaca
-
-    // Fallback hull
     const hull=new THREE.Mesh(new THREE.CapsuleGeometry(.8,3,6,12),
       new THREE.MeshStandardMaterial({color:0x9aa7ff,roughness:.55,metalness:.2,emissive:0x10163a,emissiveIntensity:.2}));
     hull.rotation.z=Math.PI/2; ship.add(hull);
 
-    // GLB (media/spaceship.glb) — +X yönüne çevir
     const loader = new GLTFLoader();
     let exhaustLocal=new THREE.Vector3(-2,0,0);
-    let baseModel=null;
-
-    function cloneSkeleton(src){
-      const obj = src.clone(true);
-      obj.traverse(n=>{
-        if(n.isMesh){
-          n.material = n.material.clone();
-          if(n.skeleton){ n.skeleton = n.skeleton.clone(); }
-        }
-      });
-      return obj;
-    }
-    function fitModelToShip(model){
+    loader.load('media/spaceship.glb', (gltf)=>{
+      const model = gltf.scene || gltf.scenes?.[0]; if(!model) return;
+      ship.clear();
       const box0 = new THREE.Box3().setFromObject(model);
       const size0 = new THREE.Vector3(); box0.getSize(size0);
       const s = 6 / Math.max(size0.x,size0.y,size0.z || 1);
       model.scale.setScalar(s);
-      model.rotation.set(0, Math.PI/2, 0); // +Z → +X
+      model.rotation.set(0, Math.PI/2, 0);
       const b1 = new THREE.Box3().setFromObject(model);
-      const c1 = new THREE.Vector3(); b1.getCenter(c1);
-      model.position.sub(c1);
+      const c1 = new THREE.Vector3(); b1.getCenter(c1); model.position.sub(c1);
       const b2 = new THREE.Box3().setFromObject(model);
-      const info = { exhaustLocal: new THREE.Vector3(b2.min.x - 0.6, 0, 0) };
-      return info;
-    }
+      exhaustLocal = new THREE.Vector3(b2.min.x - 0.6, 0, 0);
+      ship.add(model);
+    });
 
-    loader.load('media/spaceship.glb', (gltf)=>{
-      baseModel = gltf.scene || gltf.scenes?.[0];
-      if(baseModel){
-        ship.clear();
-        const m = cloneSkeleton(baseModel);
-        const info = fitModelToShip(m);
-        exhaustLocal.copy(info.exhaustLocal);
-        ship.add(m);
-      }
-      spawnAIShips(); // <- ARTIK VAR
-    }, undefined, ()=>{ spawnAIShips(); });
-
-    function worldFromExhaust(out, carrier=ship, exhaust=exhaustLocal){return out.copy(exhaust).applyQuaternion(carrier.quaternion).add(carrier.position);}
+    function worldFromExhaust(out){return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);}
     function makeSprite(mat){const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s;}
     const flameMat=new THREE.SpriteMaterial({map:flameTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.95});
     const smokeMat=new THREE.SpriteMaterial({map:smokeTex,transparent:true,depthWrite:false,opacity:.0});
@@ -432,7 +352,7 @@
       }
     }
 
-    /* Camera (omuz üstü klasik açı) */
+    /* Camera */
     const camOff=new THREE.Vector3(-20,8.8,0), lookAhead=new THREE.Vector3(8,2,0), camPos=new THREE.Vector3(), lookAt=new THREE.Vector3();
     function updateCamera(dt){
       const off=camOff.clone().applyQuaternion(ship.quaternion);
@@ -449,40 +369,77 @@
     addEventListener('keydown',e=>{ if(!controlsEnabled) return; if(e.code in keys) keys[e.code]=true; });
     addEventListener('keyup',e=>{ if(!controlsEnabled) return; if(e.code in keys) keys[e.code]=false; });
 
-    // Mouse — ship’e göre
-    let yawVel=0,pitchVel=0;
-    let lastX=null,lastY=null;
-    const M_SENS_X=.0048, M_SENS_Y=.0042, YAW_D=.90, PITCH_D=.90, MAX_YAW=2.8;
+    let lastX=null,lastY=null,yawVel=0,pitchVel=0; 
+    const M_SENS_X=.0048, M_SENS_Y=.0042, YAW_D=.90, PITCH_D=.90, MAX_YAW=2.8; // mouse etkisi x3
     addEventListener('mousemove',e=>{
       if(!controlsEnabled||isTouch) return;
-      if(lastX===null){ lastX=e.clientX; lastY=e.clientY; return; }
-      const dx=e.clientX-lastX, dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY;
-      // Mouse sağ → sağ, yukarı → yukarı olacak şekilde:
-      yawVel   += dx * M_SENS_X;      // +dx sağ, sağa rota
-      pitchVel += -dy * M_SENS_Y;     // +dy aşağı -> negatif pitch (aşağı), biz tersliyoruz
+      if(lastX===null){lastX=e.clientX;lastY=e.clientY;return;}
+      const dx=e.clientX-lastX,dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY;
+      // mouse sağa -> +yaw; yukarı -> +pitch
+      yawVel += dx*M_SENS_X;
+      pitchVel += -dy*M_SENS_Y;
     }, {passive:true});
     addEventListener('mouseleave',()=>{lastX=lastY=null;}); addEventListener('blur',()=>{lastX=lastY=null;});
 
-    /* Movement (player) */
+    /* Movement + collisions */
     let velF=0,yaw=0,pitch=0,throttle=0,prevThrottle=0,turnKeyVel=0;
+
+    // boundary ayarları
+    const BOUNDS_R = 230;          // sahne yarıçapı (gezegen kümesinin tamamı)
+    const BOUNDS_SOFT = 200;       // yaklaşınca geri çevir
+    const BOUNDS_FORCE = 2.2;      // merkeze çekim kuvveti
+
+    function planetRadius(p){ return p.scale.x; }
+
+    function handleCollisions(){
+      // Gezegen çarpışması (içinden geçmesin)
+      for(const pl of planets){
+        const r = planetRadius(pl)*0.98; // daha sıkı
+        const d = ship.position.distanceTo(pl.position);
+        if(d < r+1.6){ // 1.6 ~ gemi yarıçapı
+          const dir = ship.position.clone().sub(pl.position).normalize();
+          ship.position.copy(pl.position).addScaledVector(dir, r+1.6);
+          // hafif sekme
+          yaw += THREE.MathUtils.randFloatSpread(0.06);
+          pitch += THREE.MathUtils.randFloatSpread(0.04);
+          velF *= 0.4;
+          spawnSmoke(8,1.4);
+        }
+      }
+      // Dünya sınırı
+      const dist = ship.position.length();
+      if(dist > BOUNDS_R){
+        const toCenter = ship.position.clone().multiplyScalar(-1).normalize();
+        yaw += THREE.MathUtils.randFloatSpread(0.02);
+        pitch += THREE.MathUtils.randFloatSpread(0.02);
+        ship.position.addScaledVector(toCenter, (dist-BOUNDS_R)*0.6);
+        velF *= 0.7;
+      }
+    }
+
     function updateShip(dt){
       if(!controlsEnabled){ velF*=Math.pow(.94,dt*60); yawVel*=Math.pow(.92,dt*60); pitchVel*=Math.pow(.92,dt*60); updateParticles(dt); return; }
       let fwd=0, turnKey=0;
       if(!isTouch){ if(keys.KeyW)fwd+=1; if(keys.KeyS)fwd-=1; if(keys.KeyD)turnKey-=1; if(keys.KeyA)turnKey+=1; }
 
-      yawVel*=Math.pow(YAW_D,dt*60); pitchVel*=Math.pow(PITCH_D,dt*60); 
-      turnKeyVel=THREE.MathUtils.damp(turnKeyVel,turnKey*1.2,6,dt);
-
-      const yawRate=THREE.MathUtils.clamp((yawVel+turnKeyVel)*3.0,-MAX_YAW,MAX_YAW);
-      const pitchRate=THREE.MathUtils.clamp(pitchVel*3.0,-1.6,1.6);
-      yaw+=yawRate*dt; 
-      pitch+=pitchRate*dt; 
-      pitch=clamp(pitch,-Math.PI/3,Math.PI/3);
+      yawVel*=Math.pow(YAW_D,dt*60); pitchVel*=Math.pow(PITCH_D,dt*60); turnKeyVel=THREE.MathUtils.damp(turnKeyVel,turnKey*1.2,6,dt);
+      const yawRate=THREE.MathUtils.clamp((yawVel+turnKeyVel)*3.0,-MAX_YAW,MAX_YAW), pitchRate=THREE.MathUtils.clamp(pitchVel*3.0,-1.6,1.6);
+      yaw+=yawRate*dt; pitch+=pitchRate*dt; pitch=clamp(pitch,-Math.PI/3,Math.PI/3);
 
       const ACC=26, MAX=26, DRAG_C=.985, DRAG_A=.96, DRAG_B=.90;
-      const tTarget=Math.max(0,fwd); throttle += (tTarget-throttle)*(1-Math.pow(.2,dt*60)); 
-      velF+=throttle*ACC*dt; if(fwd<0) velF+=fwd*ACC*dt;
+      const tTarget=Math.max(0,fwd); throttle += (tTarget-throttle)*(1-Math.pow(.2,dt*60)); velF+=throttle*ACC*dt; if(fwd<0) velF+=fwd*ACC*dt;
       const drag=(fwd<0)?DRAG_B:(throttle>.02?DRAG_A:DRAG_C); velF*=Math.pow(drag,dt*60); velF=clamp(velF,-MAX,MAX);
+
+      // Sınır yaklaşınca yumuşak geri çevirme (oyuncu için de)
+      const dist = ship.position.length();
+      if(dist > BOUNDS_SOFT){
+        const toCenter = ship.position.clone().multiplyScalar(-1).normalize();
+        const forward=new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion);
+        const steer = toCenter.sub(forward).clampLength(0, BOUNDS_FORCE*dt);
+        // yaw/pitch'ı ufakça merkeze çevir
+        const right = new THREE.Vector3(0,1,0).applyQuaternion(ship.quaternion);
+        yaw += steer.dot(new THREE.Vector3(0,0,1)) * 0.0; // minimal
+      }
 
       const targetRoll=-(yawVel+turnKeyVel)*0.25; ship.rotation.set(pitch,yaw,THREE.MathUtils.damp(ship.rotation.z,targetRoll,8,dt));
       const forward=new THREE.Vector3(1,0,0).applyQuaternion(ship.quaternion); ship.position.addScaledVector(forward,velF*dt);
@@ -495,10 +452,11 @@
       if((throttle<=.02 && speedAbs>2) || fwd<0) spawnSmoke(2,1.0+(fwd<0?.6:0));
       prevThrottle=throttle;
 
+      handleCollisions();
       updateParticles(dt);
     }
 
-    /* Overlay & hint (Quick View) */
+    /* Overlay & quick view */
     const qv=document.getElementById('quickview'), qvTitle=document.getElementById('qvTitle'),
           qvTag=document.getElementById('qvTag'), qvMedia=document.getElementById('qvMedia');
     let nearest=null;
@@ -536,297 +494,177 @@
       }
     });
 
-    /* Planet spin */
-    function spinPlanets(dt){ for(const pl of planets){ pl.rotation.y += (pl.userData.spin||0.03)*dt; } }
-
-    /* ---- AI Ships ---- */
+    /* AI SHIPS — sadece SAHNE SINIRI ile kısıtla */
     const AI_COUNT = 12;
     const aiShips = [];
-    const aiTmp = new THREE.Vector3();
-    const aiForward = new THREE.Vector3(1,0,0);
-    function createAIShip(pos=new THREE.Vector3()){
-      const group=new THREE.Group();
-      // model (clone varsa), yoksa küçük kapsül
-      let model=null, exhaust = new THREE.Vector3(-1.2,0,0);
-      if(baseModel){
-        model = cloneSkeleton(baseModel);
-        const info = fitModelToShip(model);
-        exhaust.copy(info.exhaustLocal.clone().multiplyScalar(0.6)); // biraz kısa duman
-      }else{
-        model = new THREE.Mesh(new THREE.CapsuleGeometry(.4,1.4,6,12), new THREE.MeshStandardMaterial({color:0x93a3ff,metalness:.2,roughness:.6,emissive:0x0f1633,emissiveIntensity:.25}));
-        model.rotation.z=Math.PI/2;
-      }
-      // invert renk efekti
-      model.traverse(n=>{ if(n.isMesh){ n.material = n.material.clone(); n.material.color.offsetHSL(0.5,0,0); }});
-      group.add(model);
-      group.position.copy(pos);
-      group.rotation.y = Math.random()*Math.PI*2;
+    const aiTmpV = new THREE.Vector3(), aiForward = new THREE.Vector3(1,0,0), center = new THREE.Vector3(0,0,0);
 
-      // part. havuzu
-      const fPool=[...Array(50)].map(()=>makeSprite(flameMat)), sPool=[...Array(36)].map(()=>makeSprite(smokeMat));
-      const fData=fPool.map(()=>({life:0,max:0,vel:new THREE.Vector3()})), sData=sPool.map(()=>({life:0,max:0,vel:new THREE.Vector3()}));
-      const exhaustFn = (out)=>worldFromExhaust(out, group, exhaust);
-
-      function aiSpawnFlame(n,intensity=1){
-        for(let i=0;i<fPool.length&&n>0;i++){
-          if(fData[i].life>0)continue; n--;
-          const sp=fPool[i],d=fData[i]; const pos=new THREE.Vector3(); exhaustFn(pos);
-          sp.position.copy(pos); sp.scale.setScalar(0.8+Math.random()*1.2*intensity);
-          d.max=.32+Math.random()*.22; d.life=d.max;
-          const dir=new THREE.Vector3(-1,THREE.MathUtils.randFloatSpread(.32),THREE.MathUtils.randFloatSpread(.32)).applyQuaternion(group.quaternion);
-          d.vel.copy(dir.multiplyScalar(11+16*intensity)); sp.material.opacity=.9; sp.visible=true;
-        }
-      }
-      function aiSpawnSmoke(n,boost=1){
-        for(let i=0;i<sPool.length&&n>0;i++){
-          if(sData[i].life>0)continue; n--;
-          const sp=sPool[i],d=sData[i]; const pos=new THREE.Vector3(); exhaustFn(pos);
-          sp.position.copy(pos); const s=1.0+Math.random()*2.0*boost; sp.scale.set(s,s,1);
-          d.max=.9+Math.random()*.7; d.life=d.max;
-          const dir=new THREE.Vector3(-1,THREE.MathUtils.randFloatSpread(.22),THREE.MathUtils.randFloatSpread(.22)).applyQuaternion(group.quaternion);
-          d.vel.copy(dir.multiplyScalar(2.8+1.8*boost)); sp.material.opacity=.3; sp.visible=true;
-        }
-      }
-      function aiUpdateParticles(dt){
-        for(let i=0;i<fPool.length;i++){
-          const p=fPool[i],d=fData[i]; if(d.life<=0){p.visible=false;continue;}
-          d.life-=dt; p.position.addScaledVector(d.vel,dt); const t=d.life/d.max; p.material.opacity=.15+.75*t; const s=(.6+1.6*(1-t)); p.scale.set(s,s,1); if(d.life<=0)p.visible=false;
-        }
-        for(let i=0;i<sPool.length;i++){
-          const p=sPool[i],d=sData[i]; if(d.life<=0){p.visible=false;continue;}
-          d.life-=dt; p.position.addScaledVector(d.vel,dt); p.position.y+=dt*.5; const t=d.life/d.max; p.material.opacity=.28*t; const s=p.scale.x*(1+.3*dt); p.scale.set(s,s,1); if(d.life<=0)p.visible=false;
-        }
-      }
-
-      const ai={
-        group, vel:0, yaw:group.rotation.y, pitch:0, throttle:0, state:'roam',
-        timer: 1+Math.random()*2, target: null, wander: new THREE.Vector2(Math.random()*1000,Math.random()*1000),
-        updateParticles: aiUpdateParticles, spawnFlame: aiSpawnFlame, spawnSmoke: aiSpawnSmoke
-      };
-      aiShips.push(ai); scene.add(group);
-      return ai;
+    function makeAIHull(){
+      const g=new THREE.CapsuleGeometry(.6,2.2,6,12);
+      const m=new THREE.MeshStandardMaterial({color:0xffffff,metalness:.25,roughness:.5,emissive:0x111133,emissiveIntensity:.25});
+      const mesh=new THREE.Mesh(g,m); mesh.rotation.z=Math.PI/2; return mesh;
     }
 
-    function pickPlanet(){
-      return planets[Math.floor(Math.random()*planets.length)];
+    function spawnAIShips(modelGLB){
+      for(let i=0;i<AI_COUNT;i++){
+        const grp=new THREE.Group();
+        let body;
+        if(modelGLB){
+          body = modelGLB.clone(true);
+        }else{
+          body = makeAIHull();
+        }
+        // “invertimsi” görünüm
+        if(body.traverse){
+          body.traverse(o=>{
+            if(o.isMesh){
+              o.material = o.material.clone();
+              o.material.color.offsetHSL(0.5,0,0); // ton kaydır
+              o.material.emissive = new THREE.Color(0x99ccff);
+              o.material.emissiveIntensity = 0.35;
+            }
+          });
+        }
+        grp.add(body);
+        grp.position.set(THREE.MathUtils.randFloatSpread(80),THREE.MathUtils.randFloatSpread(20),THREE.MathUtils.randFloatSpread(80));
+        scene.add(grp);
+        aiShips.push({
+          g:grp, vel:THREE.MathUtils.randFloat(6,10), throttle:0.4,
+          target: randomAITarget(), cooldown: THREE.MathUtils.randFloat(2,5),
+          smokeCooldown:0
+        });
+      }
     }
 
-    function steerToward(ai, targetPos, dt){
-      // hedef yön
-      const fwd=aiForward.clone().applyQuaternion(ai.group.quaternion);
-      const to=targetPos.clone().sub(ai.group.position);
-      const yawTarget=Math.atan2(to.z, to.x);
-      const yawCur=ai.yaw;
-      const dy=angleDiff(yawTarget, yawCur);
-      ai.yaw += THREE.MathUtils.clamp(dy, -1.6*dt, 1.6*dt);
+    function randomAITarget(){
+      // hedefler küre içinde ama sınırdan uzakta
+      const r = Math.random()*150+20; const th=Math.random()*Math.PI*2; const u=Math.random()*2-1; const s=Math.sqrt(1-u*u);
+      return new THREE.Vector3(s*Math.cos(th)*r, u*20, s*Math.sin(th)*r);
+    }
+    function randomNearPlanet(){
+      const pl = planets[Math.floor(Math.random()*planets.length)];
+      const off = new THREE.Vector3().randomDirection().multiplyScalar(planetRadius(pl)*THREE.MathUtils.randFloat(1.6,2.6));
+      return pl.position.clone().add(off);
+    }
 
-      // hafif pitch sapması (yukarı-aşağı)
-      const aimY = clamp(to.y/30,-0.6,0.6);
-      ai.pitch = lerp(ai.pitch, aimY, 1-Math.pow(0.2,dt*60));
+    function steerTo(ai, dt){
+      const dir = ai.target.clone().sub(ai.g.position);
+      const dist = dir.length();
+      if(dist>0.0001) dir.normalize();
+
+      // Basic wander + yumuşak yönelme
+      const q = ai.g.quaternion.clone();
+      aiForward.set(1,0,0).applyQuaternion(q);
+      const turn = dir.clone().sub(aiForward).clampLength(0, 1.6*dt);
+      // küçük yaw/pitch:
+      const axis = aiForward.clone().cross(dir).normalize();
+      const ang = Math.min(0.9*dt, aiForward.angleTo(dir));
+      if(isFinite(ang) && axis.lengthSq()>1e-6){
+        ai.g.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(axis, ang));
+      }
+
+      // sınır yaklaşınca merkeze yönel
+      const distCenter = ai.g.position.length();
+      if(distCenter > BOUNDS_SOFT){
+        const toC = center.clone().sub(ai.g.position).normalize();
+        const axisC = aiForward.clone().cross(toC).normalize();
+        const angC = Math.min(1.2*dt, aiForward.angleTo(toC));
+        if(isFinite(angC) && axisC.lengthSq()>1e-6){
+          ai.g.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(axisC, angC));
+        }
+        // throttle’ı da düşür biraz
+        ai.throttle = Math.max(0.25, ai.throttle - 0.4*dt);
+      } else {
+        // normalde hedefe göre throttle ayarla
+        if(dist>40) ai.throttle = Math.min(1.0, ai.throttle + 0.5*dt);
+        else if(dist<18) ai.throttle = Math.max(0.1, ai.throttle - 0.8*dt);
+      }
+
+      // hız
+      const fwd = aiForward.set(1,0,0).applyQuaternion(ai.g.quaternion);
+      ai.g.position.addScaledVector(fwd, ai.vel * ai.throttle * dt);
+      // yer sınırı
+      if(ai.g.position.length() > BOUNDS_R){
+        const toCenter = center.clone().sub(ai.g.position).normalize();
+        ai.g.position.addScaledVector(toCenter, 20*dt);
+        ai.throttle = Math.max(0.2, ai.throttle - 0.6*dt);
+      }
+      // Y ekseni sınırı (oyuncuyla benzer)
+      ai.g.position.y = clamp(ai.g.position.y, -70, 70);
+
+      // partikül efekti (basit)
+      ai.smokeCooldown -= dt;
+      if(ai.throttle>0.2 && Math.random()<0.5) spawnFlame(1, 0.6+ai.throttle*0.6);
+      if(ai.throttle<0.15 && ai.smokeCooldown<=0){ spawnSmoke(2, 1.0); ai.smokeCooldown=0.2; }
     }
 
     function updateAI(dt){
       for(const ai of aiShips){
-        ai.timer -= dt;
-        if(!ai.target || ai.timer<=0){
-          // yeni hedef belirle
-          if(Math.random()<0.6){ ai.target = pickPlanet(); ai.state='approach'; ai.timer= 6+Math.random()*8; }
-          else { ai.target = null; ai.state='roam'; ai.timer= 4+Math.random()*6; }
+        ai.cooldown -= dt;
+        // hedef bitti mi veya hedef çok yakınsa yenisini seç
+        if(ai.g.position.distanceTo(ai.target) < 10 || ai.cooldown<=0){
+          ai.cooldown = THREE.MathUtils.randFloat(2,6);
+          ai.target = (Math.random()<0.6) ? randomNearPlanet() : randomAITarget();
         }
 
-        // durumlara göre hız hedefi
-        let speedT = 10;
-        if(ai.state==='approach') speedT = 16;
-        if(ai.state==='roam')     speedT = 10;
-        if(ai.state==='loiter')   speedT = 0;
-
-        // zaman zaman fren
-        if(Math.random()<0.003){ speedT = 0; ai.state='loiter'; ai.timer = 0.8+Math.random()*1.6; ai.spawnSmoke(10,1.2); }
-
-        // hedefe göre direksiyon
-        if(ai.state==='approach' && ai.target){
-          const tp = ai.target.position.clone();
-          const r  = ai.target.userData.radius || 10;
-          // biraz "yanından" geçmek için ofset
-          tp.y += Math.sin((performance.now()+ai.wander.x)*0.001)*2.0;
-          steerToward(ai, tp, dt);
-          // yakınsa biraz bekleyip ayrıl
-          const d = ai.group.position.distanceTo(ai.target.position);
-          if(d < r + 6){ ai.state='loiter'; ai.timer=1.2+Math.random()*1.4; speedT=0; }
-        } else if(ai.state==='roam'){
-          // perlin yok → basit wander gürültüsü
-          ai.wander.x += dt; ai.wander.y += dt*1.13;
-          const angle = Math.sin(ai.wander.x*0.7)*0.6 + Math.cos(ai.wander.y*0.6)*0.6;
-          ai.yaw += angle*dt*0.6;
-          ai.pitch = lerp(ai.pitch, Math.sin(ai.wander.x*0.9)*0.2, 1-Math.pow(0.3,dt*60));
-        }
-
-        // throttle/hız
-        const acc = 18;
-        const drag = (speedT<=0.1)? 0.92 : 0.97;
-        const tTarget = (speedT>0)? 1:0;
-        ai.throttle += (tTarget-ai.throttle)*(1-Math.pow(.25,dt*60));
-        ai.vel += ai.throttle*acc*dt;
-        ai.vel *= Math.pow(drag, dt*60);
-        ai.vel = clamp(ai.vel, -18, 20);
-
-        // dönüşleri uygula
-        ai.group.rotation.set(ai.pitch, ai.yaw, THREE.MathUtils.damp(ai.group.rotation.z, -ai.yaw*0.08, 8, dt));
-
-        // hareket
-        const fwdNow = aiForward.clone().applyQuaternion(ai.group.quaternion);
-        ai.group.position.addScaledVector(fwdNow, ai.vel*dt);
-
-        // partikül
-        if(ai.throttle>0.02){ ai.spawnFlame(3+Math.floor(ai.throttle*6), 0.8+ai.throttle*0.6); }
-        if(ai.throttle<0.02 && ai.vel>2){ ai.spawnSmoke(2,1.0); }
-
-        // sahne sınırı – geri çevir
-        const L=220; if(ai.group.position.length()>L){
-          const toCenter = new THREE.Vector3().sub(ai.group.position).setY(0);
-          steerToward(ai, ai.group.position.clone().add(toCenter), dt);
-          ai.throttle=1;
-        }
-
-        // gezegen çarpışması (itme)
+        // gezegen çarpışmalarına temel tepki
         for(const pl of planets){
-          const pr = pl.userData.radius;
-          const min = pr + 2.5; // AI gemi yarıçap ~2.5
-          const d = ai.group.position.distanceTo(pl.position);
-          if(d<min){
-            // içeri girdiyse dışarı it, hız düşür
-            const n = ai.group.position.clone().sub(pl.position).normalize();
-            ai.group.position.copy(pl.position).addScaledVector(n, min+0.1);
-            ai.vel *= 0.5;
-            ai.yaw += (Math.random()-0.5)*0.6; // sekme
+          const r = planetRadius(pl)*0.96;
+          const d = ai.g.position.distanceTo(pl.position);
+          if(d < r+1.2){
+            const dir = ai.g.position.clone().sub(pl.position).normalize();
+            ai.g.position.copy(pl.position).addScaledVector(dir, r+1.2);
+            ai.throttle = Math.max(0.2, ai.throttle*0.5);
+            break;
           }
         }
-        ai.updateParticles(dt);
+        steerTo(ai, dt);
       }
 
-      // AI ↔ AI çarpışma (basit ayırma)
-      for(let i=0;i<aiShips.length;i++){
-        for(let j=i+1;j<aiShips.length;j++){
-          const A=aiShips[i], B=aiShips[j];
-          const d=A.group.position.distanceTo(B.group.position);
-          const min=4.2;
-          if(d<min && d>0.0001){
-            const n = B.group.position.clone().sub(A.group.position).divideScalar(d);
-            const push = (min-d)*0.5;
-            A.group.position.addScaledVector(n, -push);
-            B.group.position.addScaledVector(n,  push);
-            A.vel*=0.9; B.vel*=0.9;
-          }
-        }
-      }
-    }
-
-    function spawnAIShips(){
-      for(let i=0;i<AI_COUNT;i++){
-        const pos = new THREE.Vector3(
-          THREE.MathUtils.randFloatSpread(80),
-          THREE.MathUtils.randFloatSpread(22),
-          THREE.MathUtils.randFloatSpread(80)
-        );
-        createAIShip(pos);
-      }
-    }
-
-    /* Player ↔ gezegen/AI çarpışmaları */
-    function collisionsPlayer(dt){
-      // gezegen
-      for(const pl of planets){
-        const pr = pl.userData.radius;
-        const min = pr + SHIP_RADIUS;
-        const d = ship.position.distanceTo(pl.position);
-        if(d<min){
-          const n = ship.position.clone().sub(pl.position).normalize();
-          ship.position.copy(pl.position).addScaledVector(n, min+0.05);
-          velF *= 0.6; // hız kes
-          // bounce yönü için biraz yaw ekle
-          yaw += (Math.random()-0.5)*0.3;
-        }
-      }
-      // AI
+      // player <-> AI basit çarpışma
       for(const ai of aiShips){
-        const d = ship.position.distanceTo(ai.group.position);
-        const min = 2.5 + SHIP_RADIUS;
-        if(d<min && d>0.0001){
-          const n = ship.position.clone().sub(ai.group.position).divideScalar(d);
-          const push = (min-d);
-          ship.position.addScaledVector(n,  push*0.6);
-          ai.group.position.addScaledVector(n,-push*0.4);
-          velF*=0.85; ai.vel*=0.85;
+        const d = ship.position.distanceTo(ai.g.position);
+        if(d < 2.6){
+          const dir = ship.position.clone().sub(ai.g.position).normalize();
+          ship.position.addScaledVector(dir, 0.6);
+          ai.g.position.addScaledVector(dir.negate(), 0.6);
+          velF *= 0.7; ai.throttle = Math.max(0.25, ai.throttle*0.6);
+          spawnSmoke(6,1.2);
         }
       }
     }
 
-    /* Satellites & debris (küçük dekor) */
-    const satellites=[], debrisPool=[];
-    function makeSatellite(x,y,z){
-      const group=new THREE.Group();
-      const body=new THREE.Mesh(new THREE.BoxGeometry(1.0,0.8,0.6), new THREE.MeshStandardMaterial({color:0xd0d6e5,metalness:.4,roughness:.6}));
-      const panelMat=new THREE.MeshStandardMaterial({color:0x6aa7ff,emissive:0x0e1a44,emissiveIntensity:.4,roughness:.4});
-      const panelL=new THREE.Mesh(new THREE.BoxGeometry(2.0,0.1,1.0), panelMat);
-      const panelR=panelL.clone(); panelL.position.set(-1.5,0,0); panelR.position.set(1.5,0,0);
-      const antenna=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,2.0,8), new THREE.MeshStandardMaterial({color:0xaaaaaa,metalness:.5,roughness:.5}));
-      antenna.position.set(0,0.8,0); antenna.rotation.x=Math.PI/2;
-      group.add(body,panelL,panelR,antenna);
-      group.position.set(x,y,z);
-      group.scale.setScalar(3);
-      group.userData.spin = THREE.MathUtils.randFloat(0.3,0.8);
-      scene.add(group);
-      satellites.push(group);
-    }
-    for(let i=0;i<5;i++){
-      const a=Math.random()*Math.PI*2, r=THREE.MathUtils.randFloat(50,120);
-      makeSatellite(Math.cos(a)*r, THREE.MathUtils.randFloatSpread(12), Math.sin(a)*r);
-    }
-    function spawnDebris(at){
-      for(let i=0;i<12;i++){
-        const cube=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.12,0.12), new THREE.MeshStandardMaterial({color:0x9fb4ff,metalness:.3,roughness:.4,transparent:true,opacity:1}));
-        cube.position.copy(at);
-        const vel=new THREE.Vector3(THREE.MathUtils.randFloatSpread(6), THREE.MathUtils.randFloatSpread(4)+1.2, THREE.MathUtils.randFloatSpread(6));
-        const life=1.6+Math.random()*0.9;
-        debrisPool.push({mesh:cube, vel, life, max:life});
-        scene.add(cube);
+    // GLB’yi bir kez yükleyip AI’lara klonla
+    loader.load('media/spaceship.glb', (gltf)=>{
+      const model = gltf.scene || gltf.scenes?.[0];
+      if(model){
+        const box0 = new THREE.Box3().setFromObject(model);
+        const size0 = new THREE.Vector3(); box0.getSize(size0);
+        const s = 3.2 / Math.max(size0.x,size0.y,size0.z || 1); // AI daha küçük
+        model.scale.setScalar(s);
+        model.rotation.set(0, Math.PI/2, 0);
+        // pivotu ortala
+        const b1 = new THREE.Box3().setFromObject(model);
+        const c1 = new THREE.Vector3(); b1.getCenter(c1); model.position.sub(c1);
+        spawnAIShips(model);
+      }else{
+        spawnAIShips(null);
       }
-    }
-    function updateSatellites(dt){
-      for(const s of satellites){ s.rotation.y += s.userData.spin*dt; }
-      for(let i=satellites.length-1;i>=0;i--){
-        const s=satellites[i];
-        if(ship.position.distanceTo(s.position) < 3.0){
-          spawnDebris(s.position); scene.remove(s); satellites.splice(i,1);
-        }
-      }
-      for(let i=debrisPool.length-1;i>=0;i--){
-        const d=debrisPool[i]; d.life-=dt;
-        d.mesh.position.addScaledVector(d.vel,dt); d.vel.multiplyScalar(0.985); d.mesh.rotation.x+=dt*2; d.mesh.rotation.y+=dt*2.4;
-        const t=Math.max(0,d.life/d.max); d.mesh.material.opacity = t;
-        if(d.life<=0){ scene.remove(d.mesh); debrisPool.splice(i,1); }
-      }
-    }
+    }, undefined, ()=>{ spawnAIShips(null); });
+
+    /* Spin planets */
+    function spinPlanets(dt){ for(const pl of planets){ pl.rotation.y += (pl.userData.spin||0.03)*dt; } }
 
     /* Start */
     const startEl=document.getElementById('start');
-    document.getElementById('btnStart').addEventListener('click',()=>{
-      startEl.classList.add('hide');
-      setTimeout(()=>{ controlsEnabled=true; },550);
-    });
+    document.getElementById('btnStart').addEventListener('click',()=>{ startEl.classList.add('hide'); setTimeout(()=>{ controlsEnabled=true; },550); });
 
     /* Resize & loop */
     addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();});
     const clock=new THREE.Clock();
     function loop(){
       const dt=Math.min(.033,clock.getDelta());
-      updateShip(dt);
-      updateCamera(dt);
-      collisionsPlayer(dt);
-      spinPlanets(dt*0.5);
-      updateAI(dt);
-      updateSatellites(dt);
-      updateCardsAndHint();
+      updateShip(dt); updateCamera(dt); updateParticles(dt); spinPlanets(dt*0.5); updateAI(dt); updateCardsAndHint();
       renderer.render(scene,camera); requestAnimationFrame(loop);
     }
     loop();

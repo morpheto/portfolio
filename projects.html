@@ -67,7 +67,9 @@
     .detail-video iframe,.detail-video video{width:100%;height:100%;border:0;display:block}
 
     /* Görsel yön duyarlılığı */
-    .gif-grid img,.gallery img{width:100%;height:100%;object-fit:cover;border-radius:10px;border:1px solid var(--border);aspect-ratio:16/9}
+    .gif-grid img,.gallery img{
+      width:100%;height:100%;object-fit:cover;border-radius:10px;border:1px solid var(--border);aspect-ratio:16/9;cursor:zoom-in;
+    }
     .gif-grid img.portrait,.gallery img.portrait{object-fit:contain;aspect-ratio:3/4;background:#0f1013}
 
     footer{border-top:1px solid var(--border);margin-top:44px}
@@ -85,6 +87,17 @@
     body.cursor-pointer .cursor-dot{width:26px;height:26px;background:rgba(255,255,255,0.12);box-shadow:0 0 24px rgba(255,255,255,0.9),0 0 60px rgba(255,255,255,0.45);outline:2px solid rgba(255,255,255,0.6);outline-offset:2px}
     @media(hover:none){body.custom-cursor{cursor:auto}.cursor-dot{display:none!important}}
     @media(prefers-reduced-motion:reduce){body.custom-cursor{cursor:auto}.cursor-dot,.cursor-trail{display:none!important}}
+
+    /* Video tıklanmasın */
+    .detail-video video, .detail-video iframe{ pointer-events:none; }
+
+    /* ---- Lightbox ---- */
+    .lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.78);backdrop-filter:blur(4px);z-index:90}
+    .lightbox.show{display:flex}
+    .lightbox-img{max-width:92vw;max-height:92vh;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:#0b0f1c}
+    .lb-btn{position:fixed;top:50%;transform:translateY(-50%);padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(20,24,34,.55);color:#fff;font-weight:700;cursor:pointer}
+    .lb-prev{left:20px}.lb-next{right:20px}
+    .lb-close{position:fixed;top:18px;right:18px;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(20,24,34,.55);cursor:pointer}
   </style>
 </head>
 <body>
@@ -126,7 +139,6 @@
       <div class="section-title">Video</div>
       <div class="detail-video" id="detailVideo" aria-label="Project video"></div>
 
-      <!-- başlıkları da kontrol için id verdim -->
       <div class="section-title" id="gifTitle">GIF Previews</div>
       <div class="gif-grid" id="detailGifs" style="display:grid;gap:12px;grid-template-columns:repeat(2,1fr)"></div>
 
@@ -139,6 +151,14 @@
     <div class="container inner">© <span id="y"></span> Orhun Ege Eker</div>
   </footer>
 
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lb-close" id="lbClose" type="button">✕</button>
+    <button class="lb-btn lb-prev" id="lbPrev" type="button">←</button>
+    <img class="lightbox-img" id="lbImg" alt="">
+    <button class="lb-btn lb-next" id="lbNext" type="button">→</button>
+  </div>
+
   <script>
     document.getElementById('y').textContent = new Date().getFullYear();
 
@@ -146,17 +166,11 @@
     async function loadProjects(){
       const res = await fetch('/projects.json?cb=' + Date.now(), { cache: 'no-store' });
       const arr = await res.json();
-
       return arr.map(p => {
         const coverFromCovers = `media/covers/${p.id}.jpg`;
         return {
           ...p,
-          media: {
-            cover : coverFromCovers,
-            video : p.video,
-            gifs  : p.gifs,
-            images: p.images
-          },
+          media: { cover: coverFromCovers, video: p.video, gifs: p.gifs, images: p.images },
           desc: p.description ?? p.desc ?? ''
         };
       });
@@ -183,7 +197,7 @@
 
     function renderGrid(items){
       gridEl.innerHTML='';
-      const cb = Date.now(); // cache-bust
+      const cb = Date.now();
       items.forEach((p,idx)=>{
         const a=document.createElement('a');
         a.className='card'; a.href=`?p=${p.id}`;
@@ -236,6 +250,42 @@
       }
     }
 
+    // ---- Lightbox state ----
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lbImg');
+    const lbPrev = document.getElementById('lbPrev');
+    const lbNext = document.getElementById('lbNext');
+    const lbClose = document.getElementById('lbClose');
+    let LB_ITEMS = [];
+    let LB_INDEX = 0;
+
+    function openLightbox(i){
+      if(!LB_ITEMS.length) return;
+      LB_INDEX = i;
+      lbImg.src = LB_ITEMS[LB_INDEX];
+      lb.classList.add('show');
+      lb.setAttribute('aria-hidden','false');
+    }
+    function closeLightbox(){
+      lb.classList.remove('show');
+      lb.setAttribute('aria-hidden','true');
+      lbImg.src = '';
+    }
+    function nextLB(){ if(!LB_ITEMS.length) return; LB_INDEX = (LB_INDEX+1)%LB_ITEMS.length; lbImg.src = LB_ITEMS[LB_INDEX]; }
+    function prevLB(){ if(!LB_ITEMS.length) return; LB_INDEX = (LB_INDEX-1+LB_ITEMS.length)%LB_ITEMS.length; lbImg.src = LB_ITEMS[LB_INDEX]; }
+
+    lbNext.addEventListener('click', nextLB);
+    lbPrev.addEventListener('click', prevLB);
+    lbClose.addEventListener('click', closeLightbox);
+    lb.addEventListener('click', (e)=>{ if(e.target===lb) closeLightbox(); });
+    window.addEventListener('keydown', (e)=>{
+      if(lb.classList.contains('show')){
+        if(e.key==='Escape') closeLightbox();
+        else if(e.key==='ArrowRight') nextLB();
+        else if(e.key==='ArrowLeft') prevLB();
+      }
+    });
+
     function renderDetail(slug){
       const p = PROJECTS.find(x=>x.id===slug); if(!p){ return showList(); }
       const coverSrc = p.media.cover || `media/covers/${p.id}.jpg`;
@@ -244,52 +294,66 @@
       document.getElementById('detailTag').textContent = p.tag || '';
       document.getElementById('detailDesc').textContent = p.desc || 'Açıklama gelecek...';
 
+      // ---- Video (autoplay+loop+muted, tıklanamaz) ----
       const v = document.getElementById('detailVideo'); v.innerHTML='';
       if(p.media.video){
         if(/\.(mp4|webm)$/i.test(p.media.video)){
           const vid = document.createElement('video');
-          vid.controls = true; vid.playsInline = true; vid.src = p.media.video;
+          vid.autoplay = true; vid.loop = true; vid.muted = true; vid.playsInline = true;
+          vid.src = p.media.video;
           v.appendChild(vid);
         } else {
+          // YouTube/Vimeo vb. için temel autoplay & mute parametreleri
+          const sep = p.media.video.includes('?') ? '&' : '?';
+          const url = p.media.video + sep + 'autoplay=1&mute=1&loop=1&playsinline=1';
           const iframe = document.createElement('iframe');
-          iframe.src = p.media.video; iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+          iframe.src = url;
+          iframe.allow = 'autoplay; fullscreen; picture-in-picture';
           v.appendChild(iframe);
         }
       } else {
         v.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;opacity:.6">No video</div>';
       }
 
+      // ---- GIFS (sınırsız + orientation + lightbox) ----
       const gifWrap = document.getElementById('detailGifs');
       const gifTitle = document.getElementById('gifTitle');
       gifWrap.innerHTML='';
-      if(p.media.gifs && p.media.gifs.length){
-        gifTitle.style.display = '';
-        gifWrap.style.display = 'grid';
-        p.media.gifs.forEach(src => {
-          const img = new Image();
-          img.onload = ()=>{ if(img.naturalHeight > img.naturalWidth) img.classList.add('portrait'); };
-          img.src = src; img.loading='lazy'; gifWrap.appendChild(img);
-        });
-      } else {
-        gifTitle.style.display = 'none';
-        gifWrap.style.display = 'none';
-      }
-
+      // ---- GALLERY (sınırsız + orientation + lightbox) ----
       const gal = document.getElementById('detailGallery');
       const galTitle = document.getElementById('galleryTitle');
       gal.innerHTML='';
-      if(p.media.images && p.media.images.length){
+
+      const gifs = Array.isArray(p.media.gifs) ? p.media.gifs : [];
+      const imgs = Array.isArray(p.media.images) ? p.media.images : [];
+
+      // Lightbox listesi: görsel sırası = önce GIF’ler sonra JPG’ler
+      LB_ITEMS = [...gifs, ...imgs];
+
+      if(gifs.length){
+        gifTitle.style.display = '';
+        gifWrap.style.display = 'grid';
+        gifs.forEach((src, i) => {
+          const img = new Image();
+          img.onload = ()=>{ if(img.naturalHeight > img.naturalWidth) img.classList.add('portrait'); else img.classList.add('landscape'); };
+          img.src = src; img.loading='lazy';
+          img.addEventListener('click', ()=> openLightbox(i)); // ilk kısımda
+          gifWrap.appendChild(img);
+        });
+      } else { gifTitle.style.display = 'none'; gifWrap.style.display = 'none'; }
+
+      if(imgs.length){
         galTitle.style.display = '';
         gal.style.display = 'grid';
-        p.media.images.forEach(src => {
+        imgs.forEach((src, i) => {
           const img = new Image();
-          img.onload = ()=>{ if(img.naturalHeight > img.naturalWidth) img.classList.add('portrait'); };
-          img.src = src; img.loading='lazy'; gal.appendChild(img);
+          img.onload = ()=>{ if(img.naturalHeight > img.naturalWidth) img.classList.add('portrait'); else img.classList.add('landscape'); };
+          img.src = src; img.loading='lazy';
+          // Lightbox indexinde GIF’lerin ardından geldiği için offset ekle
+          img.addEventListener('click', ()=> openLightbox(gifs.length + i));
+          gal.appendChild(img);
         });
-      } else {
-        galTitle.style.display = 'none';
-        gal.style.display = 'none';
-      }
+      } else { galTitle.style.display = 'none'; gal.style.display = 'none'; }
 
       listEl.style.display='none'; detailEl.style.display='block'; window.scrollTo({top:0,behavior:'instant'});
     }

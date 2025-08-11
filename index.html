@@ -368,6 +368,10 @@
           }
         });
         sharedAIModel.scale.multiplyScalar(3.2/6);
+        if (!aiSpawned) {
+  spawnAIShips();   // model hazır, şimdi AI gemilerini modelle spawn et
+  aiSpawned = true;
+}
       },
       undefined,
       (err)=>{ console.error('GLB load error (player/AI):', err); }
@@ -776,7 +780,7 @@
       PROJECTS = arr;
       buildPlanetsFromProjects(PROJECTS);
       maybeAutoStart();
-      setTimeout(()=>spawnAIShips(), 600);
+     
       loop();
     })();
 

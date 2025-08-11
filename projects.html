@@ -136,7 +136,7 @@
 
     // ---- DATA LOAD (covers pX.jpg sabit) ----
     async function loadProjects(){
-      const res = await fetch('media/projects/projects.json?cb=' + Date.now(), { cache: 'no-store' });
+      const res = await fetch('/projects.json?cb=' + Date.now(), { cache: 'no-store' });
       const arr = await res.json();
 
       return arr.map(p => {

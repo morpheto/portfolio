@@ -20,7 +20,6 @@
     a{color:inherit;text-decoration:none}
     .container{max-width:1180px;margin:0 auto;padding:0 20px}
 
-    /* Header */
     header{position:sticky;top:0;z-index:50;background:rgba(12,12,14,.6);backdrop-filter:saturate(160%) blur(10px);border-bottom:1px solid var(--border)}
     nav{display:flex;align-items:center;justify-content:space-between;height:64px}
     .brand{font-weight:800;letter-spacing:.4px;font-size:16px}
@@ -30,13 +29,11 @@
     .navlinks a:hover{opacity:1}
     .navlinks a:hover:after{transform:scaleX(1)}
 
-    /* Hero */
     .hero{padding:56px 0 8px}
     .hero h1{font-size:clamp(30px,4.2vw,44px);margin:0 0 10px;line-height:1.1;font-weight:800}
     .hero .sub{font-size:clamp(20px,3.2vw,28px);margin:0 0 8px;color:var(--text)}
     .desc{color:var(--muted);font-size:14px;max-width:820px}
 
-    /* Grid */
     .grid{display:grid;gap:18px;margin:30px 0 0;grid-template-columns:repeat(1,minmax(0,1fr))}
     @media(min-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
     @media(min-width:1040px){.grid{grid-template-columns:repeat(3,1fr)}}
@@ -55,7 +52,6 @@
     .title{font-weight:600}
     .tag{font-size:12px;color:#c8cdd8}
 
-    /* Detail */
     #detail{display:none}
     .crumbs{font-size:13px;color:#cbd5e1;margin:18px 0}
     .back-btn{display:inline-block;padding:8px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:8px;font-size:14px;color:#fff;text-decoration:none;transition:background .25s ease,border-color .25s ease}
@@ -68,35 +64,17 @@
     .section-title{margin:18px 0 8px;font-size:16px;color:#cbd5e1;font-weight:600}
     .detail-video{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;aspect-ratio:16/9;background:#0f0f10}
     .detail-video iframe,.detail-video video{width:100%;height:100%;border:0;display:block}
-    .video-note{margin:8px 2px 0;color:#aeb7c6;font-size:13px;opacity:.9}
-
-    /* GIF grid & Gallery */
-    .gif-grid{display:grid;gap:12px;grid-template-columns:repeat(2,1fr)}
-    @media(min-width:920px){.gif-grid{grid-template-columns:repeat(4,1fr)}}
-    .gif-grid img{width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--border)}
-    .gallery{display:grid;gap:14px;margin-top:8px;grid-template-columns:repeat(1,minmax(0,1fr))}
-    @media(min-width:820px){.gallery{grid-template-columns:repeat(2,1fr)}}
-    .gallery img{width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--border)}
 
     footer{border-top:1px solid var(--border);margin-top:44px}
     footer .inner{padding:22px 0;color:#cbd5e1;font-size:14px;text-align:center}
 
-    /* Custom cursor */
     body.custom-cursor{cursor:none}
-    .cursor-dot{
-      position:fixed;left:0;top:0;width:20px;height:20px;border-radius:50%;
-      pointer-events:none;transform:translate(-50%, -50%);
-      background:rgba(255,255,255,0.18);
+    .cursor-dot{position:fixed;left:0;top:0;width:20px;height:20px;border-radius:50%;
+      pointer-events:none;transform:translate(-50%,-50%);background:rgba(255,255,255,0.18);
       box-shadow:0 0 18px rgba(255,255,255,0.75), 0 0 48px rgba(255,255,255,0.35);
-      mix-blend-mode:screen;backdrop-filter:blur(2px);z-index:1000;
-    }
-    .cursor-trail{
-      position:fixed;left:0;top:0;width:8px;height:8px;border-radius:50%;
-      pointer-events:none;transform:translate(-50%, -50%) scale(1);
-      background:rgba(255,255,255,0.2);z-index:999;opacity:.9;
-      animation:trailFade .5s ease-out forwards;box-shadow:0 0 14px rgba(255,255,255,.65);
-      will-change:transform,opacity;
-    }
+      mix-blend-mode:screen;backdrop-filter:blur(2px);z-index:1000}
+    .cursor-trail{position:fixed;left:0;top:0;width:8px;height:8px;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%) scale(1);
+      background:rgba(255,255,255,0.2);z-index:999;opacity:.9;animation:trailFade .5s ease-out forwards;box-shadow:0 0 14px rgba(255,255,255,.65);will-change:transform,opacity}
     @keyframes trailFade{to{transform:translate(-50%, -50%) scale(0);opacity:0}}
     a,button,[role="button"],.card{cursor:pointer}
     body.cursor-pointer .cursor-dot{width:26px;height:26px;background:rgba(255,255,255,0.12);box-shadow:0 0 24px rgba(255,255,255,0.9),0 0 60px rgba(255,255,255,0.45);outline:2px solid rgba(255,255,255,0.6);outline-offset:2px}
@@ -130,80 +108,7 @@
 
     <div id="list">
       <section id="work">
-        <div class="grid" id="grid">
-          <a class="card" href="?p=p1">
-            <div class="media">
-              <img src="media/projects/project1/cover.jpg" alt="Audio Reactive + Hand Tracked Visualizer" loading="lazy" onerror="this.src='https://picsum.photos/seed/p1/1200/800'">
-              <span class="badge">TouchDesigner</span>
-              <div class="glare"></div>
-            </div>
-            <div class="meta"><span class="title">Audio Reactive + Hand Tracked Visualizer</span><span class="tag">Interactive · TouchDesigner</span></div>
-          </a>
-          <a class="card" href="?p=p2">
-            <div class="media">
-              <img src="media/projects/project2/cover.jpg" alt="Odin Pendant Animation" loading="lazy" onerror="this.src='https://picsum.photos/seed/p2/1200/800'">
-              <span class="badge">Animation</span>
-              <div class="glare"></div>
-            </div>
-            <div class="meta"><span class="title">Odin Pendant Animation</span><span class="tag">3D / Motion</span></div>
-          </a>
-          <a class="card" href="?p=p3">
-            <div class="media">
-              <img src="media/projects/project3/cover.jpg" alt="MediaPipe + Ableton + PointCloud" loading="lazy" onerror="this.src='https://picsum.photos/seed/p3/1200/800'">
-              <span class="badge">TouchDesigner</span>
-              <div class="glare"></div>
-            </div>
-            <div class="meta"><span class="title">MediaPipe + Ableton + PointCloud</span><span class="tag">Interactive · TouchDesigner</span></div>
-          </a>
-          <a class="card" href="?p=p4">
-            <div class="media">
-              <img src="media/projects/project4/cover.jpg" alt="Nike Air Jordan CGI" loading="lazy" onerror="this.src='https://picsum.photos/seed/p4/1200/800'">
-              <span class="badge">CGI</span>
-              <div class="glare"></div>
-            </div>
-            <div class="meta"><span class="title">Nike Air Jordan CGI</span><span class="tag">Product · CGI</span></div>
-          </a>
-          <a class="card" href="?p=p5">
-            <div class="media">
-              <img src="media/projects/project5/cover.jpg" alt="Bic Mini Lighter Spider Case" loading="lazy" onerror="this.src='https://picsum.photos/seed/p5/1200/800'">
-              <span class="badge">Design</span>
-              <div class="glare"></div>
-            </div>
-            <div class="meta"><span class="title">Bic Mini Lighter Spider Case</span><span class="tag">Product Design</span></div>
-          </a>
-          <a class="card" href="?p=p6">
-            <div class="media">
-              <img src="media/projects/project6/cover.jpg" alt="Space Keycap Animation" loading="lazy" onerror="this.src='https://picsum.photos/seed/p6/1200/800'">
-              <span class="badge">Animation</span>
-              <div class="glare"></div>
-            </div>
-            <div class="meta"><span class="title">Space Keycap Animation</span><span class="tag">3D / Motion</span></div>
-          </a>
-          <a class="card" href="?p=p7">
-            <div class="media">
-              <img src="media/projects/project7/cover.jpg" alt="Oxidized Silver Jewelry — Maverick" loading="lazy" onerror="this.src='https://picsum.photos/seed/p7/1200/800'">
-              <span class="badge">LookDev</span>
-              <div class="glare"></div>
-            </div>
-            <div class="meta"><span class="title">Oxidized Silver Jewelry — Maverick</span><span class="tag">Materials · LookDev</span></div>
-          </a>
-          <a class="card" href="?p=p8">
-            <div class="media">
-              <img src="media/projects/project8/cover.jpg" alt="YouTube Channel Intro" loading="lazy" onerror="this.src='https://picsum.photos/seed/p8/1200/800'">
-              <span class="badge">3D + Audio</span>
-              <div class="glare"></div>
-            </div>
-            <div class="meta"><span class="title">YouTube Channel Intro</span><span class="tag">Motion · 3D + Audio</span></div>
-          </a>
-          <a class="card" href="?p=p9">
-            <div class="media">
-              <img src="media/projects/project9/cover.jpg" alt="AI Visualizer from Image" loading="lazy" onerror="this.src='https://picsum.photos/seed/p9/1200/800'">
-              <span class="badge">AI</span>
-              <div class="glare"></div>
-            </div>
-            <div class="meta"><span class="title">AI Visualizer from Image</span><span class="tag">Concept · AI</span></div>
-          </a>
-        </div>
+        <div class="grid" id="grid"></div>
       </section>
     </div>
 
@@ -215,11 +120,10 @@
       <div class="detail-desc" id="detailDesc"></div>
       <div class="section-title">Video</div>
       <div class="detail-video" id="detailVideo" aria-label="Project video"></div>
-      <p class="video-note" id="detailVideoNote">Write your short video description here…</p>
       <div class="section-title">GIF Previews</div>
-      <div class="gif-grid" id="detailGifs"></div>
+      <div class="gif-grid" id="detailGifs" style="display:grid;gap:12px;grid-template-columns:repeat(2,1fr)"></div>
       <div class="section-title">Image Gallery</div>
-      <div class="gallery" id="detailGallery"></div>
+      <div class="gallery" id="detailGallery" style="display:grid;gap:14px;grid-template-columns:repeat(3,1fr)"></div>
     </div>
   </main>
 
@@ -230,153 +134,118 @@
   <script>
     document.getElementById('y').textContent = new Date().getFullYear();
 
-    const PROJECTS = {
-      p1:{ title:'Audio Reactive + Hand Tracked Visualizer', tag:'Interactive · TouchDesigner',
-          cover:'media/projects/project1/cover.jpg',
-          desc:'Write your description here…',
-          video:'media/projects/project1/video.mp4',
-          gifs:['media/projects/project1/gif-1.gif','media/projects/project1/gif-2.gif'],
-          images:['media/projects/project1/img-1.jpg','media/projects/project1/img-2.jpg','media/projects/project1/img-3.jpg'] },
-
-      p2:{ title:'Odin Pendant Animation', tag:'3D / Motion',
-          cover:'media/projects/project2/cover.jpg',
-          desc:'Write your description here…',
-          video:'media/projects/project2/video.mp4',
-          gifs:['media/projects/project2/gif-1.gif'],
-          images:['media/projects/project2/img-1.jpg','media/projects/project2/img-2.jpg','media/projects/project2/img-3.jpg'] },
-
-      p3:{ title:'MediaPipe + Ableton MIDI + PointCloud', tag:'Interactive · TouchDesigner',
-          cover:'media/projects/project3/cover.jpg',
-          desc:'Write your description here…',
-          video:'media/projects/project3/video.mp4',
-          gifs:['media/projects/project3/gif-1.gif','media/projects/project3/gif-2.gif'],
-          images:['media/projects/project3/img-1.jpg','media/projects/project3/img-2.jpg','media/projects/project3/img-3.jpg'] },
-
-      p4:{ title:'Nike Air Jordan CGI', tag:'Product · CGI',
-          cover:'media/projects/project4/cover.jpg',
-          desc:'Write your description here…',
-          video:'media/projects/project4/video.mp4',
-          gifs:['media/projects/project4/gif-1.gif'],
-          images:['media/projects/project4/img-1.jpg','media/projects/project4/img-2.jpg','media/projects/project4/img-3.jpg'] },
-
-      p5:{ title:'Bic Mini Lighter Spider Case', tag:'Product Design',
-          cover:'media/projects/project5/cover.jpg',
-          desc:'Write your description here…',
-          video:'media/projects/project5/video.mp4',
-          gifs:['media/projects/project5/gif-1.gif','media/projects/project5/gif-2.gif'],
-          images:['media/projects/project5/img-1.jpg','media/projects/project5/img-2.jpg','media/projects/project5/img-3.jpg'] },
-
-      p6:{ title:'Space Keycap Animation', tag:'3D / Motion',
-          cover:'media/projects/project6/cover.jpg',
-          desc:'Write your description here…',
-          video:'media/projects/project6/video.mp4',
-          gifs:['media/projects/project6/gif-1.gif','media/projects/project6/gif-2.gif'],
-          images:['media/projects/project6/img-1.jpg','media/projects/project6/img-2.jpg','media/projects/project6/img-3.jpg'] },
-
-      p7:{ title:'Oxidized Silver Jewelry — Maverick', tag:'Materials · LookDev',
-          cover:'media/projects/project7/cover.jpg',
-          desc:'Write your description here…',
-          video:'media/projects/project7/video.mp4',
-          gifs:['media/projects/project7/gif-1.gif'],
-          images:['media/projects/project7/img-1.jpg','media/projects/project7/img-2.jpg','media/projects/project7/img-3.jpg'] },
-
-      p8:{ title:'YouTube Channel Intro', tag:'Motion · 3D + Audio',
-          cover:'media/projects/project8/cover.jpg',
-          desc:'Write your description here…',
-          video:'media/projects/project8/video.mp4',
-          gifs:['media/projects/project8/gif-1.gif','media/projects/project8/gif-2.gif'],
-          images:['media/projects/project8/img-1.jpg','media/projects/project8/img-2.jpg','media/projects/project8/img-3.jpg'] },
-
-      p9:{ title:'AI Visualizer from Image', tag:'Concept · AI',
-          cover:'media/projects/project9/cover.jpg',
-          desc:'Write your description here…',
-          video:'media/projects/project9/video.mp4',
-          gifs:['media/projects/project9/gif-1.gif','media/projects/project9/gif-2.gif'],
-          images:['media/projects/project9/img-1.jpg','media/projects/project9/img-2.jpg','media/projects/project9/img-3.jpg'] }
-    };
+    async function loadProjects(){
+      const res = await fetch('media/projects/projects.json',{cache:'no-cache'});
+      const arr = await res.json();
+      return arr.map(p => ({
+        ...p,
+        media:{
+          cover : `${p.folder}/cover.jpg`,
+          video : `${p.folder}/video.mp4`,
+          gifs  : [`${p.folder}/g1.gif`, `${p.folder}/g2.gif`],
+          images: [`${p.folder}/img1.jpg`, `${p.folder}/img2.jpg`, `${p.folder}/img3.jpg`]
+        }
+      }));
+    }
 
     const listEl = document.getElementById('list');
     const detailEl = document.getElementById('detail');
+    const gridEl = document.getElementById('grid');
 
     function showList(){ detailEl.style.display='none'; listEl.style.display='block'; }
+    function getSlugFromURL(){ const url = new URL(window.location.href); return url.searchParams.get('p') || null; }
+    function navigateTo(slug){
+      if(slug){ history.pushState({p:slug}, '', `?p=${slug}`); renderDetail(slug); }
+      else { history.pushState({}, '', 'projects.html'); showList(); window.scrollTo({top:0,behavior:'instant'}); }
+    }
+
+    let PROJECTS = [];
+    init();
+    async function init(){
+      PROJECTS = await loadProjects();
+      renderGrid(PROJECTS);
+      const initial = getSlugFromURL(); if(initial){ renderDetail(initial); }
+    }
+
+    function renderGrid(items){
+      gridEl.innerHTML='';
+      items.forEach((p,idx)=>{
+        const a=document.createElement('a');
+        a.className='card'; a.href=`?p=${p.id}`;
+        a.innerHTML=`
+          <div class="media">
+            <img src="${p.media.cover}" alt="${p.title}" loading="lazy" onerror="this.src='https://picsum.photos/seed/${p.id||idx}/1200/800'">
+            <span class="badge">${p.tag||''}</span>
+            <div class="glare"></div>
+          </div>
+          <div class="meta"><span class="title">${p.title}</span><span class="tag">${p.tag||''}</span></div>
+        `;
+        gridEl.appendChild(a);
+      });
+
+      // tilt + glare
+      if (window.matchMedia('(hover: hover)').matches) {
+        const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
+        const maxTilt = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tilt')) || 6;
+        const scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--scale')) || 1.02;
+
+        document.querySelectorAll('.card').forEach(card => {
+          const media = card.querySelector('.media');
+          const glare = card.querySelector('.glare');
+
+          function onMove(e){
+            const r = media.getBoundingClientRect();
+            const cx = (e.clientX ?? (e.touches && e.touches[0].clientX)) - r.left;
+            const cy = (e.clientY ?? (e.touches && e.touches[0].clientY)) - r.top;
+            const px = cx / r.width, py = cy / r.height;
+            const rx = ((0.5 - py) * 2) * maxTilt;
+            const ry = ((px - 0.5) * 2) * maxTilt;
+            card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) scale(${scale})`;
+            if(glare){
+              const gx = clamp(px*100, 5, 95);
+              const gy = clamp(py*100, 5, 95);
+              glare.style.setProperty('--gx', gx + '%');
+              glare.style.setProperty('--gy', gy + '%');
+              glare.style.setProperty('--grot', (px*20-10).toFixed(2) + 'deg');
+            }
+          }
+          function onEnter(){ card.style.willChange='transform'; }
+          function onLeave(){ card.style.removeProperty('transform'); card.style.willChange=''; }
+
+          media.addEventListener('pointermove', onMove);
+          media.addEventListener('pointerenter', onEnter);
+          media.addEventListener('pointerleave', onLeave);
+        });
+      }
+    }
 
     function renderDetail(slug){
-      const p = PROJECTS[slug]; if(!p){ return showList(); }
-      document.getElementById('detailCover').src = p.cover;
+      const p = PROJECTS.find(x=>x.id===slug); if(!p){ return showList(); }
+      document.getElementById('detailCover').src = p.media.cover;
       document.getElementById('detailTitle').textContent = p.title;
       document.getElementById('detailTag').textContent = p.tag || '';
-      document.getElementById('detailDesc').textContent = p.desc || '';
-      document.getElementById('detailVideoNote').textContent = 'Write your short video description here…';
+      document.getElementById('detailDesc').textContent = p.desc || 'Açıklama gelecek...';
 
       const v = document.getElementById('detailVideo'); v.innerHTML='';
-      if(p.video){
-        if(/\.(mp4|webm)$/i.test(p.video)){
-          const vid = document.createElement('video'); vid.controls = true; vid.playsInline = true; vid.src = p.video; v.appendChild(vid);
-        } else {
-          const iframe = document.createElement('iframe'); iframe.src = p.video; iframe.allow = 'autoplay; fullscreen; picture-in-picture'; v.appendChild(iframe);
-        }
-      }
+      const vid = document.createElement('video'); vid.controls = true; vid.playsInline = true; vid.src = p.media.video; v.appendChild(vid);
+
       const gifWrap = document.getElementById('detailGifs'); gifWrap.innerHTML='';
-      (p.gifs||[]).forEach(src => { const img = new Image(); img.src = src; img.loading='lazy'; gifWrap.appendChild(img); });
-      if((p.gifs||[]).length===0){ gifWrap.innerHTML = '<div style="opacity:.6">No GIFs yet</div>'; }
+      (p.media.gifs||[]).forEach(src => { const img = new Image(); img.src = src; img.loading='lazy'; gifWrap.appendChild(img); });
+      if((p.media.gifs||[]).length===0){ gifWrap.innerHTML = '<div style="opacity:.6">No GIFs yet</div>'; }
 
       const gal = document.getElementById('detailGallery'); gal.innerHTML='';
-      (p.images||[]).forEach(src => { const img = new Image(); img.src = src; img.loading='lazy'; gal.appendChild(img); });
+      (p.media.images||[]).forEach(src => { const img = new Image(); img.src = src; img.loading='lazy'; gal.appendChild(img); });
 
       listEl.style.display='none'; detailEl.style.display='block'; window.scrollTo({top:0,behavior:'instant'});
     }
 
-    function getSlugFromURL(){ const url = new URL(window.location.href); return url.searchParams.get('p') || null; }
-    function navigateTo(slug){
-      if(slug){ history.pushState({p:slug}, '', `?p=${slug}`); renderDetail(slug); }
-      else { history.pushState({}, '', 'projects.html'); showList(); }
-    }
-
-    // Deep-link (once)
-    const initial = getSlugFromURL(); if(initial){ renderDetail(initial); }
-
     document.addEventListener('click',(e)=>{
       const a = e.target.closest('a.card');
-      if(a && a.href.includes('?p=')){ e.preventDefault(); navigateTo(new URL(a.href).searchParams.get('p')); }
+      if(a && a.href.includes('?p=')){ e.preventDefault(); const slug=new URL(a.href).searchParams.get('p'); navigateTo(slug); }
     });
     document.getElementById('backLink').addEventListener('click', (e)=>{ e.preventDefault(); navigateTo(null); });
 
-    // Tilt + glare
-    if (window.matchMedia('(hover: hover)').matches) {
-      const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
-      const maxTilt = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tilt')) || 6;
-      const scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--scale')) || 1.02;
-
-      document.querySelectorAll('.card').forEach(card => {
-        const media = card.querySelector('.media');
-        const glare = card.querySelector('.glare');
-
-        function onMove(e){
-          const r = media.getBoundingClientRect();
-          const cx = (e.clientX ?? (e.touches && e.touches[0].clientX)) - r.left;
-          const cy = (e.clientY ?? (e.touches && e.touches[0].clientY)) - r.top;
-          const px = cx / r.width, py = cy / r.height;
-          const rx = ((0.5 - py) * 2) * maxTilt;
-          const ry = ((px - 0.5) * 2) * maxTilt;
-          card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) scale(${scale})`;
-          if(glare){
-            const gx = clamp(px*100, 5, 95);
-            const gy = clamp(py*100, 5, 95);
-            glare.style.setProperty('--gx', gx + '%');
-            glare.style.setProperty('--gy', gy + '%');
-            glare.style.setProperty('--grot', (px*20-10).toFixed(2) + 'deg');
-          }
-        }
-        function onEnter(){ card.style.willChange='transform'; }
-        function onLeave(){ card.style.removeProperty('transform'); card.style.willChange=''; }
-
-        media.addEventListener('pointermove', onMove);
-        media.addEventListener('pointerenter', onEnter);
-        media.addEventListener('pointerleave', onLeave);
-      });
-    }
-
-    // Custom cursor
+    // Custom cursor (same as before)
     (function(){
       const hover = window.matchMedia('(hover: hover)').matches;
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

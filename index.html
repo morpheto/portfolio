@@ -616,8 +616,22 @@
           vid.addEventListener('contextmenu', e=>e.preventDefault());
           vid.addEventListener('dragstart', e=>e.preventDefault());
           vid.addEventListener('pointerdown', e=>e.preventDefault());
-          if (SOUND_ON.has(p.id)) {
-            vid.muted = false; vid.volume = 1.0;
+         if (SOUND_ON.has(p.id)) {
+    vid.muted = false;
+
+    // p6 için özel ses seviyesi
+    if (p.id === 'p6') {
+        vid.volume = 0.3; // %40 ses
+    } else {
+        vid.volume = 1.0;
+    }
+
+    const tryPlay = () => vid.play().catch(()=>{});
+    vid.addEventListener('canplay', tryPlay, { once: true });
+    window.addEventListener('click', tryPlay, { once: true });
+} else {
+    vid.muted = true;
+}
             const tryPlay = () => vid.play().catch(()=>{});
             vid.addEventListener('canplay', tryPlay, { once: true });
             window.addEventListener('click', tryPlay, { once: true });

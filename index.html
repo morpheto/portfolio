@@ -26,25 +26,28 @@
   .badge{position:absolute;left:8px;top:8px;background:rgba(64,191,255,.12);border:1px solid rgba(64,191,255,.4);backdrop-filter:blur(6px);font-size:11px;padding:6px 8px;border-radius:999px;color:#cfefff}
   .enter-pill{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:6px 10px;border-radius:999px;border:1px solid rgba(120,198,255,.35);background:rgba(64,191,255,.10);color:#dff2ff;font-size:12px;box-shadow:0 0 16px rgba(64,191,255,.25);opacity:0;transition:opacity .15s ease;pointer-events:none}
 
+  /* Quick View: biraz daha geniş tuttuk */
   .popup{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
   .popup.show{display:flex}
-  .popup-card{width:min(820px,92vw);border:1px solid rgba(120,198,255,.28);border-radius:16px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
-  .popup-media{height:min(52vh,460px);background:#0e1433;background-size:cover;background-position:center}
-  .popup-body{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .popup-title{font-weight:800;font-size:18px}.popup-tag{font-size:12px;color:#cfd6e3}
+  .popup-card{width:min(980px,94vw);border:1px solid rgba(120,198,255,.28);border-radius:16px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
+  .popup-media{height:min(42vh,360px);background:#0e1433;background-size:cover;background-position:center}
+  .popup-body{padding:14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .popup-title{font-weight:800;font-size:18px}
+  .popup-tag{font-size:12px;color:#cfd6e3}
   .popup-actions{display:flex;gap:10px}
   .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
   .btn.primary{background:var(--accent);border-color:#2b66ff}
 
+  /* Full Project Viewer: büyük düzen */
   .viewer{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(6px)}
   .viewer.show{display:flex}
-  .viewer-card{width:min(1100px,94vw);max-height:92vh;overflow:auto;border:1px solid rgba(120,198,255,.28);border-radius:16px;background:#0b0f1c;box-shadow:0 24px 70px rgba(0,0,0,.6)}
-  .viewer-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
-  .viewer-title{font-weight:800}.viewer-tag{font-size:12px;color:#cfd6e3;opacity:.9}
-  .viewer-body{padding:14px 16px}
-  .viewer-grid{display:grid;gap:12px;grid-template-columns:1fr}
-  @media(min-width:880px){.viewer-grid{grid-template-columns:1.2fr .8fr}}
-  .viewer-media{aspect-ratio:16/9;background:#0e1433;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+  .viewer-card{width:min(1200px,96vw);max-height:92vh;overflow:auto;border:1px solid rgba(120,198,255,.28);border-radius:16px;background:#0b0f1c;box-shadow:0 24px 70px rgba(0,0,0,.6)}
+  .viewer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .viewer-title{font-weight:800;font-size:18px}.viewer-tag{font-size:12px;color:#cfd6e3;opacity:.9}
+  .viewer-body{padding:16px 18px}
+  .viewer-grid{display:grid;gap:14px;grid-template-columns:1fr}
+  @media(min-width:880px){.viewer-grid{grid-template-columns:1.6fr 1fr}}
+  .viewer-media{height:min(68vh,640px);background:#0e1433;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
   .viewer-media>video,.viewer-media>iframe{width:100%;height:100%;display:block;border:0}
   .viewer-stack{display:grid;gap:12px}
   .viewer-gifs,.viewer-gallery{display:grid;gap:10px}
@@ -53,6 +56,7 @@
   .viewer-gifs img,.viewer-gallery img{width:100%;height:100%;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.08)}
   .viewer-desc{margin-top:12px;color:#d7deea;line-height:1.6}
 
+  /* Start overlay */
   .start{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 600px at 50% -20%, rgba(120,170,255,.08), rgba(5,6,10,.95))}
   .start.hide{animation:fade .6s both}@keyframes fade{to{opacity:0;visibility:hidden}}
   .start-card{padding:22px 24px;border:1px solid rgba(255,255,255,.12);background:rgba(10,12,20,.72);backdrop-filter:blur(8px);border-radius:16px;display:flex;flex-direction:column;gap:10px;align-items:center;min-width:260px}
@@ -62,6 +66,7 @@
   .actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;justify-content:center}
   .btn.linklike{background:transparent}
 
+  /* Mobile gate */
   .mobile-gate{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:radial-gradient(800px 400px at 50% 50%, rgba(120,170,255,.12), rgba(5,6,10,.95));backdrop-filter:blur(6px)}
   .mobile-card{padding:24px 28px;border:1px solid rgba(255,255,255,.18);background:linear-gradient(180deg, rgba(20,24,40,.9), rgba(10,12,20,.95));border-radius:20px;max-width:360px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4)}
   .mobile-card h2{margin:0 0 10px;font-size:20px;font-weight:700;color:#e0e7ff}
@@ -368,6 +373,7 @@
         exhaustLocal = new THREE.Vector3(b2.min.x - 0.6, 0, 0);
         ship.add(model);
 
+        // AI için tonlanmış klon
         sharedAIModel = model.clone(true);
         sharedAIModel.traverse(o=>{
           if(o.isMesh){
@@ -739,15 +745,27 @@
       }
     }
 
-    /* ---------- Start, resize, main loop ---------- */
+    /* ---------- Start sadece ilk girişte ---------- */
     const startEl=document.getElementById('start');
-    document.getElementById('btnStart').addEventListener('click',()=>{ startEl.classList.add('hide'); setTimeout(()=>{ controlsEnabled=true; },550); });
+    const START_KEY = 'spaceTourSeen';
+    function maybeAutoStart(){
+      if(localStorage.getItem(START_KEY)==='1'){
+        // daha önce görmüş -> start overlay’i göstermeden başlat
+        startEl.classList.add('hide');
+        controlsEnabled = true;
+      }
+    }
+    document.getElementById('btnStart').addEventListener('click',()=>{
+      localStorage.setItem(START_KEY,'1');
+      startEl.classList.add('hide');
+      setTimeout(()=>{ controlsEnabled=true; },550);
+    });
+
+    /* ---------- Resize & loop ---------- */
     addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();});
     const clock=new THREE.Clock();
 
     /* ---------- Kartlar ve gezegenleri kur ---------- */
-   
-
     function buildPlanetsFromProjects(PROJECTS){
       const POS=[], RMIN=70, RMAX=150;
       for(let i=0;i<PROJECTS.length;i++){
@@ -786,6 +804,7 @@
       const arr = await loadProjects();
       PROJECTS = arr;
       buildPlanetsFromProjects(PROJECTS);
+      maybeAutoStart();         // <- sadece ilk girişte start göster
       setTimeout(()=>spawnAIShips(), 600); // sharedAIModel hazırsa klonlanır; değilse fallback görünür
       loop();
     })();

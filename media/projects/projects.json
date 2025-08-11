@@ -1,157 +1,155 @@
-{
-  "projects": [
-    {
-      "id": "p1",
-      "title": "Audio Reactive + Hand Tracked Visualizer",
-      "tag": "Interactive · TouchDesigner",
-      "cover": "media/projects/project1/cover.jpg",
-      "desc": "Placeholder description for project 1.",
-      "video": "media/projects/project1/video.mp4",
-      "gifs": [
-        "media/projects/project1/gif1.gif",
-        "media/projects/project1/gif2.gif"
-      ],
-      "images": [
-        "media/projects/project1/img1.jpg",
-        "media/projects/project1/img2.jpg",
-        "media/projects/project1/img3.jpg"
-      ]
-    },
-    {
-      "id": "p2",
-      "title": "Odin Pendant Animation",
-      "tag": "3D / Motion",
-      "cover": "media/projects/project2/cover.jpg",
-      "desc": "Placeholder description for project 2.",
-      "video": "media/projects/project2/video.mp4",
-      "gifs": [
-        "media/projects/project2/gif1.gif",
-        "media/projects/project2/gif2.gif"
-      ],
-      "images": [
-        "media/projects/project2/img1.jpg",
-        "media/projects/project2/img2.jpg",
-        "media/projects/project2/img3.jpg"
-      ]
-    },
-    {
-      "id": "p3",
-      "title": "MediaPipe + Ableton + PointCloud",
-      "tag": "Interactive · TouchDesigner",
-      "cover": "media/projects/project3/cover.jpg",
-      "desc": "Placeholder description for project 3.",
-      "video": "media/projects/project3/video.mp4",
-      "gifs": [
-        "media/projects/project3/gif1.gif",
-        "media/projects/project3/gif2.gif"
-      ],
-      "images": [
-        "media/projects/project3/img1.jpg",
-        "media/projects/project3/img2.jpg",
-        "media/projects/project3/img3.jpg"
-      ]
-    },
-    {
-      "id": "p4",
-      "title": "Nike Air Jordan CGI",
-      "tag": "Product · CGI",
-      "cover": "media/projects/project4/cover.jpg",
-      "desc": "Placeholder description for project 4.",
-      "video": "media/projects/project4/video.mp4",
-      "gifs": [
-        "media/projects/project4/gif1.gif",
-        "media/projects/project4/gif2.gif"
-      ],
-      "images": [
-        "media/projects/project4/img1.jpg",
-        "media/projects/project4/img2.jpg",
-        "media/projects/project4/img3.jpg"
-      ]
-    },
-    {
-      "id": "p5",
-      "title": "Bic Mini Lighter Spider Case",
-      "tag": "Product Design",
-      "cover": "media/projects/project5/cover.jpg",
-      "desc": "Placeholder description for project 5.",
-      "video": "media/projects/project5/video.mp4",
-      "gifs": [
-        "media/projects/project5/gif1.gif",
-        "media/projects/project5/gif2.gif"
-      ],
-      "images": [
-        "media/projects/project5/img1.jpg",
-        "media/projects/project5/img2.jpg",
-        "media/projects/project5/img3.jpg"
-      ]
-    },
-    {
-      "id": "p6",
-      "title": "Space Keycap Animation",
-      "tag": "3D / Motion",
-      "cover": "media/projects/project6/cover.jpg",
-      "desc": "Placeholder description for project 6.",
-      "video": "media/projects/project6/video.mp4",
-      "gifs": [
-        "media/projects/project6/gif1.gif",
-        "media/projects/project6/gif2.gif"
-      ],
-      "images": [
-        "media/projects/project6/img1.jpg",
-        "media/projects/project6/img2.jpg",
-        "media/projects/project6/img3.jpg"
-      ]
-    },
-    {
-      "id": "p7",
-      "title": "Oxidized Silver Jewelry — Maverick",
-      "tag": "Materials · LookDev",
-      "cover": "media/projects/project7/cover.jpg",
-      "desc": "Placeholder description for project 7.",
-      "video": "media/projects/project7/video.mp4",
-      "gifs": [
-        "media/projects/project7/gif1.gif",
-        "media/projects/project7/gif2.gif"
-      ],
-      "images": [
-        "media/projects/project7/img1.jpg",
-        "media/projects/project7/img2.jpg",
-        "media/projects/project7/img3.jpg"
-      ]
-    },
-    {
-      "id": "p8",
-      "title": "YouTube Channel Intro",
-      "tag": "Motion · 3D + Audio",
-      "cover": "media/projects/project8/cover.jpg",
-      "desc": "Placeholder description for project 8.",
-      "video": "media/projects/project8/video.mp4",
-      "gifs": [
-        "media/projects/project8/gif1.gif",
-        "media/projects/project8/gif2.gif"
-      ],
-      "images": [
-        "media/projects/project8/img1.jpg",
-        "media/projects/project8/img2.jpg",
-        "media/projects/project8/img3.jpg"
-      ]
-    },
-    {
-      "id": "p9",
-      "title": "AI Visualizer from Image",
-      "tag": "Concept · AI",
-      "cover": "media/projects/project9/cover.jpg",
-      "desc": "Placeholder description for project 9.",
-      "video": "media/projects/project9/video.mp4",
-      "gifs": [
-        "media/projects/project9/gif1.gif",
-        "media/projects/project9/gif2.gif"
-      ],
-      "images": [
-        "media/projects/project9/img1.jpg",
-        "media/projects/project9/img2.jpg",
-        "media/projects/project9/img3.jpg"
-      ]
-    }
-  ]
-}
+[
+  {
+    "id": "p1",
+    "title": "Audio Reactive + Hand Tracked Visualizer",
+    "tag": "Interactive · TouchDesigner",
+    "cover": "media/project1/cover.jpg",
+    "desc": "Real-time, audio-reactive visuals with hand tracking for gestural control. Built in TouchDesigner.",
+    "video": "media/project1/video.mp4",
+    "gifs": [
+      "media/project1/preview1.gif",
+      "media/project1/preview2.gif"
+    ],
+    "images": [
+      "media/project1/img1.jpg",
+      "media/project1/img2.jpg",
+      "media/project1/img3.jpg"
+    ]
+  },
+  {
+    "id": "p2",
+    "title": "Odin Pendant Animation",
+    "tag": "3D / Motion",
+    "cover": "media/project2/cover.jpg",
+    "desc": "Short product animation for an Odin pendant — modeling, lighting and cinematic shots.",
+    "video": "media/project2/video.mp4",
+    "gifs": [
+      "media/project2/preview1.gif",
+      "media/project2/preview2.gif"
+    ],
+    "images": [
+      "media/project2/img1.jpg",
+      "media/project2/img2.jpg",
+      "media/project2/img3.jpg"
+    ]
+  },
+  {
+    "id": "p3",
+    "title": "MediaPipe + Ableton MIDI + PointCloud",
+    "tag": "Interactive · TouchDesigner",
+    "cover": "media/project3/cover.jpg",
+    "desc": "Gesture and face tracking via MediaPipe, music-driven controls via Ableton MIDI, and a dynamic point cloud visualizer.",
+    "video": "media/project3/video.mp4",
+    "gifs": [
+      "media/project3/preview1.gif",
+      "media/project3/preview2.gif"
+    ],
+    "images": [
+      "media/project3/img1.jpg",
+      "media/project3/img2.jpg",
+      "media/project3/img3.jpg"
+    ]
+  },
+  {
+    "id": "p4",
+    "title": "Nike Air Jordan CGI",
+    "tag": "Product · CGI",
+    "cover": "media/project4/cover.jpg",
+    "desc": "Photoreal sneaker CGI with focus on materials, stitching and dramatic lighting.",
+    "video": "media/project4/video.mp4",
+    "gifs": [
+      "media/project4/preview1.gif",
+      "media/project4/preview2.gif"
+    ],
+    "images": [
+      "media/project4/img1.jpg",
+      "media/project4/img2.jpg",
+      "media/project4/img3.jpg"
+    ]
+  },
+  {
+    "id": "p5",
+    "title": "Bic Mini Lighter Spider Case",
+    "tag": "Product Design",
+    "cover": "media/project5/cover.jpg",
+    "desc": "Accessory concept designed around the Bic Mini lighter — modeling, detailing and material exploration.",
+    "video": "media/project5/video.mp4",
+    "gifs": [
+      "media/project5/preview1.gif",
+      "media/project5/preview2.gif"
+    ],
+    "images": [
+      "media/project5/img1.jpg",
+      "media/project5/img2.jpg",
+      "media/project5/img3.jpg"
+    ]
+  },
+  {
+    "id": "p6",
+    "title": "Space Keycap Animation",
+    "tag": "3D / Motion",
+    "cover": "media/project6/cover.jpg",
+    "desc": "Keycap animation with cosmic theme — macro cameras, subtle fx and typography accents.",
+    "video": "media/project6/video.mp4",
+    "gifs": [
+      "media/project6/preview1.gif",
+      "media/project6/preview2.gif"
+    ],
+    "images": [
+      "media/project6/img1.jpg",
+      "media/project6/img2.jpg",
+      "media/project6/img3.jpg"
+    ]
+  },
+  {
+    "id": "p7",
+    "title": "Oxidized Silver Jewelry — Maverick",
+    "tag": "Materials · LookDev",
+    "cover": "media/project7/cover.jpg",
+    "desc": "Scene creation and material optimization for oxidized silver jewelry in Maverick Render.",
+    "video": "media/project7/video.mp4",
+    "gifs": [
+      "media/project7/preview1.gif",
+      "media/project7/preview2.gif"
+    ],
+    "images": [
+      "media/project7/img1.jpg",
+      "media/project7/img2.jpg",
+      "media/project7/img3.jpg"
+    ]
+  },
+  {
+    "id": "p8",
+    "title": "YouTube Channel Intro",
+    "tag": "Motion · 3D + Audio",
+    "cover": "media/project8/cover.jpg",
+    "desc": "A short, punchy intro combining 3D visuals with audio design for branding.",
+    "video": "media/project8/video.mp4",
+    "gifs": [
+      "media/project8/preview1.gif",
+      "media/project8/preview2.gif"
+    ],
+    "images": [
+      "media/project8/img1.jpg",
+      "media/project8/img2.jpg",
+      "media/project8/img3.jpg"
+    ]
+  },
+  {
+    "id": "p9",
+    "title": "AI Visualizer from Image",
+    "tag": "Concept · AI",
+    "cover": "media/project9/cover.jpg",
+    "desc": "Transforming a provided image into AI-augmented motion and visual textures.",
+    "video": "media/project9/video.mp4",
+    "gifs": [
+      "media/project9/preview1.gif",
+      "media/project9/preview2.gif"
+    ],
+    "images": [
+      "media/project9/img1.jpg",
+      "media/project9/img2.jpg",
+      "media/project9/img3.jpg"
+    ]
+  }
+]

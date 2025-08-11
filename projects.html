@@ -70,10 +70,10 @@
 
     body.custom-cursor{cursor:none}
     .cursor-dot{position:fixed;left:0;top:0;width:20px;height:20px;border-radius:50%;
-      pointer-events:none;transform:translate(-50%,-50%);background:rgba(255,255,255,0.18);
+      pointer-events:none;transform:translate(-50%, -50%);background:rgba(255,255,255,0.18);
       box-shadow:0 0 18px rgba(255,255,255,0.75), 0 0 48px rgba(255,255,255,0.35);
       mix-blend-mode:screen;backdrop-filter:blur(2px);z-index:1000}
-    .cursor-trail{position:fixed;left:0;top:0;width:8px;height:8px;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%) scale(1);
+    .cursor-trail{position:fixed;left:0;top:0;width:8px;height:8px;border-radius:50%;pointer-events:none;transform:translate(-50%, -50%) scale(1);
       background:rgba(255,255,255,0.2);z-index:999;opacity:.9;animation:trailFade .5s ease-out forwards;box-shadow:0 0 14px rgba(255,255,255,.65);will-change:transform,opacity}
     @keyframes trailFade{to{transform:translate(-50%, -50%) scale(0);opacity:0}}
     a,button,[role="button"],.card{cursor:pointer}
@@ -134,23 +134,26 @@
   <script>
     document.getElementById('y').textContent = new Date().getFullYear();
 
-async function loadProjects(){
-    const res = await fetch('media/projects/projects.json', { cache: 'no-cache' });
-    const arr = await res.json();
+    // ---- DATA LOAD (covers pX.jpg sabit) ----
+    async function loadProjects(){
+      const res = await fetch('media/projects/projects.json?cb=' + Date.now(), { cache: 'no-store' });
+      const arr = await res.json();
 
-    return arr.map(p => ({
-      ...p,
-      // JSON'daki path'leri aynen kullan
-      media: {
-        cover : p.cover,
-        video : p.video,
-        gifs  : p.gifs,
-        images: p.images
-      },
-      // detail view bu alanı okuyor
-      desc: p.description ?? p.desc ?? ''
-    }));
-  }
+      return arr.map(p => {
+        // Kapakları covers klasöründen p1.jpg, p2.jpg ... kullan
+        const coverFromCovers = `media/covers/${p.id}.jpg`;
+        return {
+          ...p,
+          media: {
+            cover : coverFromCovers,
+            video : p.video,
+            gifs  : p.gifs,
+            images: p.images
+          },
+          desc: p.description ?? p.desc ?? ''
+        };
+      });
+    }
 
     const listEl = document.getElementById('list');
     const detailEl = document.getElementById('detail');
@@ -173,12 +176,15 @@ async function loadProjects(){
 
     function renderGrid(items){
       gridEl.innerHTML='';
+      const cb = Date.now(); // cache-bust
       items.forEach((p,idx)=>{
         const a=document.createElement('a');
         a.className='card'; a.href=`?p=${p.id}`;
+        const coverSrc = p.media.cover || `media/covers/${p.id}.jpg`;
         a.innerHTML=`
           <div class="media">
-            <img src="${p.media.cover}" alt="${p.title}" loading="lazy" onerror="this.src='https://picsum.photos/seed/${p.id||idx}/1200/800'">
+            <img src="${coverSrc}?cb=${cb}" alt="${p.title}" loading="lazy"
+                 onerror="this.src='https://picsum.photos/seed/${p.id||idx}/1200/800'">
             <span class="badge">${p.tag||''}</span>
             <div class="glare"></div>
           </div>
@@ -225,7 +231,8 @@ async function loadProjects(){
 
     function renderDetail(slug){
       const p = PROJECTS.find(x=>x.id===slug); if(!p){ return showList(); }
-      document.getElementById('detailCover').src = p.media.cover;
+      const coverSrc = p.media.cover || `media/covers/${p.id}.jpg`;
+      document.getElementById('detailCover').src = coverSrc + '?cb=' + Date.now();
       document.getElementById('detailTitle').textContent = p.title;
       document.getElementById('detailTag').textContent = p.tag || '';
       document.getElementById('detailDesc').textContent = p.desc || 'Açıklama gelecek...';
@@ -249,7 +256,7 @@ async function loadProjects(){
     });
     document.getElementById('backLink').addEventListener('click', (e)=>{ e.preventDefault(); navigateTo(null); });
 
-    // Custom cursor (same as before)
+    // Custom cursor
     (function(){
       const hover = window.matchMedia('(hover: hover)').matches;
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

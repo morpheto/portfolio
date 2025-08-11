@@ -1,0 +1,75 @@
+[
+  {
+    "id": "p1",
+    "folder": "media/projects/project1",
+    "title": "Audio Reactive + Hand Tracked Visualizer",
+    "tag": "Interactive · TouchDesigner",
+    "type": "moon",
+    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+  },
+  {
+    "id": "p2",
+    "folder": "media/projects/project2",
+    "title": "Odin Pendant Animation",
+    "tag": "3D / Motion",
+    "type": "rocky",
+    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+  },
+  {
+    "id": "p3",
+    "folder": "media/projects/project3",
+    "title": "MediaPipe + Ableton + PointCloud",
+    "tag": "Interactive · TouchDesigner",
+    "type": "gas",
+    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+  },
+  {
+    "id": "p4",
+    "folder": "media/projects/project4",
+    "title": "Nike Air Jordan CGI",
+    "tag": "Product · CGI",
+    "type": "rocky",
+    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+  },
+  {
+    "id": "p5",
+    "folder": "media/projects/project5",
+    "title": "Bic Mini Lighter Spider Case",
+    "tag": "Product Design",
+    "type": "moon",
+    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+  },
+  {
+    "id": "p6",
+    "folder": "media/projects/project6",
+    "title": "Space Keycap Animation",
+    "tag": "3D / Motion",
+    "type": "gas",
+    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+  },
+  {
+    "id": "p7",
+    "folder": "media/projects/project7",
+    "title": "Oxidized Silver Jewelry — Maverick",
+    "tag": "Materials · LookDev",
+    "type": "rocky",
+    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+  },
+  {
+    "id": "p8",
+    "folder": "media/projects/project8",
+    "title": "YouTube Channel Intro",
+    "tag": "Motion · 3D + Audio",
+    "type": "moon",
+    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+  },
+  {
+    "id": "p9",
+    "folder": "media/projects/project9",
+    "title": "AI Visualizer from Image",
+    "tag": "Concept · AI",
+    "type": "gas",
+    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+  }
+]
+}

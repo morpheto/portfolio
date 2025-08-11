@@ -368,8 +368,10 @@
           }
         });
         sharedAIModel.scale.multiplyScalar(3.2/6);
-        if (!aiSpawned) {
-  spawnAIShips();   // model hazır, şimdi AI gemilerini modelle spawn et
+
+// Model yüklendiğinde AI gemilerini bir kez spawn et
+if (!aiSpawned) {
+  spawnAIShips();
   aiSpawned = true;
 }
       },
@@ -650,7 +652,7 @@
       }
       return {spawnFlameAt, spawnSmokeAt, update};
     }
-
+    let aiSpawned = false; // AI spawn bayrağı
     const AI_COUNT = 12;
     const aiShips = [];
     const center = new THREE.Vector3(0,0,0);

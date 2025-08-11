@@ -57,6 +57,9 @@
   .viewer-gifs{grid-template-columns:repeat(2,1fr)}
   .viewer-gallery{grid-template-columns:repeat(3,1fr)}
   .viewer-gifs img,.viewer-gallery img{width:100%;height:100%;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.08)}
+  /* Yön duyarlı yerleşim */
+  .viewer-gifs img,.viewer-gallery img{aspect-ratio:16/9}
+  .viewer-gifs img.portrait,.viewer-gallery img.portrait{object-fit:contain;aspect-ratio:3/4;background:#0e1433}
   .viewer-desc{margin-top:12px;color:#d7deea;line-height:1.6}
 
   .start{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 600px at 50% -20%, rgba(120,170,255,.08), rgba(5,6,10,.95))}
@@ -536,10 +539,16 @@
     function qvCloseFn(){ qv.classList.remove('show'); qv.style.display='none'; qv.setAttribute('aria-hidden','true'); controlsEnabled=true; }
     document.getElementById('qvExit').addEventListener('click',qvCloseFn);
 
+    function markPortrait(img){
+      if(img.naturalHeight > img.naturalWidth){ img.classList.add('portrait'); }
+    }
+
     function openViewer(p){
       qvCloseFn();
       vwTitle.textContent=p.title; vwTag.textContent=p.tag||''; vwDesc.textContent=p.description||'';
       vwVideo.innerHTML=''; vwGifs.innerHTML=''; vwImages.innerHTML='';
+
+      // video
       if(p.video){
         if(/\.(mp4|webm)$/i.test(p.video)){
           const vid=document.createElement('video'); vid.controls=true; vid.playsInline=true; vid.src=p.video; vwVideo.appendChild(vid);
@@ -547,8 +556,23 @@
           const iframe=document.createElement('iframe'); iframe.src=p.video; iframe.allow='autoplay; fullscreen; picture-in-picture'; vwVideo.appendChild(iframe);
         }
       } else { vwVideo.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;opacity:.6">No video</div>'; }
-      (p.gifs||[]).slice(0,2).forEach(src=>{ const img=new Image(); img.src=src; img.loading='lazy'; vwGifs.appendChild(img); });
-      (p.images||[]).slice(0,6).forEach(src=>{ const img=new Image(); img.src=src; img.loading='lazy'; vwImages.appendChild(img); });
+
+      // GIF’ler (yoksa bölümü gizle)
+      if(p.gifs && p.gifs.length){
+        vwGifs.style.display='grid';
+        p.gifs.slice(0,2).forEach(src=>{ const img=new Image(); img.onload=()=>markPortrait(img); img.src=src; img.loading='lazy'; vwGifs.appendChild(img); });
+      } else {
+        vwGifs.style.display='none';
+      }
+
+      // Görseller (yoksa bölümü gizle)
+      if(p.images && p.images.length){
+        vwImages.style.display='grid';
+        p.images.slice(0,6).forEach(src=>{ const img=new Image(); img.onload=()=>markPortrait(img); img.src=src; img.loading='lazy'; vwImages.appendChild(img); });
+      } else {
+        vwImages.style.display='none';
+      }
+
       viewer.style.display='flex'; viewer.classList.add('show'); viewer.setAttribute('aria-hidden','false');
       controlsEnabled=false;
     }
@@ -762,7 +786,7 @@
         const [x,y,z]=POS[i]; m.position.set(x,y,z); m.userData.project=p; scene.add(m); planets.push(m);
 
         const el=document.createElement('div'); el.className='planet-card';
-        const cover=p.cover?`background-image:url('${p.cover}')`:`background-image:none`;
+        const cover = p.cover ? `background-image:url('${p.cover}')` : 'background-image:none';
         el.innerHTML=`<div class="planet-card__media" style="${cover}">
           <div class="badge">${p.tag||''}</div>
           <div class="enter-pill">Press <b>E</b> to View</div>

@@ -66,6 +66,10 @@
     .detail-video{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;aspect-ratio:16/9;background:#0f0f10}
     .detail-video iframe,.detail-video video{width:100%;height:100%;border:0;display:block}
 
+    /* Görsel yön duyarlılığı */
+    .gif-grid img,.gallery img{width:100%;height:100%;object-fit:cover;border-radius:10px;border:1px solid var(--border);aspect-ratio:16/9}
+    .gif-grid img.portrait,.gallery img.portrait{object-fit:contain;aspect-ratio:3/4;background:#0f1013}
+
     footer{border-top:1px solid var(--border);margin-top:44px}
     footer .inner{padding:22px 0;color:#cbd5e1;font-size:14px;text-align:center}
 
@@ -121,9 +125,12 @@
       <div class="detail-desc" id="detailDesc"></div>
       <div class="section-title">Video</div>
       <div class="detail-video" id="detailVideo" aria-label="Project video"></div>
-      <div class="section-title">GIF Previews</div>
+
+      <!-- başlıkları da kontrol için id verdim -->
+      <div class="section-title" id="gifTitle">GIF Previews</div>
       <div class="gif-grid" id="detailGifs" style="display:grid;gap:12px;grid-template-columns:repeat(2,1fr)"></div>
-      <div class="section-title">Image Gallery</div>
+
+      <div class="section-title" id="galleryTitle">Image Gallery</div>
       <div class="gallery" id="detailGallery" style="display:grid;gap:14px;grid-template-columns:repeat(3,1fr)"></div>
     </div>
   </main>
@@ -141,7 +148,6 @@
       const arr = await res.json();
 
       return arr.map(p => {
-        // Kapakları covers klasöründen p1.jpg, p2.jpg ... kullan
         const coverFromCovers = `media/covers/${p.id}.jpg`;
         return {
           ...p,
@@ -239,14 +245,51 @@
       document.getElementById('detailDesc').textContent = p.desc || 'Açıklama gelecek...';
 
       const v = document.getElementById('detailVideo'); v.innerHTML='';
-      const vid = document.createElement('video'); vid.controls = true; vid.playsInline = true; vid.src = p.media.video; v.appendChild(vid);
+      if(p.media.video){
+        if(/\.(mp4|webm)$/i.test(p.media.video)){
+          const vid = document.createElement('video');
+          vid.controls = true; vid.playsInline = true; vid.src = p.media.video;
+          v.appendChild(vid);
+        } else {
+          const iframe = document.createElement('iframe');
+          iframe.src = p.media.video; iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+          v.appendChild(iframe);
+        }
+      } else {
+        v.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;opacity:.6">No video</div>';
+      }
 
-      const gifWrap = document.getElementById('detailGifs'); gifWrap.innerHTML='';
-      (p.media.gifs||[]).forEach(src => { const img = new Image(); img.src = src; img.loading='lazy'; gifWrap.appendChild(img); });
-      if((p.media.gifs||[]).length===0){ gifWrap.innerHTML = '<div style="opacity:.6">No GIFs yet</div>'; }
+      const gifWrap = document.getElementById('detailGifs');
+      const gifTitle = document.getElementById('gifTitle');
+      gifWrap.innerHTML='';
+      if(p.media.gifs && p.media.gifs.length){
+        gifTitle.style.display = '';
+        gifWrap.style.display = 'grid';
+        p.media.gifs.forEach(src => {
+          const img = new Image();
+          img.onload = ()=>{ if(img.naturalHeight > img.naturalWidth) img.classList.add('portrait'); };
+          img.src = src; img.loading='lazy'; gifWrap.appendChild(img);
+        });
+      } else {
+        gifTitle.style.display = 'none';
+        gifWrap.style.display = 'none';
+      }
 
-      const gal = document.getElementById('detailGallery'); gal.innerHTML='';
-      (p.media.images||[]).forEach(src => { const img = new Image(); img.src = src; img.loading='lazy'; gal.appendChild(img); });
+      const gal = document.getElementById('detailGallery');
+      const galTitle = document.getElementById('galleryTitle');
+      gal.innerHTML='';
+      if(p.media.images && p.media.images.length){
+        galTitle.style.display = '';
+        gal.style.display = 'grid';
+        p.media.images.forEach(src => {
+          const img = new Image();
+          img.onload = ()=>{ if(img.naturalHeight > img.naturalWidth) img.classList.add('portrait'); };
+          img.src = src; img.loading='lazy'; gal.appendChild(img);
+        });
+      } else {
+        galTitle.style.display = 'none';
+        gal.style.display = 'none';
+      }
 
       listEl.style.display='none'; detailEl.style.display='block'; window.scrollTo({top:0,behavior:'instant'});
     }

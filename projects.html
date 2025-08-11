@@ -294,44 +294,54 @@
       document.getElementById('detailTag').textContent = p.tag || '';
       document.getElementById('detailDesc').textContent = p.desc || 'Açıklama gelecek...';
 
-     // ---- Video (autoplay+loop, tıklanamaz) ----
-const v = document.getElementById('detailVideo'); v.innerHTML='';
-if (p.media.video){
-  if (/\.(mp4|webm)$/i.test(p.media.video)){
+// ---- Video (autoplay+loop; ses: p3,p4,p6,p8,p9 açık, diğerleri kapalı) ----
+const v = document.getElementById('detailVideo');
+const videoTitleEl = v.previousElementSibling; // "Video" başlığı
+v.innerHTML = '';
+
+// varsayılan olarak görünür bırak
+v.style.display = '';
+if (videoTitleEl) videoTitleEl.style.display = '';
+
+// Ses açık olacak projeler
+const SOUND_ON = new Set(['p3','p4','p6','p8','p9']);
+
+if (p.media.video && p.media.video.trim() !== '') {
+  if (/\.(mp4|webm)$/i.test(p.media.video)) {
     const vid = document.createElement('video');
     vid.autoplay = true;
     vid.loop = true;
     vid.playsInline = true;
     vid.src = p.media.video;
 
-    // varsayılan: sessiz
-    vid.muted = true;
-
-    // Sadece p2'de sesi aç
-    if (p.id === 'p2') {
+    if (SOUND_ON.has(p.id)) {
       vid.muted = false;
       vid.volume = 1.0;
-      // bazı tarayıcılar sesli autoplay'i engeller — mümkünse dene:
-      vid.addEventListener('canplay', () => {
-        vid.play().catch(()=>{/* sessiz engel durumunda hata yut */});
-      });
-      // kullanıcı ilk etkileşiminde tekrar dene (engel kalkar)
-      const oncePlay = () => { vid.play().catch(()=>{}); window.removeEventListener('click', oncePlay); };
-      window.addEventListener('click', oncePlay, { once: true });
+
+      // Tarayıcı sesli autoplay’i engellerse dene + ilk kullanıcı etkileşiminde tekrar dene
+      const tryPlay = () => vid.play().catch(()=>{});
+      vid.addEventListener('canplay', tryPlay, { once: true });
+      window.addEventListener('click', tryPlay, { once: true });
+    } else {
+      vid.muted = true;
     }
 
     v.appendChild(vid);
   } else {
-    // YouTube/Vimeo vb. için
+    // YouTube/Vimeo vb.
     const sep = p.media.video.includes('?') ? '&' : '?';
-    // varsayılan: mute=1, p2'de mute=0 dene (platform destekliyorsa)
-    const muteParam = (p.id === 'p2') ? 'mute=0' : 'mute=1';
+    const muteParam = SOUND_ON.has(p.id) ? 'mute=0' : 'mute=1';
     const url = p.media.video + sep + `autoplay=1&${muteParam}&loop=1&playsinline=1`;
     const iframe = document.createElement('iframe');
     iframe.src = url;
     iframe.allow = 'autoplay; fullscreen; picture-in-picture';
     v.appendChild(iframe);
   }
+} else {
+  // Video yok (ör. p5): başlığı ve alanı tamamen gizle
+  if (videoTitleEl) videoTitleEl.style.display = 'none';
+  v.style.display = 'none';
+}
 } else {
   v.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;opacity:.6">No video</div>';
 }

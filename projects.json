@@ -51,8 +51,8 @@
     "type": "gas",
     "cover": "media/covers/p3.jpg",
     "video": "media/project3/video.mp4",
-    "gifs": ["media/project3/gif1.gif", "media/project3/gif2.gif"],
-    "images": ["media/project3/img1.jpg", "media/project3/img2.jpg", "media/project3/img3.jpg"],
+    "gifs": ["media/project3/gif1.gif",
+    "images": ["media/project3/img1.jpg", "media/project3/img2.jpg",
     "description": "A TouchDesigner case study using the built-in MediaPipe plugin to control a 3D point cloud via hand gestures. The point cloud was generated from a personal drone scan of an abandoned house in Şile.",
     "tools": ["TouchDesigner", "MediaPipe", "Ableton Live", "DJI Drone"]
   },

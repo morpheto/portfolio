@@ -69,8 +69,7 @@
     "type": "rocky",
     "cover": "media/covers/p4.jpg",
     "video": "media/project4/video.mp4",
-    "gifs": ["media/project4/gif1.gif", "media/project4/gif2.gif"],
-    "images": ["media/project4/img1.jpg", "media/project4/img2.jpg", "media/project4/img3.jpg"],
+    "images": ["media/project4/img1.jpg"],
     "description": "A CGI placement of Nike Air Jordan sneakers onto an iconic building in Istanbul. The project focuses on integrating high-quality 3D assets seamlessly into real-world urban architecture.",
     "tools": ["Blender", "Maverick Render", "Adobe Photoshop"]
   },
@@ -80,9 +79,7 @@
     "tag": "Product Design",
     "type": "moon",
     "cover": "media/covers/p5.jpg",
-    "video": "media/project5/video.mp4",
-    "gifs": ["media/project5/gif1.gif", "media/project5/gif2.gif"],
-    "images": ["media/project5/img1.jpg", "media/project5/img2.jpg", "media/project5/img3.jpg"],
+    "images": ["media/project5/img1.jpg", "media/project5/img2.jpg", "media/project5/img3.jpg", "media/project5/img4.jpg", "media/project5/img5.jpg", "media/project5/img6.jpg"],
     "description": "A case study of a custom silver case for Bic mini lighters, designed for the Sarnion brand. Features a spider web motif with gemstone eyes. Produced, sold, and integrated into the product line.",
     "tools": ["ZBrush", "Maverick Render", "Silversmithing"]
   },

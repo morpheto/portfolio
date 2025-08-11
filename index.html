@@ -375,8 +375,7 @@
 
     function worldFromExhaust_player(out){return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);}
 
-    const flameTex = new THREE.CanvasTexture(document.createElement('canvas')); // placeholder overwrite guard
-    const smokeTex = new THREE.CanvasTexture(document.createElement('canvas')); // (already created above but harmless)
+    
 
     /* (re-bind real textures created earlier) */
     (function(){

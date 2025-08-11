@@ -5,6 +5,7 @@
     { "src": "projects.html", "use": "@vercel/static" },
     { "src": "about.html", "use": "@vercel/static" },
     { "src": "contact.html", "use": "@vercel/static" },
+    { "src": "projects.json", "use": "@vercel/static" },
     { "src": "media/**", "use": "@vercel/static" }
   ],
   "cleanUrls": true,
@@ -12,12 +13,19 @@
     { "source": "/projects", "destination": "/projects.html" },
     { "source": "/space", "destination": "/index.html" },
     { "source": "/about", "destination": "/about.html" },
-    { "source": "/contact", "destination": "/contact.html" }
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/projects.json", "destination": "/projects.json" }
   ],
   "redirects": [
     { "source": "/index.html", "destination": "/", "permanent": true }
   ],
   "headers": [
+    {
+      "source": "/projects.json",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=60, s-maxage=60" }
+      ]
+    },
     {
       "source": "/(.*)\\.(jpg|jpeg|png|gif|webp|mp4|webm)$",
       "headers": [

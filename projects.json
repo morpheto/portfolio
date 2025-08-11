@@ -1,75 +1,101 @@
 [
   {
     "id": "p1",
-    "folder": "media/projects/project1",
     "title": "Audio Reactive + Hand Tracked Visualizer",
     "tag": "Interactive · TouchDesigner",
     "type": "moon",
-    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+    "cover": "media/project1/cover.jpg",
+    "video": "media/project1/video.mp4",
+    "gifs": ["media/project1/gif1.gif", "media/project1/gif2.gif"],
+    "images": ["media/project1/img1.jpg", "media/project1/img2.jpg", "media/project1/img3.jpg"],
+    "desc": "Placeholder description for p1."
   },
   {
     "id": "p2",
-    "folder": "media/projects/project2",
     "title": "Odin Pendant Animation",
     "tag": "3D / Motion",
     "type": "rocky",
-    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+    "cover": "media/project2/cover.jpg",
+    "video": "media/project2/video.mp4",
+    "gifs": ["media/project2/gif1.gif", "media/project2/gif2.gif"],
+    "images": ["media/project2/img1.jpg", "media/project2/img2.jpg", "media/project2/img3.jpg"],
+    "desc": "Placeholder description for p2."
   },
   {
     "id": "p3",
-    "folder": "media/projects/project3",
     "title": "MediaPipe + Ableton + PointCloud",
     "tag": "Interactive · TouchDesigner",
     "type": "gas",
-    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+    "cover": "media/project3/cover.jpg",
+    "video": "media/project3/video.mp4",
+    "gifs": ["media/project3/gif1.gif", "media/project3/gif2.gif"],
+    "images": ["media/project3/img1.jpg", "media/project3/img2.jpg", "media/project3/img3.jpg"],
+    "desc": "Placeholder description for p3."
   },
   {
     "id": "p4",
-    "folder": "media/projects/project4",
     "title": "Nike Air Jordan CGI",
     "tag": "Product · CGI",
     "type": "rocky",
-    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+    "cover": "media/project4/cover.jpg",
+    "video": "media/project4/video.mp4",
+    "gifs": ["media/project4/gif1.gif", "media/project4/gif2.gif"],
+    "images": ["media/project4/img1.jpg", "media/project4/img2.jpg", "media/project4/img3.jpg"],
+    "desc": "Placeholder description for p4."
   },
   {
     "id": "p5",
-    "folder": "media/projects/project5",
     "title": "Bic Mini Lighter Spider Case",
     "tag": "Product Design",
     "type": "moon",
-    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+    "cover": "media/project5/cover.jpg",
+    "video": "media/project5/video.mp4",
+    "gifs": ["media/project5/gif1.gif", "media/project5/gif2.gif"],
+    "images": ["media/project5/img1.jpg", "media/project5/img2.jpg", "media/project5/img3.jpg"],
+    "desc": "Placeholder description for p5."
   },
   {
     "id": "p6",
-    "folder": "media/projects/project6",
     "title": "Space Keycap Animation",
     "tag": "3D / Motion",
     "type": "gas",
-    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+    "cover": "media/project6/cover.jpg",
+    "video": "media/project6/video.mp4",
+    "gifs": ["media/project6/gif1.gif", "media/project6/gif2.gif"],
+    "images": ["media/project6/img1.jpg", "media/project6/img2.jpg", "media/project6/img3.jpg"],
+    "desc": "Placeholder description for p6."
   },
   {
     "id": "p7",
-    "folder": "media/projects/project7",
     "title": "Oxidized Silver Jewelry — Maverick",
     "tag": "Materials · LookDev",
     "type": "rocky",
-    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+    "cover": "media/project7/cover.jpg",
+    "video": "media/project7/video.mp4",
+    "gifs": ["media/project7/gif1.gif", "media/project7/gif2.gif"],
+    "images": ["media/project7/img1.jpg", "media/project7/img2.jpg", "media/project7/img3.jpg"],
+    "desc": "Placeholder description for p7."
   },
   {
     "id": "p8",
-    "folder": "media/projects/project8",
     "title": "YouTube Channel Intro",
     "tag": "Motion · 3D + Audio",
     "type": "moon",
-    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+    "cover": "media/project8/cover.jpg",
+    "video": "media/project8/video.mp4",
+    "gifs": ["media/project8/gif1.gif", "media/project8/gif2.gif"],
+    "images": ["media/project8/img1.jpg", "media/project8/img2.jpg", "media/project8/img3.jpg"],
+    "desc": "Placeholder description for p8."
   },
   {
     "id": "p9",
-    "folder": "media/projects/project9",
     "title": "AI Visualizer from Image",
     "tag": "Concept · AI",
     "type": "gas",
-    "desc": "Bu proje için açıklama metni. İstediğin zaman güncelle."
+    "cover": "media/project9/cover.jpg",
+    "video": "media/project9/video.mp4",
+    "gifs": ["media/project9/gif1.gif", "media/project9/gif2.gif"],
+    "images": ["media/project9/img1.jpg", "media/project9/img2.jpg", "media/project9/img3.jpg"],
+    "desc": "Placeholder description for p9."
   }
 ]
-}

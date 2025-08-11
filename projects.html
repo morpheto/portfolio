@@ -134,19 +134,21 @@
   <script>
     document.getElementById('y').textContent = new Date().getFullYear();
 
-    async function loadProjects(){
-      const res = await fetch('media/projects/projects.json',{cache:'no-cache'});
-      const arr = await res.json();
-      return arr.map(p => ({
-        ...p,
-        media:{
-          cover : `${p.folder}/cover.jpg`,
-          video : `${p.folder}/video.mp4`,
-          gifs  : [`${p.folder}/g1.gif`, `${p.folder}/g2.gif`],
-          images: [`${p.folder}/img1.jpg`, `${p.folder}/img2.jpg`, `${p.folder}/img3.jpg`]
-        }
-      }));
+async function loadProjects(){
+  const res = await fetch('media/projects/projects.json', { cache: 'no-cache' });
+  const arr = await res.json();
+
+  // JSON’daki yolları AYNEN kullan (cover/gifs/images/video)
+  return arr.map(p => ({
+    ...p,
+    media: {
+      cover : p.cover,   // ör: "media/covers/p1.jpg"
+      video : p.video,   // ör: "media/project1/video.mp4"
+      gifs  : p.gifs,    // ör: ["media/project1/gif1.gif", ...]
+      images: p.images   // ör: ["media/project1/img1.jpg", ...]
     }
+  }));
+}
 
     const listEl = document.getElementById('list');
     const detailEl = document.getElementById('detail');

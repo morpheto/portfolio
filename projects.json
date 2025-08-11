@@ -102,8 +102,7 @@
     "type": "rocky",
     "cover": "media/covers/p7.jpg",
     "video": "media/project7/video.mp4",
-    "gifs": ["media/project7/gif1.gif", "media/project7/gif2.gif"],
-    "images": ["media/project7/img1.jpg", "media/project7/img2.jpg", "media/project7/img3.jpg"],
+    "images": ["media/project7/img1.jpg", "media/project7/img2.jpg", "media/project7/img3.jpg", "media/project7/img4.jpg", "media/project7/img5.jpg"],
     "description": "A look development case study in Maverick Render, focused on achieving a realistic oxidized silver material through multiple iterations and shader refinements.",
     "tools": ["Maverick Render", "Material Node Editing"]
   },
@@ -115,7 +114,7 @@
     "cover": "media/covers/p8.jpg",
     "video": "media/project8/video.mp4",
     "gifs": ["media/project8/gif1.gif", "media/project8/gif2.gif"],
-    "images": ["media/project8/img1.jpg", "media/project8/img2.jpg", "media/project8/img3.jpg"],
+    "images": ["media/project8/img1.jpg", "media/project8/img2.jpg", "media/project8/img3.jpg", "media/project8/img4.jpg", "media/project8/img5.jpg"],
     "description": "A motion design case study for the Punkart YouTube channel, developed in collaboration with Barış Yardımcı. 3D models were created and animated in Blender, with a custom rain simulation added directly within the scene. Multiple concepts were explored before finalizing the visual direction.",
     "tools": ["Blender", "Adobe After Effects", "Adobe Premiere Pro"]
   },
@@ -127,7 +126,7 @@
     "cover": "media/covers/p9.jpg",
     "video": "media/project9/video.mp4",
     "gifs": ["media/project9/gif1.gif", "media/project9/gif2.gif"],
-    "images": ["media/project9/img1.jpg", "media/project9/img2.jpg", "media/project9/img3.jpg"],
+    "images": ["media/project9/img1.jpg", "media/project9/img2.jpg", "media/project9/img3.jpg", "media/project9/img4.jpg", "media/project9/img5.jpg", "media/project9/img6.jpg"],
     "description": "An AI-driven visualizer project for the Punkart YouTube channel's 'Buzz' track, created in collaboration with Barış Yardımcı. The workflow involved transforming a provided image into a dynamic, music-synced animation using AI generation, motion design, and custom editing.",
     "tools": ["Kling", "Higgsfield", "Adobe Photoshop", "Adobe Premiere Pro"]
   }

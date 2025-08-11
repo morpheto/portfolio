@@ -44,18 +44,25 @@
   "description": "A case study showcasing the design and animation of a Norse mythology-inspired pendant. Modeled in ZBrush, animated in Blender, and rendered in Maverick Render with detailed material work.",
   "tools": ["ZBrush", "Blender", "Maverick Render"]
 },
-  {
-    "id": "p3",
-    "title": "MediaPipe + Ableton + PointCloud",
-    "tag": "Interactive · TouchDesigner",
-    "type": "gas",
-    "cover": "media/covers/p3.jpg",
-    "video": "media/project3/video.mp4",
-    "gifs": ["media/project3/gif1.gif",
-    "images": ["media/project3/img1.jpg", "media/project3/img2.jpg",
-    "description": "A TouchDesigner case study using the built-in MediaPipe plugin to control a 3D point cloud via hand gestures. The point cloud was generated from a personal drone scan of an abandoned house in Şile.",
-    "tools": ["TouchDesigner", "MediaPipe", "Ableton Live", "DJI Drone"]
-  },
+{
+  "id": "p3",
+  "title": "MediaPipe + Ableton + PointCloud",
+  "tag": "Interactive · TouchDesigner",
+  "type": "gas",
+  "cover": "media/covers/p3.jpg",
+  "video": "media/project3/video.mp4",
+  "gifs": [
+    "media/project3/gif1.gif",
+    "media/project3/gif2.gif"
+  ],
+  "images": [
+    "media/project3/img1.jpg",
+    "media/project3/img2.jpg",
+    "media/project3/img3.jpg"
+  ],
+  "description": "A TouchDesigner case study using the built-in MediaPipe plugin to control a 3D point cloud via hand gestures. The point cloud was generated from a personal drone scan of an abandoned house in Şile.",
+  "tools": ["TouchDesigner", "MediaPipe", "Ableton Live", "DJI Drone"]
+},
   {
     "id": "p4",
     "title": "Nike Air Jordan CGI",

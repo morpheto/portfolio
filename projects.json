@@ -12,8 +12,7 @@
     "media/project1/gif3.gif",
     "media/project1/gif4.gif",
     "media/project1/gif5.gif",
-    "media/project1/gif6.gif",
-    "media/project1/gif7.gif"
+    "media/project1/gif6.gif"
   ],
   "images": [
     "media/project1/img1.jpg",
@@ -21,8 +20,7 @@
     "media/project1/img3.jpg",
     "media/project1/img4.jpg",
     "media/project1/img5.jpg",
-    "media/project1/img6.jpg",
-    "media/project1/img7.jpg"
+    "media/project1/img6.jpg"
   ],
   "description": "A partially completed 3D animated music video for a rap artist. Features full character modeling, partial animations, and multiple experimental test footages combining visual style exploration with editing.",
   "tools": ["Blender", "Daz3D", "FaceGen", "Rokoko MoCap", "Adobe Premiere Pro"]

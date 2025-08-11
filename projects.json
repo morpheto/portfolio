@@ -26,6 +26,25 @@
   "tools": ["Blender", "Daz3D", "FaceGen", "Rokoko MoCap", "Adobe Premiere Pro"]
 },
   {
+  "id": "p2",
+  "title": "Odin Pendant Animation",
+  "tag": "3D / Motion",
+  "type": "rocky",
+  "cover": "media/covers/p2.jpg",
+  "video": "media/project2/video.mp4",
+  "gifs": [
+    "media/project2/gif1.gif",
+    "media/project2/gif2.gif"
+  ],
+  "images": [
+    "media/project2/img1.jpg",
+    "media/project2/img2.jpg",
+    "media/project2/img3.jpg"
+  ],
+  "description": "A case study showcasing the design and animation of a Norse mythology-inspired pendant. Modeled in ZBrush, animated in Blender, and rendered in Maverick Render with detailed material work.",
+  "tools": ["ZBrush", "Blender", "Maverick Render"]
+},
+  {
     "id": "p3",
     "title": "MediaPipe + Ableton + PointCloud",
     "tag": "Interactive · TouchDesigner",

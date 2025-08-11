@@ -200,8 +200,8 @@
     audio.reverse.loop = true;
 
     // fixed base levels
-    const THRUST_BASE = 0.45;   // İstediğin throttle seviyesi
-    const REVERSE_BASE = 0.45;  // aynı klasörden, aynı seviye
+    const THRUST_BASE = 0.25;   // İstediğin throttle seviyesi
+    const REVERSE_BASE = 0.50;  // aynı klasörden, aynı seviye
 
     function applyMasterVolume(){
       const m = audio.enabled ? audio.master : 0;
@@ -746,7 +746,7 @@
           if (SOUND_ON.has(p.id)) {
             vid.muted = false;
             // p6 için özel ses seviyesi
-            vid.volume = (p.id === 'p6') ? 0.4 : 1.0;
+            vid.volume = (p.id === 'p6') ? 0.15 : 1.0;
 
             const tryPlay = () => vid.play().catch(()=>{});
             vid.addEventListener('canplay', tryPlay, { once: true });

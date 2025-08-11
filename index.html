@@ -76,6 +76,10 @@
   .mobile-card h2{margin:0 0 10px}
   .mobile-card p{margin:0 0 16px;line-height:1.5}
   .mobile-card .btn.primary{padding:12px 20px;border-radius:12px}
+
+  /* --- İndirmeyi zorlaştır: viewer içindeki medya için sağ tık, seçim ve sürüklemeyi kapat --- */
+  .viewer img, .viewer video { -webkit-user-drag: none; user-select: none; }
+  .viewer .viewer-media video { pointer-events: none; } /* tıklanamaz video */
 </style>
 </head>
 <body>
@@ -543,32 +547,88 @@
       if(img.naturalHeight > img.naturalWidth){ img.classList.add('portrait'); }
     }
 
+    // Ses açık olacak projeler
+    const SOUND_ON = new Set(['p3','p4','p6','p8','p9']);
+
     function openViewer(p){
       qvCloseFn();
       vwTitle.textContent=p.title; vwTag.textContent=p.tag||''; vwDesc.textContent=p.description||'';
       vwVideo.innerHTML=''; vwGifs.innerHTML=''; vwImages.innerHTML='';
 
-      // video
-      if(p.video){
-        if(/\.(mp4|webm)$/i.test(p.video)){
-          const vid=document.createElement('video'); vid.controls=true; vid.playsInline=true; vid.src=p.video; vwVideo.appendChild(vid);
-        } else {
-          const iframe=document.createElement('iframe'); iframe.src=p.video; iframe.allow='autoplay; fullscreen; picture-in-picture'; vwVideo.appendChild(iframe);
-        }
-      } else { vwVideo.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;opacity:.6">No video</div>'; }
+      // --- Video (autoplay+loop; tıklanamaz; ses p3,p4,p6,p8,p9'da açık) ---
+      if (p.video && p.video.trim() !== '') {
+        vwVideo.style.display = ''; // göster
+        if (/\.(mp4|webm)$/i.test(p.video)) {
+          const vid = document.createElement('video');
+          vid.autoplay = true;
+          vid.loop = true;
+          vid.playsInline = true;
+          vid.preload = 'metadata';
+          vid.src = p.video;
 
-      // GIF’ler (yoksa bölümü gizle)
+          // tıklanamaz ve indirmeyi zorlaştır
+          vid.controls = false;
+          vid.setAttribute('controlsList','nodownload noplaybackrate noremoteplayback');
+          vid.setAttribute('disablePictureInPicture','');
+          vid.addEventListener('contextmenu', e=>e.preventDefault());
+          vid.addEventListener('dragstart', e=>e.preventDefault());
+          vid.addEventListener('pointerdown', e=>e.preventDefault());
+
+          if (SOUND_ON.has(p.id)) {
+            vid.muted = false;
+            vid.volume = 1.0;
+            const tryPlay = () => vid.play().catch(()=>{});
+            vid.addEventListener('canplay', tryPlay, { once: true });
+            window.addEventListener('click', tryPlay, { once: true });
+          } else {
+            vid.muted = true;
+          }
+          vwVideo.appendChild(vid);
+        } else {
+          // YouTube/Vimeo gibi gömülü kaynaklar
+          const sep = p.video.includes('?') ? '&' : '?';
+          const muteParam = SOUND_ON.has(p.id) ? 'mute=0' : 'mute=1';
+          const url = p.video + sep + `autoplay=1&${muteParam}&loop=1&playsinline=1`;
+          const iframe = document.createElement('iframe');
+          iframe.src = url;
+          iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+          iframe.style.pointerEvents = 'none'; // tıklanamaz
+          iframe.addEventListener('contextmenu', e=>e.preventDefault());
+          vwVideo.appendChild(iframe);
+        }
+      } else {
+        // video yoksa alanı tamamen gizle
+        vwVideo.style.display = 'none';
+      }
+
+      // --- GIF’ler ---
       if(p.gifs && p.gifs.length){
         vwGifs.style.display='grid';
-        p.gifs.slice(0,2).forEach(src=>{ const img=new Image(); img.onload=()=>markPortrait(img); img.src=src; img.loading='lazy'; vwGifs.appendChild(img); });
+        p.gifs.slice(0,2).forEach(src=>{
+          const img=new Image();
+          img.onload=()=>markPortrait(img);
+          img.src=src; img.loading='lazy';
+          img.draggable=false;
+          img.addEventListener('contextmenu',e=>e.preventDefault());
+          img.addEventListener('dragstart',e=>e.preventDefault());
+          vwGifs.appendChild(img);
+        });
       } else {
         vwGifs.style.display='none';
       }
 
-      // Görseller (yoksa bölümü gizle)
+      // --- Görseller ---
       if(p.images && p.images.length){
         vwImages.style.display='grid';
-        p.images.slice(0,6).forEach(src=>{ const img=new Image(); img.onload=()=>markPortrait(img); img.src=src; img.loading='lazy'; vwImages.appendChild(img); });
+        p.images.slice(0,6).forEach(src=>{
+          const img=new Image();
+          img.onload=()=>markPortrait(img);
+          img.src=src; img.loading='lazy';
+          img.draggable=false;
+          img.addEventListener('contextmenu',e=>e.preventDefault());
+          img.addEventListener('dragstart',e=>e.preventDefault());
+          vwImages.appendChild(img);
+        });
       } else {
         vwImages.style.display='none';
       }
@@ -588,6 +648,17 @@
         if(qv.classList.contains('show')){ qvOpen.click(); }
         else if(controlsEnabled && nearest){ qvOpenFor(nearest); }
       }
+    });
+
+    // Viewer içinde medya indirilemeyi zorlaştır: sağ tık / seçim / sürükleme
+    viewer.addEventListener('contextmenu', e=>{
+      const t = e.target;
+      if (t && (t.tagName==='IMG' || t.tagName==='VIDEO')) e.preventDefault();
+    });
+    viewer.addEventListener('dragstart', e=>e.preventDefault());
+    viewer.addEventListener('selectstart', e=>{
+      const t = e.target;
+      if (t && (t.tagName==='IMG' || t.tagName==='VIDEO')) e.preventDefault();
     });
 
     /* ---------- AI ships + emitters (GLB model klonu) ---------- */

@@ -540,7 +540,29 @@
       qv.style.display='flex'; qv.classList.add('show'); qv.setAttribute('aria-hidden','false');
       qvOpen.onclick = ()=> openViewer(p);
     }
-    function qvCloseFn(){ qv.classList.remove('show'); qv.style.display='none'; qv.setAttribute('aria-hidden','true'); controlsEnabled=true; }
+
+    /* --- MEDYA DURDURMA HELPER'I (Quick View/Viewer kapatırken) --- */
+    function stopAllMedia(root=document){
+      // Videoları durdur + başa al
+      root.querySelectorAll('video').forEach(v=>{
+        try { v.pause(); v.currentTime = 0; } catch {}
+      });
+      // Embed'lerde oynatmayı durdurmaya çalış (YouTube/Vimeo)
+      root.querySelectorAll('iframe').forEach(f=>{
+        try {
+          f.contentWindow?.postMessage(JSON.stringify({event:'command', func:'stopVideo'}), '*'); // YouTube
+          f.contentWindow?.postMessage('{"method":"pause"}', '*'); // Vimeo
+        } catch {}
+      });
+    }
+
+    function qvCloseFn(){
+      stopAllMedia(qv); // Quick view içindeki olası medya/iframe'leri durdur
+      qv.classList.remove('show');
+      qv.style.display='none';
+      qv.setAttribute('aria-hidden','true');
+      controlsEnabled=true;
+    }
     document.getElementById('qvExit').addEventListener('click',qvCloseFn);
 
     function markPortrait(img){
@@ -636,7 +658,14 @@
       viewer.style.display='flex'; viewer.classList.add('show'); viewer.setAttribute('aria-hidden','false');
       controlsEnabled=false;
     }
-    function closeViewer(){ viewer.classList.remove('show'); viewer.style.display='none'; viewer.setAttribute('aria-hidden','true'); controlsEnabled=true; }
+
+    function closeViewer(){
+      stopAllMedia(viewer); // Viewer kapatılırken medya tamamen dursun
+      viewer.classList.remove('show');
+      viewer.style.display='none';
+      viewer.setAttribute('aria-hidden','true');
+      controlsEnabled=true;
+    }
     document.getElementById('vwClose').addEventListener('click',closeViewer);
 
     addEventListener('keydown',e=>{

@@ -21,53 +21,31 @@
   .overlay{position:fixed;inset:0;pointer-events:none;z-index:12}
   .planet-card{position:absolute;transform:translate(-50%,-100%);width:240px;max-width:40vw;border-radius:12px;overflow:hidden;border:1px solid rgba(120,198,255,.28);background:linear-gradient(180deg, rgba(20,24,40,.85), rgba(10,12,20,.9));box-shadow:0 10px 26px rgba(0,0,0,.45);transition:opacity .15s ease, transform .15s ease;opacity:.0; pointer-events:auto}
   .planet-card__media{position:relative;height:120px;background:#0f1430;background-size:cover;background-position:center}
-  /* okunurluk için yumuşak karartma */
-  .planet-card__media::after{
-    content:""; position:absolute; inset:0; pointer-events:none; z-index:1;
-    background: radial-gradient(240px 160px at 50% 50%, rgba(0,0,0,.55), transparent 70%);
-  }
+  .planet-card__media::after{content:""; position:absolute; inset:0; pointer-events:none; z-index:1; background: radial-gradient(240px 160px at 50% 50%, rgba(0,0,0,.55), transparent 70%);}
   .planet-card__meta{display:flex;justify-content:space-between;align-items:center;padding:8px 10px}
   .title{font-weight:700}
   .badge{position:absolute;left:8px;top:8px;background:rgba(64,191,255,.12);border:1px solid rgba(64,191,255,.4);backdrop-filter:blur(6px);font-size:11px;padding:6px 8px;border-radius:999px;color:#cfefff; z-index:2}
-  /* GÜNCEL: daha kontrastlı, parlak ve nabız animasyonlu pill */
-  .enter-pill{
-    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-    padding:8px 12px; border-radius:999px;
-    border:1px solid rgba(120,198,255,.65);
-    background:linear-gradient(180deg, rgba(10,14,28,.85), rgba(12,16,30,.88));
-    box-shadow: 0 2px 14px rgba(0,0,0,.55), 0 0 24px rgba(64,191,255,.35) inset;
-    color:#e9f4ff; font-size:11px; font-weight:700; letter-spacing:.2px;
-    text-shadow: 0 1px 2px rgba(0,0,0,.9), 0 0 8px rgba(0,0,0,.6);
-    -webkit-text-stroke: .2px rgba(0,0,0,.6);
-    opacity:0; transition:opacity .15s ease, transform .15s ease;
-    pointer-events:none; z-index:2; backdrop-filter: blur(4px) saturate(120%);
-  }
+  .enter-pill{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); padding:8px 12px; border-radius:999px; border:1px solid rgba(120,198,255,.65); background:linear-gradient(180deg, rgba(10,14,28,.85), rgba(12,16,30,.88)); box-shadow: 0 2px 14px rgba(0,0,0,.55), 0 0 24px rgba(64,191,255,.35) inset; color:#e9f4ff; font-weight:700; letter-spacing:.2px; opacity:0; transition:opacity .15s ease, transform .15s ease; pointer-events:none; z-index:2; backdrop-filter: blur(4px) saturate(120%);}
   .enter-pill b{font-weight:800}
-  @keyframes pillPulse {
-    0%{transform:translate(-50%,-50%) scale(1)}
-    50%{transform:translate(-50%,-50%) scale(1.06)}
-    100%{transform:translate(-50%,-50%) scale(1)}
-  }
+  @keyframes pillPulse {0%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.06)}100%{transform:translate(-50%,-50%) scale(1)}}
   .enter-pill.show{ animation: pillPulse 1.6s ease-in-out infinite; }
 
-  /* Quick View */
   .popup{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
   .popup.show{display:flex}
   .popup-card{width:min(980px,94vw);border:1px solid rgba(120,198,255,.28);border-radius:16px;background:#0b0f1c;box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
   .popup-media{height:min(42vh,360px);background:#0e1433;background-size:cover;background-position:center}
   .popup-body{padding:14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .popup-title{font-weight:800;font-size:18px}
+  .popup-title{font-weight:800}
   .popup-tag{font-size:12px;color:#cfd6e3}
   .popup-actions{display:flex;gap:10px}
   .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(120,198,255,.3);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
   .btn.primary{background:var(--accent);border-color:#2b66ff}
 
-  /* Full Project Viewer */
   .viewer{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(6px)}
   .viewer.show{display:flex}
   .viewer-card{width:min(1200px,96vw);max-height:92vh;overflow:auto;border:1px solid rgba(120,198,255,.28);border-radius:16px;background:#0b0f1c;box-shadow:0 24px 70px rgba(0,0,0,.6)}
   .viewer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
-  .viewer-title{font-weight:800;font-size:18px}.viewer-tag{font-size:12px;color:#cfd6e3;opacity:.9}
+  .viewer-title{font-weight:800}.viewer-tag{font-size:12px;color:#cfd6e3;opacity:.9}
   .viewer-body{padding:16px 18px}
   .viewer-grid{display:grid;gap:14px;grid-template-columns:1fr}
   @media(min-width:880px){.viewer-grid{grid-template-columns:1.6fr 1fr}}
@@ -80,22 +58,20 @@
   .viewer-gifs img,.viewer-gallery img{width:100%;height:100%;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.08)}
   .viewer-desc{margin-top:12px;color:#d7deea;line-height:1.6}
 
-  /* Start overlay */
   .start{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 600px at 50% -20%, rgba(120,170,255,.08), rgba(5,6,10,.95))}
   .start.hide{animation:fade .6s both}@keyframes fade{to{opacity:0;visibility:hidden}}
   .start-card{padding:22px 24px;border:1px solid rgba(255,255,255,.12);background:rgba(10,12,20,.72);backdrop-filter:blur(8px);border-radius:16px;display:flex;flex-direction:column;gap:10px;align-items:center;min-width:260px}
-  .start-card h1{margin:0;font-size:18px;font-weight:800;letter-spacing:.2px;text-align:center}
-  .start-sub{margin:0 0 8px;font-size:12px;color:#d0d7e4;opacity:.92;text-align:center}
+  .start-card h1{margin:0;font-weight:800;letter-spacing:.2px;text-align:center}
+  .start-sub{margin:0 0 8px;color:#d0d7e4;opacity:.92;text-align:center}
   .kbd{font-weight:700;border:1px solid rgba(255,255,255,.18);padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.06)}
   .actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;justify-content:center}
   .btn.linklike{background:transparent}
 
-  /* Mobile gate */
   .mobile-gate{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:radial-gradient(800px 400px at 50% 50%, rgba(120,170,255,.12), rgba(5,6,10,.95));backdrop-filter:blur(6px)}
   .mobile-card{padding:24px 28px;border:1px solid rgba(255,255,255,.18);background:linear-gradient(180deg, rgba(20,24,40,.9), rgba(10,12,20,.95));border-radius:20px;max-width:360px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4)}
-  .mobile-card h2{margin:0 0 10px;font-size:20px;font-weight:700;color:#e0e7ff}
-  .mobile-card p{margin:0 0 16px;font-size:15px;color:#d0d7e4;line-height:1.5}
-  .mobile-card .btn.primary{padding:12px 20px;font-size:15px;border-radius:12px}
+  .mobile-card h2{margin:0 0 10px}
+  .mobile-card p{margin:0 0 16px;line-height:1.5}
+  .mobile-card .btn.primary{padding:12px 20px;border-radius:12px}
 </style>
 </head>
 <body>
@@ -112,7 +88,6 @@
   <div class="help" id="helpBox">Loading controls…</div>
   <div class="overlay" id="overlay"></div>
 
-  <!-- Yakın kart -->
   <div class="popup" id="quickview" aria-hidden="true">
     <div class="popup-card" role="dialog" aria-modal="true">
       <div class="popup-media" id="qvMedia"></div>
@@ -129,7 +104,6 @@
     </div>
   </div>
 
-  <!-- Tam proje görüntüleyici -->
   <div class="viewer" id="viewer" aria-hidden="true">
     <div class="viewer-card">
       <div class="viewer-head">
@@ -160,7 +134,7 @@
         <a class="btn linklike" href="projects.html">Basic Portfolio</a>
         <button id="btnStart" class="btn primary" type="button">Start</button>
       </div>
-      <p style="margin:8px 0 0;font-size:12px;opacity:.85">
+      <p style="margin:8px 0 0;opacity:.85">
         <span class="kbd">W/S</span> move · mouse turn · near planet <span class="kbd">E</span> view
       </p>
     </div>
@@ -192,11 +166,9 @@
     const isTouch = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window);
     const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
-    /* ----- Mobile gate ----- */
     const mobileGate = document.getElementById('mobileGate');
     if (isTouch) mobileGate.style.display = 'flex';
 
-    /* HUD help */
     const helpBox=document.getElementById('helpBox');
     helpBox.innerHTML = isTouch
       ? '<b>Mobile</b> — This space tour shines on desktop! Try the Basic Portfolio for now.'
@@ -239,17 +211,20 @@
       }
     }
 
-    /* Textures for exhaust */
+    /* ---------- Basit yardımcılar ---------- */
     function makeRadialTexture(inner, outer, size=128){
       const c=document.createElement('canvas'); c.width=c.height=size;
-      const ctx=c.getContext('2d'); const g=ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
-      g.addColorStop(0,inner); g.addColorStop(1,outer); ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
-      const t=new THREE.CanvasTexture(c); t.minFilter=THREE.LinearFilter; t.magFilter=THREE.LinearFilter; return t;
+      const ctx=c.getContext('2d');
+      const g=ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
+      g.addColorStop(0,inner); g.addColorStop(1,outer);
+      ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
+      const t=new THREE.CanvasTexture(c);
+      t.minFilter=THREE.LinearFilter; t.magFilter=THREE.LinearFilter; return t;
     }
     const flameTex = makeRadialTexture('rgba(120,230,255,1)','rgba(0,170,255,0)');
     const smokeTex = makeRadialTexture('rgba(160,210,255,0.55)','rgba(90,140,200,0)');
 
-    /* Scene */
+    /* ---------- Scene ---------- */
     const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('scene'), antialias:true});
     renderer.setPixelRatio(Math.min(2, devicePixelRatio||1)); renderer.setSize(innerWidth, innerHeight);
     const scene = new THREE.Scene(); scene.background = new THREE.Color(0x05060a);
@@ -258,7 +233,7 @@
     scene.add(new THREE.HemisphereLight(0x89b4ff, 0x05060a, .55));
     const sun = new THREE.DirectionalLight(0xffffff,.85); sun.position.set(160,220,120); scene.add(sun);
 
-    /* Stars & extras (kısaltılmış) */
+    /* ---------- Stars ---------- */
     (function(){
       const g=new THREE.BufferGeometry(), N=2500, pos=new Float32Array(N*3);
       for(let i=0;i<N;i++){const R=900+Math.random()*1400, th=Math.random()*Math.PI*2, u=Math.random()*2-1, s=Math.sqrt(1-u*u);
@@ -267,34 +242,30 @@
       scene.add(new THREE.Points(g,new THREE.PointsMaterial({size:1.6,color:0xbfd9ff,sizeAttenuation:true})));
     })();
 
-    /* planet textures (kısaltılmış) */
+    /* ---------- Planet helpers (özet) ---------- */
     function seededRand(seed){ let t = seed >>> 0; return ()=>((t = (1664525*t + 1013904223)>>>0)/0xffffffff); }
-    function makeMoonTextures(seed){ const rnd=seededRand(seed), size=1024, c=document.createElement('canvas'); c.width=c.height=size; const ctx=c.getContext('2d');
-      ctx.fillStyle='#6f7178'; ctx.fillRect(0,0,size,size);
-      for(let i=0;i<220;i++){ const x=rnd()*size,y=rnd()*size,r=8+rnd()*42; const g=ctx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'#54565b'); g.addColorStop(.6,'#686a70'); g.addColorStop(1,'rgba(110,110,115,.35)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); }
+    const sphereGeo=new THREE.SphereGeometry(1,96,72);
+    function makeMoonTextures(seed){ const rnd=seededRand(seed), s=1024, c=document.createElement('canvas'); c.width=c.height=s; const ctx=c.getContext('2d');
+      ctx.fillStyle='#6f7178'; ctx.fillRect(0,0,s,s);
+      for(let i=0;i<220;i++){ const x=rnd()*s,y=rnd()*s,r=8+rnd()*42; const g=ctx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'#54565b'); g.addColorStop(.6,'#686a70'); g.addColorStop(1,'rgba(110,110,115,.35)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); }
       const tex=new THREE.CanvasTexture(c);
-      const ch=document.createElement('canvas'); ch.width=ch.height=size; const hx=ch.getContext('2d');
-      hx.fillStyle='#000'; hx.fillRect(0,0,size,size);
-      for(let i=0;i<220;i++){ const x=rnd()*size,y=rnd()*size,r=8+rnd()*42; const g=hx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'#fff'); g.addColorStop(.6,'#aaa'); g.addColorStop(1,'rgba(0,0,0,0)'); hx.fillStyle=g; hx.beginPath(); hx.arc(x,y,r,0,Math.PI*2); hx.fill(); }
+      const ch=document.createElement('canvas'); ch.width=ch.height=s; const hx=ch.getContext('2d');
+      hx.fillStyle='#000'; hx.fillRect(0,0,s,s);
+      for(let i=0;i<220;i++){ const x=rnd()*s,y=rnd()*s,r=8+rnd()*42; const g=hx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'#fff'); g.addColorStop(.6,'#aaa'); g.addColorStop(1,'rgba(0,0,0,0)'); hx.fillStyle=g; hx.beginPath(); hx.arc(x,y,r,0,Math.PI*2); hx.fill(); }
       const disp=new THREE.CanvasTexture(ch); return {map:tex, disp}; }
-    function makeRockyTextures(seed){ const rnd=seededRand(seed), size=1024, c=document.createElement('canvas'); c.width=c.height=size; const ctx=c.getContext('2d');
-      ctx.fillStyle='#8b5a2b'; ctx.fillRect(0,0,size,size);
-      for(let i=0;i<160;i++){ const x=rnd()*size,y=rnd()*size,r=10+rnd()*36; const g=ctx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'#a66a36'); g.addColorStop(1,'rgba(139,69,19,0.35)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); }
+    function makeRockyTextures(seed){ const rnd=seededRand(seed), s=1024, c=document.createElement('canvas'); c.width=c.height=s; const ctx=c.getContext('2d');
+      ctx.fillStyle='#8b5a2b'; ctx.fillRect(0,0,s,s);
+      for(let i=0;i<160;i++){ const x=rnd()*s,y=rnd()*s,r=10+rnd()*36; const g=ctx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'#a66a36'); g.addColorStop(1,'rgba(139,69,19,0.35)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); }
       const tex=new THREE.CanvasTexture(c);
-      const ch=document.createElement('canvas'); ch.width=ch.height=size; const hx=ch.getContext('2d');
-      hx.fillStyle='#000'; hx.fillRect(0,0,size,size);
-      for(let i=0;i<150;i++){ const x=rnd()*size,y=rnd()*size,r=10+rnd()*32; const g=hx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'#fff'); g.addColorStop(1,'rgba(0,0,0,0)'); hx.fillStyle=g; hx.beginPath(); hx.arc(x,y,r,0,Math.PI*2); hx.fill(); }
+      const ch=document.createElement('canvas'); ch.width=ch.height=s; const hx=ch.getContext('2d');
+      hx.fillStyle='#000'; hx.fillRect(0,0,s,s);
+      for(let i=0;i<150;i++){ const x=rnd()*s,y=rnd()*s,r=10+rnd()*32; const g=hx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'#fff'); g.addColorStop(1,'rgba(0,0,0,0)'); hx.fillStyle=g; hx.beginPath(); hx.arc(x,y,r,0,Math.PI*2); hx.fill(); }
       const disp=new THREE.CanvasTexture(ch); return {map:tex, disp}; }
-    function makeGasTextures(seed){ const rnd=seededRand(seed), size=1024, c=document.createElement('canvas'); c.width=c.height=size; const ctx=c.getContext('2d');
-      for(let y=0;y<size;y++){ const t=y/size;
-        const r=60+80*Math.sin(6*t + seed*0.13), g=120+120*Math.sin(8*t + seed*0.21), b=160+80*Math.sin(5*t + seed*0.31);
-        ctx.fillStyle=`rgb(${r|0},${g|0},${b|0})`; ctx.fillRect(0,y,size,1); }
-      for(let i=0;i<50;i++){ const x=rnd()*size,y=rnd()*size,rx=40+rnd()*90,ry=20+rnd()*60;
-        ctx.fillStyle='rgba(255,255,255,0.12)'; ctx.beginPath(); ctx.ellipse(x,y,rx,ry, rnd()*Math.PI, 0, Math.PI*2); ctx.fill(); }
+    function makeGasTextures(seed){ const rnd=seededRand(seed), s=1024, c=document.createElement('canvas'); c.width=c.height=s; const ctx=c.getContext('2d');
+      for(let y=0;y<s;y++){ const t=y/s; const r=60+80*Math.sin(6*t + seed*0.13), g=120+120*Math.sin(8*t + seed*0.21), b=160+80*Math.sin(5*t + seed*0.31); ctx.fillStyle=`rgb(${r|0},${g|0},${b|0})`; ctx.fillRect(0,y,s,1); }
+      for(let i=0;i<50;i++){ const x=rnd()*s,y=rnd()*s,rx=40+rnd()*90,ry=20+rnd()*60; ctx.fillStyle='rgba(255,255,255,0.12)'; ctx.beginPath(); ctx.ellipse(x,y,rx,ry, rnd()*Math.PI, 0, Math.PI*2); ctx.fill(); }
       const tex=new THREE.CanvasTexture(c);
-      const ch=document.createElement('canvas'); ch.width=ch.height=size; const hx=ch.getContext('2d');
-      const grad=hx.createLinearGradient(0,0,0,size); grad.addColorStop(0,'#777'); grad.addColorStop(.5,'#bbb'); grad.addColorStop(1,'#777');
-      hx.fillStyle=grad; hx.fillRect(0,0,size,size);
+      const ch=document.createElement('canvas'); ch.width=ch.height=s; const hx=ch.getContext('2d'); const grad=hx.createLinearGradient(0,0,0,s); grad.addColorStop(0,'#777'); grad.addColorStop(.5,'#bbb'); grad.addColorStop(1,'#777'); hx.fillStyle=grad; hx.fillRect(0,0,s,s);
       const disp=new THREE.CanvasTexture(ch); return {map:tex, disp}; }
     function appearanceForType(type){
       if(type==='moon')  return {h:0.0,s:0.10,l:0.42,metal:0.2,rough:0.85,ring:false,emiss:0.10};
@@ -302,12 +273,6 @@
       if(type==='gas')   return {h:0.58,s:0.60,l:0.50,metal:0.1,rough:0.95,ring:Math.random()<0.40,emiss:0.25};
       return {h:0.66,s:0.40,l:0.58,metal:0.22,rough:0.55,ring:Math.random()<0.5,emiss:0.18};
     }
-
-    /* ---------- Ortak yardımcılar ---------- */
-    const overlay=document.getElementById('overlay');
-    const planets=[], cardsRef=[], tmpV=new THREE.Vector3();
-    const sphereGeo=new THREE.SphereGeometry(1,96,72);
-
     function makePlanet(r, type, seed){
       let tex; if(type==='moon') tex=makeMoonTextures(seed); else if(type==='rocky') tex=makeRockyTextures(seed); else tex=makeGasTextures(seed);
       const app = appearanceForType(type);
@@ -330,7 +295,9 @@
       return m;
     }
 
-    function makeSprite(mat){const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s;}
+    /* ---------- Overlay kartları ---------- */
+    const overlay=document.getElementById('overlay');
+    const planets=[], cardsRef=[], tmpV=new THREE.Vector3();
 
     /* ---------- Player ship + particles ---------- */
     const ship=new THREE.Group(); scene.add(ship);
@@ -341,23 +308,27 @@
     const loader = new GLTFLoader();
     let exhaustLocal=new THREE.Vector3(-2,0,0);
     let sharedAIModel = null;
+    let aiSpawned = false;
 
     loader.load('media/spaceship.glb',
       (gltf)=>{
         const model = gltf.scene || gltf.scenes?.[0]; if(!model) return;
         ship.clear();
+        // Oyuncu gemisini normalize et
         const box0 = new THREE.Box3().setFromObject(model);
         const size0 = new THREE.Vector3(); box0.getSize(size0);
         const s = 6 / Math.max(size0.x,size0.y,size0.z || 1);
         model.scale.setScalar(s);
         model.rotation.set(0, Math.PI/2, 0);
+        // merkeze al
         const b1 = new THREE.Box3().setFromObject(model);
         const c1 = new THREE.Vector3(); b1.getCenter(c1); model.position.sub(c1);
+        // egzoz offsetini bul
         const b2 = new THREE.Box3().setFromObject(model);
         exhaustLocal = new THREE.Vector3(b2.min.x - 0.6, 0, 0);
         ship.add(model);
 
-        // AI için tonlanmış klon
+        // AI için: materyal tonlamalı klon (tek seferlik şablon)
         sharedAIModel = model.clone(true);
         sharedAIModel.traverse(o=>{
           if(o.isMesh){
@@ -367,13 +338,10 @@
             o.material.emissiveIntensity = 0.35;
           }
         });
+        // Oyuncu modelini 6 birime sığdırdık; AI'lar biraz daha küçük dursun
         sharedAIModel.scale.multiplyScalar(3.2/6);
 
-// Model yüklendiğinde AI gemilerini bir kez spawn et
-if (!aiSpawned) {
-  spawnAIShips();
-  aiSpawned = true;
-}
+        if (!aiSpawned) { spawnAIShips(); aiSpawned = true; }
       },
       undefined,
       (err)=>{ console.error('GLB load error (player/AI):', err); }
@@ -381,16 +349,10 @@ if (!aiSpawned) {
 
     function worldFromExhaust_player(out){return out.copy(exhaustLocal).applyQuaternion(ship.quaternion).add(ship.position);}
 
-    
-
-    /* (re-bind real textures created earlier) */
-    (function(){
-      // no-op; textures set above
-    })();
-
-    /* particle materials */
-    const flameMat=new THREE.SpriteMaterial({map:makeRadialTexture('rgba(120,230,255,1)','rgba(0,170,255,0)'),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.95});
-    const smokeMat=new THREE.SpriteMaterial({map:makeRadialTexture('rgba(160,210,255,0.55)','rgba(90,140,200,0)'),transparent:true,depthWrite:false,opacity:.0});
+    /* ---------- Particle materials + pools ---------- */
+    const flameMat=new THREE.SpriteMaterial({map:flameTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.95});
+    const smokeMat=new THREE.SpriteMaterial({map:smokeTex,transparent:true,depthWrite:false,opacity:.0});
+    function makeSprite(mat){const s=new THREE.Sprite(mat.clone()); s.visible=false; scene.add(s); return s;}
 
     const flamePool=[...Array(140)].map(()=>makeSprite(flameMat)), smokePool=[...Array(100)].map(()=>makeSprite(smokeMat));
     const flameData=flamePool.map(()=>({life:0,max:0,vel:new THREE.Vector3()})), smokeData=smokePool.map(()=>({life:0,max:0,vel:new THREE.Vector3()}));
@@ -430,7 +392,7 @@ if (!aiSpawned) {
       }
     }
 
-    /* ---------- Camera ---------- */
+    /* ---------- Kamera ---------- */
     const camOff=new THREE.Vector3(-20,8.8,0), lookAhead=new THREE.Vector3(8,2,0), camPos=new THREE.Vector3(), lookAt=new THREE.Vector3();
     function updateCamera(dt){
       const off=camOff.clone().applyQuaternion(ship.quaternion);
@@ -532,7 +494,7 @@ if (!aiSpawned) {
       updateParticles_player(dt);
     }
 
-    /* ---------- Overlay & quick view + Full viewer ---------- */
+    /* ---------- Overlay & Quickview ---------- */
     const qv=document.getElementById('quickview'), qvTitle=document.getElementById('qvTitle'),
           qvTag=document.getElementById('qvTag'), qvMedia=document.getElementById('qvMedia'),
           qvOpen=document.getElementById('qvOpen');
@@ -551,7 +513,6 @@ if (!aiSpawned) {
           const dist=camera.position.distanceTo(obj.position); const a=THREE.MathUtils.clamp(1-(dist-60)/220,0,1);
           el.style.opacity=a; el.style.transform=`translate(-50%,-100%) scale(${0.92+a*0.1})`;
         } else { el.style.opacity=0; }
-        // pill'i her turda default gizle + animasyonu kapat
         if(pill){ pill.style.opacity=0; pill.classList.remove('show'); }
         const d=ship.position.distanceTo(obj.position); if(d<dmin){dmin=d; best=obj;}
       }
@@ -559,8 +520,8 @@ if (!aiSpawned) {
       if(nearest && controlsEnabled && !qv.classList.contains('show')){
         const ref=cardsRef.find(c=>c.obj===nearest);
         if(ref && ref.pill){
-          ref.pill.style.opacity = 0.98;   // yüksek görünürlük
-          ref.pill.classList.add('show');  // nabız animasyonu
+          ref.pill.style.opacity = 0.98;
+          ref.pill.classList.add('show');
         }
       }
     }
@@ -576,7 +537,7 @@ if (!aiSpawned) {
 
     function openViewer(p){
       qvCloseFn();
-      vwTitle.textContent=p.title; vwTag.textContent=p.tag||''; vwDesc.textContent=p.description||'Placeholder project description…';
+      vwTitle.textContent=p.title; vwTag.textContent=p.tag||''; vwDesc.textContent=p.description||'';
       vwVideo.innerHTML=''; vwGifs.innerHTML=''; vwImages.innerHTML='';
       if(p.video){
         if(/\.(mp4|webm)$/i.test(p.video)){
@@ -604,10 +565,10 @@ if (!aiSpawned) {
       }
     });
 
-    /* ---------- AI ships + emitters (kısaltılmış) ---------- */
+    /* ---------- AI ships + emitters (GLB model klonu) ---------- */
     function makeEmitter(){
-      const flames=[...Array(32)].map(()=>makeSprite(new THREE.SpriteMaterial({map:makeRadialTexture('rgba(120,230,255,1)','rgba(0,170,255,0)'),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.9})));
-      const smokes=[...Array(20)].map(()=>makeSprite(new THREE.SpriteMaterial({map:makeRadialTexture('rgba(160,210,255,0.55)','rgba(90,140,200,0)'),transparent:true,depthWrite:false,opacity:.3})));
+      const flames=[...Array(32)].map(()=>makeSprite(flameMat));
+      const smokes=[...Array(20)].map(()=>makeSprite(smokeMat));
       const fd=flames.map(()=>({life:0,max:0,vel:new THREE.Vector3()}));
       const sd=smokes.map(()=>({life:0,max:0,vel:new THREE.Vector3()}));
       function spawnFlameAt(pos,quat,intensity=1){
@@ -652,7 +613,7 @@ if (!aiSpawned) {
       }
       return {spawnFlameAt, spawnSmokeAt, update};
     }
-    let aiSpawned = false; // AI spawn bayrağı
+
     const AI_COUNT = 12;
     const aiShips = [];
     const center = new THREE.Vector3(0,0,0);
@@ -661,82 +622,100 @@ if (!aiSpawned) {
       const r = Math.random()*150+20; const th=Math.random()*Math.PI*2; const u=Math.random()*2-1; const s=Math.sqrt(1-u*u);
       return new THREE.Vector3(s*Math.cos(th)*r, u*20, s*Math.sin(th)*r);
     }
-function spawnAIShips(){
-  for(let i=0;i<AI_COUNT;i++){
-    const grp = new THREE.Group();
-    let body;
 
-    if (sharedAIModel) {
-      // GLB yüklendiyse: derin klonla ve küçük oranda ölçekle/pozla
-      body = sharedAIModel.clone(true);
-      body.rotation.set(0, Math.PI/2, 0); // oyuncu gemisiyle aynı yön
-    } else {
-      // Fallback: kapsül gövde
-      const g = new THREE.CapsuleGeometry(.6, 2.2, 6, 12);
-      const m = new THREE.MeshStandardMaterial({
-        color: 0xffffff, metalness:.25, roughness:.5,
-        emissive:0x111133, emissiveIntensity:.35
-      });
-      body = new THREE.Mesh(g, m);
-      body.rotation.z = Math.PI/2;
+    function spawnAIShips(){
+      for(let i=0;i<AI_COUNT;i++){
+        const grp=new THREE.Group();
+        let body;
+
+        if (sharedAIModel) {
+          body = sharedAIModel.clone(true);
+          // GLB klonu merkezlenmiş ve ölçeklenmiş durumda
+          body.rotation.set(0, Math.PI/2, 0);
+        } else {
+          // GLB yüklenemezse son çare: kapsül (ama normalde GLB kullanılacak)
+          const g=new THREE.CapsuleGeometry(.6,2.2,6,12);
+          const m=new THREE.MeshStandardMaterial({color:0xffffff,metalness:.25,roughness:.5,emissive:0x111133,emissiveIntensity:.35});
+          body=new THREE.Mesh(g,m); body.rotation.z=Math.PI/2;
+        }
+
+        // AI egzoz offsetini kutudan hesapla (glb’de doğru noktadan partikül çıksın)
+        const tmp = new THREE.Box3().setFromObject(body);
+        const aiExhaustLocal = new THREE.Vector3(tmp.min.x - 0.5, 0, 0);
+
+        grp.add(body);
+        grp.position.set(THREE.MathUtils.randFloatSpread(80),THREE.MathUtils.randFloatSpread(20),THREE.MathUtils.randFloatSpread(80));
+        scene.add(grp);
+        aiShips.push({
+          g: grp,
+          exhaustLocal: aiExhaustLocal,
+          vel: THREE.MathUtils.randFloat(6,10),
+          throttle: 0.4, prevThrottle: 0.4,
+          target: randomAITarget(),
+          cooldown: THREE.MathUtils.randFloat(2,5),
+          emitter: makeEmitter()
+        });
+      }
     }
 
-    grp.add(body);
-    grp.position.set(
-      THREE.MathUtils.randFloatSpread(80),
-      THREE.MathUtils.randFloatSpread(20),
-      THREE.MathUtils.randFloatSpread(80)
-    );
-    scene.add(grp);
+    function worldFromExhaust_ai(ai, out){
+      return out.copy(ai.exhaustLocal).applyQuaternion(ai.g.quaternion).add(ai.g.position);
+    }
 
-    aiShips.push({
-      g: grp,
-      vel: THREE.MathUtils.randFloat(6,10),
-      throttle: 0.4, prevThrottle: 0.4,
-      target: randomAITarget(),
-      cooldown: THREE.MathUtils.randFloat(2,5),
-      emitter: makeEmitter()
-    });
-  }
-}
     function updateAI(dt){
-      const BOUNDS_SOFT = 200, BOUNDS_R=230;
-      const center = new THREE.Vector3(0,0,0);
+      const SOFT = 200, HARD=230;
       for(const ai of aiShips){
         ai.cooldown -= dt;
         if(ai.g.position.distanceTo(ai.target) < 10 || ai.cooldown<=0){
           ai.cooldown = THREE.MathUtils.randFloat(2,6);
-          ai.target = randomAITarget();
+          // %60 rastgele, %40 merkez yakınlarına hedef (leash)
+          ai.target = (Math.random()<0.6) ? randomAITarget()
+                                          : center.clone().add(new THREE.Vector3().randomDirection().multiplyScalar(THREE.MathUtils.randFloat(40,110)));
         }
+
+        // yönel
         const dir = ai.target.clone().sub(ai.g.position); const dist = dir.length(); if(dist>0.0001) dir.normalize();
         const forward = new THREE.Vector3(1,0,0).applyQuaternion(ai.g.quaternion);
         const axis = forward.clone().cross(dir).normalize(); const ang = Math.min(1.0*dt, forward.angleTo(dir));
         if(isFinite(ang) && axis.lengthSq()>1e-6){ ai.g.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(axis, ang)); }
-        const distC = ai.g.position.length();
-        if(distC > BOUNDS_SOFT){
-          const toC = center.clone().sub(ai.g.position).normalize();
-          const ax = forward.clone().cross(toC).normalize(); const an = Math.min(1.2*dt, forward.angleTo(toC));
-          if(isFinite(an) && ax.lengthSq()>1e-6){ ai.g.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(ax, an)); }
-          ai.throttle = Math.max(0.2, ai.throttle - 0.4*dt);
+
+        // yumuşak merkez yayı (drift’i engeller)
+        const kSpring = 0.06; // yay katsayısı
+        const toCenter = center.clone().sub(ai.g.position);
+        ai.g.position.addScaledVector(toCenter, kSpring*dt);
+
+        // throttle yönetimi + hız
+        const dCenter = ai.g.position.length();
+        if(dCenter > SOFT){
+          ai.throttle = Math.max(0.15, ai.throttle - 0.5*dt);
+          // hedefi merkeze kır
+          ai.target = center.clone().add(new THREE.Vector3().randomDirection().multiplyScalar(THREE.MathUtils.randFloat(40,100)));
         } else {
           if(dist>40) ai.throttle = Math.min(1.0, ai.throttle + 0.5*dt);
           else if(dist<18) ai.throttle = Math.max(0.1, ai.throttle - 0.8*dt);
         }
+
         ai.g.position.addScaledVector(forward, ai.vel * ai.throttle * dt);
-        if(ai.g.position.length() > BOUNDS_R){
-          const toCenter = center.clone().sub(ai.g.position).normalize();
-          ai.g.position.addScaledVector(toCenter, 20*dt);
+
+        // sert sınır
+        const dLen = ai.g.position.length();
+        if(dLen > HARD){
+          const pull = center.clone().sub(ai.g.position).normalize();
+          ai.g.position.addScaledVector(pull, (dLen-HARD)*0.8*dt);
           ai.throttle = Math.max(0.2, ai.throttle - 0.6*dt);
         }
         ai.g.position.y = clamp(ai.g.position.y, -70, 70);
 
-        const exhaustPos = ai.g.position.clone().addScaledVector(forward, -1.6);
+        // partiküller (ileri mavi alev, yavaşlayınca duman)
+        const exhaustPos = worldFromExhaust_ai(ai, new THREE.Vector3());
         if(ai.throttle>0.22){ if(Math.random()<0.8) ai.emitter.spawnFlameAt(exhaustPos, ai.g.quaternion, 0.6+ai.throttle*0.6); }
         if(ai.prevThrottle>0.25 && ai.throttle<=0.12){ ai.emitter.spawnSmokeAt(exhaustPos, ai.g.quaternion, 1.2); }
         ai.prevThrottle = ai.throttle;
 
         ai.emitter.update(dt);
       }
+
+      // AI ↔ oyuncu çarpışma yumuşatma
       for(const ai of aiShips){
         const d = ship.position.distanceTo(ai.g.position);
         if(d < 2.6){
@@ -749,7 +728,7 @@ function spawnAIShips(){
       }
     }
 
-    /* ---------- Start sadece ilk girişte ---------- */
+    /* ---------- Start ---------- */
     const startEl=document.getElementById('start');
     const START_KEY = 'spaceTourSeen';
     function maybeAutoStart(){
@@ -808,11 +787,9 @@ function spawnAIShips(){
       PROJECTS = arr;
       buildPlanetsFromProjects(PROJECTS);
       maybeAutoStart();
-     
       loop();
     })();
 
-    /* ---------- Quickview klavye ---------- */
     document.getElementById('qvExit').addEventListener('click',()=>qvCloseFn());
   </script>
 </body>

@@ -85,6 +85,25 @@
     body.cursor-pointer .cursor-dot{width:26px;height:26px;background:rgba(255,255,255,0.12);box-shadow:0 0 24px rgba(255,255,255,0.9),0 0 60px rgba(255,255,255,0.45);outline:2px solid rgba(255,255,255,0.6);outline-offset:2px}
     @media(hover:none){body.custom-cursor{cursor:auto}.cursor-dot{display:none!important}}
     @media(prefers-reduced-motion:reduce){body.custom-cursor{cursor:auto}.cursor-dot,.cursor-trail{display:none!important}}
+    /* --- Gallery aspect helpers --- */
+.viewer-gifs img,
+.viewer-gallery img{
+  aspect-ratio: 4 / 3;   /* varsayılan kutu oranı */
+  object-fit: cover;      /* kırp, taşırma yok */
+}
+
+.viewer-gifs img.portrait,
+.viewer-gallery img.portrait{
+  aspect-ratio: 3 / 4;    /* dikeyler */
+}
+
+.viewer-gifs img.landscape,
+.viewer-gallery img.landscape{
+  aspect-ratio: 16 / 9;   /* yataylar */
+}
+
+/* Video tıklanmasın */
+.viewer-media video{ pointer-events: none; }
   </style>
 </head>
 <body>

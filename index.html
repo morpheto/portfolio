@@ -17,24 +17,13 @@
   .nav{display:flex;gap:16px;align-items:center}
   .nav a{color:var(--text);text-decoration:none;opacity:.9;font-size:14px}
 
-  /* *** EKLENDİ *** — Ses UI */
-  .audio-ui{display:flex;align-items:center;gap:10px; margin-left:16px;}
-  .audio-btn{
-    display:inline-flex;align-items:center;justify-content:center;gap:8px;
-    padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.15);
-    background:rgba(255,255,255,.06);color:#fff;font-size:13px;cursor:pointer
-  }
-  .audio-btn[aria-pressed="false"]{opacity:.75}
-  .audio-range{
-    width:120px;height:6px;border-radius:999px;appearance:none;background:rgba(255,255,255,.15);outline:none
-  }
-  .audio-range::-webkit-slider-thumb{
-    -webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;
-    background:#fff;border:2px solid #2b66ff;cursor:pointer
-  }
-  .audio-range::-moz-range-thumb{
-    width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid #2b66ff;cursor:pointer
-  }
+  /* --- Ses kontrolü (sağ üst) --- */
+  .audio-ctl{display:flex;align-items:center;gap:8px;margin-left:8px;padding:6px 8px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(255,255,255,.06);backdrop-filter:blur(6px)}
+  .audio-btn{appearance:none;border:0;background:transparent;color:#fff;font-weight:800;cursor:pointer;font-size:14px;line-height:1;padding:4px 6px;border-radius:8px}
+  .audio-btn:hover{background:rgba(255,255,255,.08)}
+  .vol{appearance:none;width:110px;height:6px;border-radius:999px;background:rgba(255,255,255,.15);cursor:pointer}
+  .vol::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 0 10px rgba(255,255,255,.6)}
+  .vol::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:0;box-shadow:0 0 10px rgba(255,255,255,.6)}
 
   .help{position:fixed;right:12px;bottom:12px;z-index:20;color:var(--muted);font-size:12px;padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.06);backdrop-filter:blur(6px)}
 
@@ -107,16 +96,11 @@
       <a href="projects.html">PROJECTS</a>
       <a href="about.html">ABOUT</a>
       <a href="contact.html">CONTACT</a>
-
-      <!-- *** EKLENDİ *** Ses UI -->
-      <div class="audio-ui" id="audioUI" aria-label="Audio controls">
-        <button class="audio-btn" id="audioToggle" aria-pressed="true" type="button" title="Ses açık/kapat">
-          <span id="audioIcon" aria-hidden="true">🔊</span>
-          <span id="audioLabel">On</span>
-        </button>
-        <input id="audioVolume" class="audio-range" type="range" min="0" max="1" step="0.01" value="0.35" aria-label="Ses seviyesi" />
+      <!-- Ses kontrolü -->
+      <div class="audio-ctl" id="audioCtl">
+        <button class="audio-btn" id="audioToggle" type="button" aria-pressed="false" title="Ses Aç/Kapat">🔊</button>
+        <input class="vol" id="audioVol" type="range" min="0" max="100" step="1" value="70" aria-label="Ses düzeyi">
       </div>
-      <!-- *** EKLENDİ BİTİŞ *** -->
     </div>
   </div>
 
@@ -184,11 +168,6 @@
   </div>
 
   <canvas id="scene"></canvas>
-
-  <!-- *** EKLENDİ *** Ses dosyaları -->
-  <audio id="sfxHum" src="media/audio/space_hum.mp3" preload="auto" loop></audio>
-  <audio id="sfxPopup" src="media/audio/popup_open.wav" preload="auto"></audio>
-  <!-- *** EKLENDİ BİTİŞ *** -->
 
   <script type="importmap">
   {
@@ -354,17 +333,21 @@
       (gltf)=>{
         const model = gltf.scene || gltf.scenes?.[0]; if(!model) return;
         ship.clear();
+        // Oyuncu gemisini normalize et
         const box0 = new THREE.Box3().setFromObject(model);
         const size0 = new THREE.Vector3(); box0.getSize(size0);
         const s = 6 / Math.max(size0.x,size0.y,size0.z || 1);
         model.scale.setScalar(s);
         model.rotation.set(0, Math.PI/2, 0);
+        // merkeze al
         const b1 = new THREE.Box3().setFromObject(model);
         const c1 = new THREE.Vector3(); b1.getCenter(c1); model.position.sub(c1);
+        // egzoz offsetini bul
         const b2 = new THREE.Box3().setFromObject(model);
         exhaustLocal = new THREE.Vector3(b2.min.x - 0.6, 0, 0);
         ship.add(model);
 
+        // AI için: materyal tonlamalı klon (tek seferlik şablon)
         sharedAIModel = model.clone(true);
         sharedAIModel.traverse(o=>{
           if(o.isMesh){
@@ -374,6 +357,7 @@
             o.material.emissiveIntensity = 0.35;
           }
         });
+        // Oyuncu modelini 6 birime sığdırdık; AI'lar biraz daha küçük dursun
         sharedAIModel.scale.multiplyScalar(3.2/6);
 
         if (!aiSpawned) { spawnAIShips(); aiSpawned = true; }
@@ -527,6 +511,9 @@
 
       handleCollisions();
       updateParticles_player(dt);
+
+      // ---- Ses: itiş/geri ----
+      audioUpdateMovement(keys, velF, throttle);
     }
 
     /* ---------- Overlay & Quickview ---------- */
@@ -539,13 +526,18 @@
           vwDesc=document.getElementById('vwDesc');
 
     let nearest=null, PROJECTS=[];
+    const pillShownFor = new WeakSet(); // yaklaşma sesi için
+
     function updateCardsAndHint(){
       const W=innerWidth,H=innerHeight; let best=null,dmin=Infinity;
       for(const {el,obj,pill} of cardsRef){
         tmpV.copy(obj.position); tmpV.y+=10; tmpV.project(camera);
         const on=tmpV.z<1&&tmpV.z>-1; let x=(tmpV.x*.5+.5)*W,y=(-tmpV.y*.5+.5)*H;
-        if(on){ x=clamp(x,18,W-18); y=clamp(y,80,H-96); el.style.left=x+'px'; el.style.top=y+'px';
-          const dist=camera.position.distanceTo(obj.position); const a=THREE.MathUtils.clamp(1-(dist-60)/220,0,1);
+        if(on){
+          x=clamp(x,18,W-18); y=clamp(y,80,H-96);
+          el.style.left=x+'px'; el.style.top=y+'px';
+          const dist=camera.position.distanceTo(obj.position);
+          const a=THREE.MathUtils.clamp(1-(dist-60)/220,0,1);
           el.style.opacity=a; el.style.transform=`translate(-50%,-100%) scale(${0.92+a*0.1})`;
         } else { el.style.opacity=0; }
         if(pill){ pill.style.opacity=0; pill.classList.remove('show'); }
@@ -555,32 +547,37 @@
       if(nearest && controlsEnabled && !qv.classList.contains('show')){
         const ref=cardsRef.find(c=>c.obj===nearest);
         if(ref && ref.pill){
+          const firstShow = !pillShownFor.has(ref.pill);
           ref.pill.style.opacity = 0.98;
           ref.pill.classList.add('show');
+          if (firstShow) {
+            pillShownFor.add(ref.pill);
+            playApproach(); // yaklaşma "Press E" sesi
+          }
         }
       }
     }
+
     function qvOpenFor(pl){
       controlsEnabled=false;
       const p=pl.userData.project;
-      qvTitle.textContent=p.title; qvTag.textContent=p.tag||''; qvMedia.style.backgroundImage=`url('${p.cover||''}')`;
+      qvTitle.textContent=p.title; qvTag.textContent=p.tag||'';
+      qvMedia.style.backgroundImage=`url('${p.cover||''}')`;
       qv.style.display='flex'; qv.classList.add('show'); qv.setAttribute('aria-hidden','false');
       qvOpen.onclick = ()=> openViewer(p);
-
-      // *** EKLENDİ *** Quick View açılma sesi
-      try { playPopupSfx(); } catch {}
+      // Ses: popup açılışı + arkaplanı kısmak
+      playPopupOpen();
+      duckBg(true);
     }
 
-    /* --- MEDYA DURDURMA HELPER'I --- */
+    /* --- MEDYA DURDURMA HELPER'I (Quick View/Viewer kapatırken) --- */
     function stopAllMedia(root=document){
-      root.querySelectorAll('video').forEach(v=>{
-        try { v.pause(); v.currentTime = 0; } catch {}
-      });
+      root.querySelectorAll('video').forEach(v=>{ try{ v.pause(); v.currentTime=0; }catch{} });
       root.querySelectorAll('iframe').forEach(f=>{
-        try {
+        try{
           f.contentWindow?.postMessage(JSON.stringify({event:'command', func:'stopVideo'}), '*'); // YouTube
           f.contentWindow?.postMessage('{"method":"pause"}', '*'); // Vimeo
-        } catch {}
+        }catch{}
       });
     }
 
@@ -590,6 +587,7 @@
       qv.style.display='none';
       qv.setAttribute('aria-hidden','true');
       controlsEnabled=true;
+      duckBg(false); // arkaplan sesini eski seviyeye getir
     }
     document.getElementById('qvExit').addEventListener('click',qvCloseFn);
 
@@ -597,6 +595,7 @@
       if(img.naturalHeight > img.naturalWidth){ img.classList.add('portrait'); }
     }
 
+    // Ses açık olacak projeler
     const SOUND_ON = new Set(['p3','p4','p6','p8','p9']);
 
     function openViewer(p){
@@ -604,6 +603,7 @@
       vwTitle.textContent=p.title; vwTag.textContent=p.tag||''; vwDesc.textContent=p.description||'';
       vwVideo.innerHTML=''; vwGifs.innerHTML=''; vwImages.innerHTML='';
 
+      // --- Video (autoplay+loop; tıklanamaz; ses p3,p4,p6,p8,p9'da açık) ---
       if (p.video && p.video.trim() !== '') {
         vwVideo.style.display = '';
         if (/\.(mp4|webm)$/i.test(p.video)) {
@@ -616,7 +616,6 @@
           vid.addEventListener('contextmenu', e=>e.preventDefault());
           vid.addEventListener('dragstart', e=>e.preventDefault());
           vid.addEventListener('pointerdown', e=>e.preventDefault());
-
           if (SOUND_ON.has(p.id)) {
             vid.muted = false; vid.volume = 1.0;
             const tryPlay = () => vid.play().catch(()=>{});
@@ -641,6 +640,7 @@
         vwVideo.style.display = 'none';
       }
 
+      // --- GIF’ler ---
       if(p.gifs && p.gifs.length){
         vwGifs.style.display='grid';
         p.gifs.slice(0,2).forEach(src=>{
@@ -656,6 +656,7 @@
         vwGifs.style.display='none';
       }
 
+      // --- Görseller ---
       if(p.images && p.images.length){
         vwImages.style.display='grid';
         p.images.slice(0,6).forEach(src=>{
@@ -673,6 +674,7 @@
 
       viewer.style.display='flex'; viewer.classList.add('show'); viewer.setAttribute('aria-hidden','false');
       controlsEnabled=false;
+      duckBg(true); // viewer açıkken de arkaplan hafif kısık kalsın
     }
 
     function closeViewer(){
@@ -681,6 +683,7 @@
       viewer.style.display='none';
       viewer.setAttribute('aria-hidden','true');
       controlsEnabled=true;
+      duckBg(false);
     }
     document.getElementById('vwClose').addEventListener('click',closeViewer);
 
@@ -705,7 +708,7 @@
       if (t && (t.tagName==='IMG' || t.tagName==='VIDEO')) e.preventDefault();
     });
 
-    /* ---------- AI ships + emitters ---------- */
+    /* ---------- AI ships + emitters (GLB model klonu) ---------- */
     function makeEmitter(){
       const flames=[...Array(32)].map(()=>makeSprite(flameMat));
       const smokes=[...Array(20)].map(()=>makeSprite(smokeMat));
@@ -864,14 +867,14 @@
       if(localStorage.getItem(START_KEY)==='1'){
         startEl.classList.add('hide');
         controlsEnabled = true;
-        // *** EKLENDİ *** — sessiz otomatik hum başlatma denemesi (tarayıcı izni varsa)
-        tryStartHum();
+        armAudioAutostart(); // refresh/geri dönüşte ses yine başlasın
       }
     }
     document.getElementById('btnStart').addEventListener('click',()=>{
       localStorage.setItem(START_KEY,'1');
       startEl.classList.add('hide');
-      setTimeout(()=>{ controlsEnabled=true; tryStartHum(true); },550);
+      setTimeout(()=>{ controlsEnabled=true; },550);
+      initAudio(); // ilk kez başlatma
     });
 
     /* ---------- Resize & loop ---------- */
@@ -923,81 +926,135 @@
 
     document.getElementById('qvExit').addEventListener('click',()=>qvCloseFn());
 
-    /* ===========================================================
-       *** EKLENDİ *** SES SİSTEMİ
-       - Uğultu (loop) ve popup sfx
-       - Sağ üstte mute + volume
-       - localStorage ile kalıcı
-       =========================================================== */
-    const hum = document.getElementById('sfxHum');
-    const sfxPopup = document.getElementById('sfxPopup');
-    const btnToggle = document.getElementById('audioToggle');
-    const rngVol = document.getElementById('audioVolume');
-    const icon = document.getElementById('audioIcon');
-    const label = document.getElementById('audioLabel');
+    /* =========================
+       ========== SES ==========
+       ========================= */
+    const toggleBtn = document.getElementById('audioToggle');
+    const volSlider = document.getElementById('audioVol');
+    let audioReady = false;
+    let audioEnabled = true;
+    let masterVol = 0.7; // slider başlangıcıyla aynı
 
-    const LS_MUTE = 'audioMuted';
-    const LS_VOL = 'audioVolume';
+    const bg = new Audio('media/audio/space_hum.mp3');       bg.loop = true;  bg.preload = 'auto';
+    const sPopup = new Audio('media/audio/popup_open.wav');   sPopup.preload = 'auto';
+    const sThrust = new Audio('media/audio/thrust.mp3');      sThrust.loop = true; sThrust.preload='auto';
+    const sReverse = new Audio('media/audio/reverse.mp3');    sReverse.loop = true; sReverse.preload='auto';
+    const sApproach = new Audio('media/audio/approach.mp3');  sApproach.preload='auto';
 
-    let audioMuted = (localStorage.getItem(LS_MUTE) ?? 'false') === 'true' ? true : false;
-    let audioVolume = parseFloat(localStorage.getItem(LS_VOL) ?? '0.35');
-    audioVolume = isFinite(audioVolume) ? clamp(audioVolume, 0, 1) : 0.35;
+    // Base seviyeler (master ile çarpılır)
+    const base = {
+      bg: 0.6,
+      popup: 0.9,
+      thrust: 0.55,
+      reverse: 0.55,
+      approach: 0.75
+    };
 
-    rngVol.value = String(audioVolume);
-    btnToggle.setAttribute('aria-pressed', String(!audioMuted));
-    updateAudioUI();
-
+    // Ducking
+    let ducking = false;
+    const DUCK_LEVEL = 0.35; // arkaplanı %35'e indir
     function applyVolumes(){
-      hum.volume = audioMuted ? 0 : audioVolume;
-      sfxPopup.volume = audioMuted ? 0 : Math.min(1, audioVolume * 0.9);
+      if(!audioEnabled){ [bg,sPopup,sThrust,sReverse,sApproach].forEach(a=>a.volume=0); return; }
+      const duck = ducking ? DUCK_LEVEL : 1.0;
+      bg.volume = clamp(masterVol * base.bg * duck, 0, 1);
+      sPopup.volume = clamp(masterVol * base.popup, 0, 1);
+      sThrust.volume = clamp(masterVol * base.thrust, 0, 1);
+      sReverse.volume = clamp(masterVol * base.reverse, 0, 1);
+      sApproach.volume = clamp(masterVol * base.approach, 0, 1);
     }
-    function updateAudioUI(){
-      icon.textContent = audioMuted || audioVolume <= 0.001 ? '🔇' : (audioVolume < 0.5 ? '🔉' : '🔊');
-      label.textContent = (audioMuted || audioVolume <= 0.001) ? 'Off' : 'On';
-      btnToggle.setAttribute('aria-pressed', String(!(audioMuted || audioVolume <= 0.001)));
+    function duckBg(on){
+      ducking = !!on;
       applyVolumes();
     }
 
-    btnToggle.addEventListener('click', ()=>{
-      audioMuted = !audioMuted;
-      localStorage.setItem(LS_MUTE, String(audioMuted));
-      updateAudioUI();
-      if(!audioMuted){ tryStartHum(); } else { hum.pause(); }
-    });
-
-    rngVol.addEventListener('input', ()=>{
-      audioVolume = parseFloat(rngVol.value) || 0;
-      localStorage.setItem(LS_VOL, String(audioVolume));
-      if(audioVolume <= 0.001){ audioMuted = true; localStorage.setItem(LS_MUTE,'true'); }
-      else if(audioMuted){ audioMuted = false; localStorage.setItem(LS_MUTE,'false'); }
-      updateAudioUI();
-      if(!audioMuted){ tryStartHum(); }
-    });
-
-    function tryStartHum(force=false){
-      if(audioMuted) return;
-      try{
-        // Autoplay politikası: kullanıcı etkileşimi yoksa play() reddedilebilir
-        if(force){
-          hum.play().catch(()=>{ /* kullanıcı tıklayana kadar bekler */ });
-        }else{
-          if(hum.paused) hum.play().catch(()=>{});
-        }
-      }catch{}
+    function initAudio(){
+      if(audioReady) return;
+      audioReady = true;
+      audioEnabled = true;
+      applyVolumes();
+      bg.play().catch(()=>{/* gesture bekleyebilir */});
     }
 
-    // İlk kullanıcı etkileşiminde hum’u başlat (ek güvenlik)
-    const _onceKick = ()=>{ tryStartHum(true); window.removeEventListener('pointerdown', _onceKick); };
-    window.addEventListener('pointerdown', _onceKick, { once: true });
-
-    function playPopupSfx(){
-      if(audioMuted) return;
-      try{
-        sfxPopup.currentTime = 0;
-        sfxPopup.play().catch(()=>{});
-      }catch{}
+    // Sayfa yenilense bile ilk etkileşimde sesi başlat
+    function armAudioAutostart(){
+      const once = ()=>{ initAudio(); window.removeEventListener('pointerdown',once); window.removeEventListener('keydown',once); };
+      window.addEventListener('pointerdown', once, {once:true, passive:true});
+      window.addEventListener('keydown', once, {once:true});
     }
-    /* ===================== SES BİTİŞ ===================== */
+    // İlk girişte de kolaçan et
+    armAudioAutostart();
+
+    // UI: toggle + volume
+    toggleBtn.addEventListener('click', ()=>{
+      audioEnabled = !audioEnabled;
+      toggleBtn.setAttribute('aria-pressed', String(!audioEnabled ? false : true));
+      toggleBtn.textContent = audioEnabled ? '🔊' : '🔇';
+      if(audioEnabled){
+        initAudio();
+        applyVolumes();
+        if(bg.paused) bg.play().catch(()=>{});
+        // hareket sesleri gerekiyorsa tekrar dene
+        audioUpdateMovement(keys, velF, throttle);
+      } else {
+        // sadece vol=0 yap; pause etmiyoruz ki tekrar açınca kaldığı yerden devam etsin
+        applyVolumes();
+      }
+    });
+    volSlider.addEventListener('input', ()=>{
+      masterVol = Number(volSlider.value)/100;
+      applyVolumes();
+    });
+
+    // Hareket sesi kontrolü
+    let thrustOn = false;
+    let reverseOn = false;
+    function audioUpdateMovement(keys, velF, throttle){
+      if(!audioEnabled || !audioReady) return;
+
+      const forwardActive = keys.KeyW && (throttle>0.05 || velF>0.5);
+      const reverseActive = keys.KeyS || velF < -0.1;
+
+      if(forwardActive && !thrustOn){
+        try{ sThrust.currentTime = 0; }catch{}
+        sThrust.play().catch(()=>{});
+        thrustOn = true;
+      }
+      if(!forwardActive && thrustOn){
+        sThrust.pause();
+        thrustOn = false;
+      }
+
+      if(reverseActive && !reverseOn){
+        try{ sReverse.currentTime = 0; }catch{}
+        sReverse.play().catch(()=>{});
+        reverseOn = true;
+      }
+      if(!reverseActive && reverseOn){
+        sReverse.pause();
+        reverseOn = false;
+      }
+      applyVolumes();
+    }
+
+    // Yaklaşma sesi
+    let lastApproachAt = 0;
+    function playApproach(){
+      const now = performance.now();
+      if(now - lastApproachAt < 1300) return; // spam koruma
+      lastApproachAt = now;
+      if(!audioEnabled) return;
+      try{ sApproach.currentTime = 0; }catch{}
+      sApproach.play().catch(()=>{});
+      applyVolumes();
+    }
+
+    // Popup sesi
+    function playPopupOpen(){
+      if(!audioEnabled) return;
+      try{ sPopup.currentTime = 0; }catch{}
+      sPopup.play().catch(()=>{});
+      applyVolumes();
+    }
   </script>
 </body>
 </html>

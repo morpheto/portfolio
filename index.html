@@ -14,8 +14,27 @@
 
   .hud{position:fixed;top:12px;left:12px;right:12px;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(8,10,18,.45);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px);border-radius:16px}
   .brand{font-weight:800;letter-spacing:.4px;font-size:16px}
-  .nav{display:flex;gap:16px}
+  .nav{display:flex;gap:16px;align-items:center}
   .nav a{color:var(--text);text-decoration:none;opacity:.9;font-size:14px}
+
+  /* *** EKLENDİ *** — Ses UI */
+  .audio-ui{display:flex;align-items:center;gap:10px; margin-left:16px;}
+  .audio-btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.15);
+    background:rgba(255,255,255,.06);color:#fff;font-size:13px;cursor:pointer
+  }
+  .audio-btn[aria-pressed="false"]{opacity:.75}
+  .audio-range{
+    width:120px;height:6px;border-radius:999px;appearance:none;background:rgba(255,255,255,.15);outline:none
+  }
+  .audio-range::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;
+    background:#fff;border:2px solid #2b66ff;cursor:pointer
+  }
+  .audio-range::-moz-range-thumb{
+    width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid #2b66ff;cursor:pointer
+  }
 
   .help{position:fixed;right:12px;bottom:12px;z-index:20;color:var(--muted);font-size:12px;padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.06);backdrop-filter:blur(6px)}
 
@@ -57,7 +76,6 @@
   .viewer-gifs{grid-template-columns:repeat(2,1fr)}
   .viewer-gallery{grid-template-columns:repeat(3,1fr)}
   .viewer-gifs img,.viewer-gallery img{width:100%;height:100%;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.08)}
-  /* Yön duyarlı yerleşim */
   .viewer-gifs img,.viewer-gallery img{aspect-ratio:16/9}
   .viewer-gifs img.portrait,.viewer-gallery img.portrait{object-fit:contain;aspect-ratio:3/4;background:#0e1433}
   .viewer-desc{margin-top:12px;color:#d7deea;line-height:1.6}
@@ -76,6 +94,9 @@
   .mobile-card h2{margin:0 0 10px}
   .mobile-card p{margin:0 0 16px;line-height:1.5}
   .mobile-card .btn.primary{padding:12px 20px;border-radius:12px}
+
+  .viewer img, .viewer video { -webkit-user-drag: none; user-select: none; }
+  .viewer .viewer-media video { pointer-events: none; }
 </style>
 </head>
 <body>
@@ -86,6 +107,16 @@
       <a href="projects.html">PROJECTS</a>
       <a href="about.html">ABOUT</a>
       <a href="contact.html">CONTACT</a>
+
+      <!-- *** EKLENDİ *** Ses UI -->
+      <div class="audio-ui" id="audioUI" aria-label="Audio controls">
+        <button class="audio-btn" id="audioToggle" aria-pressed="true" type="button" title="Ses açık/kapat">
+          <span id="audioIcon" aria-hidden="true">🔊</span>
+          <span id="audioLabel">On</span>
+        </button>
+        <input id="audioVolume" class="audio-range" type="range" min="0" max="1" step="0.01" value="0.35" aria-label="Ses seviyesi" />
+      </div>
+      <!-- *** EKLENDİ BİTİŞ *** -->
     </div>
   </div>
 
@@ -153,6 +184,11 @@
   </div>
 
   <canvas id="scene"></canvas>
+
+  <!-- *** EKLENDİ *** Ses dosyaları -->
+  <audio id="sfxHum" src="media/audio/space_hum.mp3" preload="auto" loop></audio>
+  <audio id="sfxPopup" src="media/audio/popup_open.wav" preload="auto"></audio>
+  <!-- *** EKLENDİ BİTİŞ *** -->
 
   <script type="importmap">
   {
@@ -318,21 +354,17 @@
       (gltf)=>{
         const model = gltf.scene || gltf.scenes?.[0]; if(!model) return;
         ship.clear();
-        // Oyuncu gemisini normalize et
         const box0 = new THREE.Box3().setFromObject(model);
         const size0 = new THREE.Vector3(); box0.getSize(size0);
         const s = 6 / Math.max(size0.x,size0.y,size0.z || 1);
         model.scale.setScalar(s);
         model.rotation.set(0, Math.PI/2, 0);
-        // merkeze al
         const b1 = new THREE.Box3().setFromObject(model);
         const c1 = new THREE.Vector3(); b1.getCenter(c1); model.position.sub(c1);
-        // egzoz offsetini bul
         const b2 = new THREE.Box3().setFromObject(model);
         exhaustLocal = new THREE.Vector3(b2.min.x - 0.6, 0, 0);
         ship.add(model);
 
-        // AI için: materyal tonlamalı klon (tek seferlik şablon)
         sharedAIModel = model.clone(true);
         sharedAIModel.traverse(o=>{
           if(o.isMesh){
@@ -342,7 +374,6 @@
             o.material.emissiveIntensity = 0.35;
           }
         });
-        // Oyuncu modelini 6 birime sığdırdık; AI'lar biraz daha küçük dursun
         sharedAIModel.scale.multiplyScalar(3.2/6);
 
         if (!aiSpawned) { spawnAIShips(); aiSpawned = true; }
@@ -535,40 +566,107 @@
       qvTitle.textContent=p.title; qvTag.textContent=p.tag||''; qvMedia.style.backgroundImage=`url('${p.cover||''}')`;
       qv.style.display='flex'; qv.classList.add('show'); qv.setAttribute('aria-hidden','false');
       qvOpen.onclick = ()=> openViewer(p);
+
+      // *** EKLENDİ *** Quick View açılma sesi
+      try { playPopupSfx(); } catch {}
     }
-    function qvCloseFn(){ qv.classList.remove('show'); qv.style.display='none'; qv.setAttribute('aria-hidden','true'); controlsEnabled=true; }
+
+    /* --- MEDYA DURDURMA HELPER'I --- */
+    function stopAllMedia(root=document){
+      root.querySelectorAll('video').forEach(v=>{
+        try { v.pause(); v.currentTime = 0; } catch {}
+      });
+      root.querySelectorAll('iframe').forEach(f=>{
+        try {
+          f.contentWindow?.postMessage(JSON.stringify({event:'command', func:'stopVideo'}), '*'); // YouTube
+          f.contentWindow?.postMessage('{"method":"pause"}', '*'); // Vimeo
+        } catch {}
+      });
+    }
+
+    function qvCloseFn(){
+      stopAllMedia(qv);
+      qv.classList.remove('show');
+      qv.style.display='none';
+      qv.setAttribute('aria-hidden','true');
+      controlsEnabled=true;
+    }
     document.getElementById('qvExit').addEventListener('click',qvCloseFn);
 
     function markPortrait(img){
       if(img.naturalHeight > img.naturalWidth){ img.classList.add('portrait'); }
     }
 
+    const SOUND_ON = new Set(['p3','p4','p6','p8','p9']);
+
     function openViewer(p){
       qvCloseFn();
       vwTitle.textContent=p.title; vwTag.textContent=p.tag||''; vwDesc.textContent=p.description||'';
       vwVideo.innerHTML=''; vwGifs.innerHTML=''; vwImages.innerHTML='';
 
-      // video
-      if(p.video){
-        if(/\.(mp4|webm)$/i.test(p.video)){
-          const vid=document.createElement('video'); vid.controls=true; vid.playsInline=true; vid.src=p.video; vwVideo.appendChild(vid);
-        } else {
-          const iframe=document.createElement('iframe'); iframe.src=p.video; iframe.allow='autoplay; fullscreen; picture-in-picture'; vwVideo.appendChild(iframe);
-        }
-      } else { vwVideo.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;opacity:.6">No video</div>'; }
+      if (p.video && p.video.trim() !== '') {
+        vwVideo.style.display = '';
+        if (/\.(mp4|webm)$/i.test(p.video)) {
+          const vid = document.createElement('video');
+          vid.autoplay = true; vid.loop = true; vid.playsInline = true; vid.preload = 'metadata';
+          vid.src = p.video;
+          vid.controls = false;
+          vid.setAttribute('controlsList','nodownload noplaybackrate noremoteplayback');
+          vid.setAttribute('disablePictureInPicture','');
+          vid.addEventListener('contextmenu', e=>e.preventDefault());
+          vid.addEventListener('dragstart', e=>e.preventDefault());
+          vid.addEventListener('pointerdown', e=>e.preventDefault());
 
-      // GIF’ler (yoksa bölümü gizle)
+          if (SOUND_ON.has(p.id)) {
+            vid.muted = false; vid.volume = 1.0;
+            const tryPlay = () => vid.play().catch(()=>{});
+            vid.addEventListener('canplay', tryPlay, { once: true });
+            window.addEventListener('click', tryPlay, { once: true });
+          } else {
+            vid.muted = true;
+          }
+          vwVideo.appendChild(vid);
+        } else {
+          const sep = p.video.includes('?') ? '&' : '?';
+          const muteParam = SOUND_ON.has(p.id) ? 'mute=0' : 'mute=1';
+          const url = p.video + sep + `autoplay=1&${muteParam}&loop=1&playsinline=1`;
+          const iframe = document.createElement('iframe');
+          iframe.src = url;
+          iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+          iframe.style.pointerEvents = 'none';
+          iframe.addEventListener('contextmenu', e=>e.preventDefault());
+          vwVideo.appendChild(iframe);
+        }
+      } else {
+        vwVideo.style.display = 'none';
+      }
+
       if(p.gifs && p.gifs.length){
         vwGifs.style.display='grid';
-        p.gifs.slice(0,2).forEach(src=>{ const img=new Image(); img.onload=()=>markPortrait(img); img.src=src; img.loading='lazy'; vwGifs.appendChild(img); });
+        p.gifs.slice(0,2).forEach(src=>{
+          const img=new Image();
+          img.onload=()=>markPortrait(img);
+          img.src=src; img.loading='lazy';
+          img.draggable=false;
+          img.addEventListener('contextmenu',e=>e.preventDefault());
+          img.addEventListener('dragstart',e=>e.preventDefault());
+          vwGifs.appendChild(img);
+        });
       } else {
         vwGifs.style.display='none';
       }
 
-      // Görseller (yoksa bölümü gizle)
       if(p.images && p.images.length){
         vwImages.style.display='grid';
-        p.images.slice(0,6).forEach(src=>{ const img=new Image(); img.onload=()=>markPortrait(img); img.src=src; img.loading='lazy'; vwImages.appendChild(img); });
+        p.images.slice(0,6).forEach(src=>{
+          const img=new Image();
+          img.onload=()=>markPortrait(img);
+          img.src=src; img.loading='lazy';
+          img.draggable=false;
+          img.addEventListener('contextmenu',e=>e.preventDefault());
+          img.addEventListener('dragstart',e=>e.preventDefault());
+          vwImages.appendChild(img);
+        });
       } else {
         vwImages.style.display='none';
       }
@@ -576,7 +674,14 @@
       viewer.style.display='flex'; viewer.classList.add('show'); viewer.setAttribute('aria-hidden','false');
       controlsEnabled=false;
     }
-    function closeViewer(){ viewer.classList.remove('show'); viewer.style.display='none'; viewer.setAttribute('aria-hidden','true'); controlsEnabled=true; }
+
+    function closeViewer(){
+      stopAllMedia(viewer);
+      viewer.classList.remove('show');
+      viewer.style.display='none';
+      viewer.setAttribute('aria-hidden','true');
+      controlsEnabled=true;
+    }
     document.getElementById('vwClose').addEventListener('click',closeViewer);
 
     addEventListener('keydown',e=>{
@@ -590,7 +695,17 @@
       }
     });
 
-    /* ---------- AI ships + emitters (GLB model klonu) ---------- */
+    viewer.addEventListener('contextmenu', e=>{
+      const t = e.target;
+      if (t && (t.tagName==='IMG' || t.tagName==='VIDEO')) e.preventDefault();
+    });
+    viewer.addEventListener('dragstart', e=>e.preventDefault());
+    viewer.addEventListener('selectstart', e=>{
+      const t = e.target;
+      if (t && (t.tagName==='IMG' || t.tagName==='VIDEO')) e.preventDefault();
+    });
+
+    /* ---------- AI ships + emitters ---------- */
     function makeEmitter(){
       const flames=[...Array(32)].map(()=>makeSprite(flameMat));
       const smokes=[...Array(20)].map(()=>makeSprite(smokeMat));
@@ -655,16 +770,13 @@
 
         if (sharedAIModel) {
           body = sharedAIModel.clone(true);
-          // GLB klonu merkezlenmiş ve ölçeklenmiş durumda
           body.rotation.set(0, Math.PI/2, 0);
         } else {
-          // GLB yüklenemezse son çare: kapsül (ama normalde GLB kullanılacak)
           const g=new THREE.CapsuleGeometry(.6,2.2,6,12);
           const m=new THREE.MeshStandardMaterial({color:0xffffff,metalness:.25,roughness:.5,emissive:0x111133,emissiveIntensity:.35});
           body=new THREE.Mesh(g,m); body.rotation.z=Math.PI/2;
         }
 
-        // AI egzoz offsetini kutudan hesapla (glb’de doğru noktadan partikül çıksın)
         const tmp = new THREE.Box3().setFromObject(body);
         const aiExhaustLocal = new THREE.Vector3(tmp.min.x - 0.5, 0, 0);
 
@@ -693,27 +805,22 @@
         ai.cooldown -= dt;
         if(ai.g.position.distanceTo(ai.target) < 10 || ai.cooldown<=0){
           ai.cooldown = THREE.MathUtils.randFloat(2,6);
-          // %60 rastgele, %40 merkez yakınlarına hedef (leash)
           ai.target = (Math.random()<0.6) ? randomAITarget()
                                           : center.clone().add(new THREE.Vector3().randomDirection().multiplyScalar(THREE.MathUtils.randFloat(40,110)));
         }
 
-        // yönel
         const dir = ai.target.clone().sub(ai.g.position); const dist = dir.length(); if(dist>0.0001) dir.normalize();
         const forward = new THREE.Vector3(1,0,0).applyQuaternion(ai.g.quaternion);
         const axis = forward.clone().cross(dir).normalize(); const ang = Math.min(1.0*dt, forward.angleTo(dir));
         if(isFinite(ang) && axis.lengthSq()>1e-6){ ai.g.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(axis, ang)); }
 
-        // yumuşak merkez yayı (drift’i engeller)
-        const kSpring = 0.06; // yay katsayısı
+        const kSpring = 0.06;
         const toCenter = center.clone().sub(ai.g.position);
         ai.g.position.addScaledVector(toCenter, kSpring*dt);
 
-        // throttle yönetimi + hız
         const dCenter = ai.g.position.length();
         if(dCenter > SOFT){
           ai.throttle = Math.max(0.15, ai.throttle - 0.5*dt);
-          // hedefi merkeze kır
           ai.target = center.clone().add(new THREE.Vector3().randomDirection().multiplyScalar(THREE.MathUtils.randFloat(40,100)));
         } else {
           if(dist>40) ai.throttle = Math.min(1.0, ai.throttle + 0.5*dt);
@@ -722,7 +829,6 @@
 
         ai.g.position.addScaledVector(forward, ai.vel * ai.throttle * dt);
 
-        // sert sınır
         const dLen = ai.g.position.length();
         if(dLen > HARD){
           const pull = center.clone().sub(ai.g.position).normalize();
@@ -731,7 +837,6 @@
         }
         ai.g.position.y = clamp(ai.g.position.y, -70, 70);
 
-        // partiküller (ileri mavi alev, yavaşlayınca duman)
         const exhaustPos = worldFromExhaust_ai(ai, new THREE.Vector3());
         if(ai.throttle>0.22){ if(Math.random()<0.8) ai.emitter.spawnFlameAt(exhaustPos, ai.g.quaternion, 0.6+ai.throttle*0.6); }
         if(ai.prevThrottle>0.25 && ai.throttle<=0.12){ ai.emitter.spawnSmokeAt(exhaustPos, ai.g.quaternion, 1.2); }
@@ -740,7 +845,6 @@
         ai.emitter.update(dt);
       }
 
-      // AI ↔ oyuncu çarpışma yumuşatma
       for(const ai of aiShips){
         const d = ship.position.distanceTo(ai.g.position);
         if(d < 2.6){
@@ -760,12 +864,14 @@
       if(localStorage.getItem(START_KEY)==='1'){
         startEl.classList.add('hide');
         controlsEnabled = true;
+        // *** EKLENDİ *** — sessiz otomatik hum başlatma denemesi (tarayıcı izni varsa)
+        tryStartHum();
       }
     }
     document.getElementById('btnStart').addEventListener('click',()=>{
       localStorage.setItem(START_KEY,'1');
       startEl.classList.add('hide');
-      setTimeout(()=>{ controlsEnabled=true; },550);
+      setTimeout(()=>{ controlsEnabled=true; tryStartHum(true); },550);
     });
 
     /* ---------- Resize & loop ---------- */
@@ -816,6 +922,82 @@
     })();
 
     document.getElementById('qvExit').addEventListener('click',()=>qvCloseFn());
+
+    /* ===========================================================
+       *** EKLENDİ *** SES SİSTEMİ
+       - Uğultu (loop) ve popup sfx
+       - Sağ üstte mute + volume
+       - localStorage ile kalıcı
+       =========================================================== */
+    const hum = document.getElementById('sfxHum');
+    const sfxPopup = document.getElementById('sfxPopup');
+    const btnToggle = document.getElementById('audioToggle');
+    const rngVol = document.getElementById('audioVolume');
+    const icon = document.getElementById('audioIcon');
+    const label = document.getElementById('audioLabel');
+
+    const LS_MUTE = 'audioMuted';
+    const LS_VOL = 'audioVolume';
+
+    let audioMuted = (localStorage.getItem(LS_MUTE) ?? 'false') === 'true' ? true : false;
+    let audioVolume = parseFloat(localStorage.getItem(LS_VOL) ?? '0.35');
+    audioVolume = isFinite(audioVolume) ? clamp(audioVolume, 0, 1) : 0.35;
+
+    rngVol.value = String(audioVolume);
+    btnToggle.setAttribute('aria-pressed', String(!audioMuted));
+    updateAudioUI();
+
+    function applyVolumes(){
+      hum.volume = audioMuted ? 0 : audioVolume;
+      sfxPopup.volume = audioMuted ? 0 : Math.min(1, audioVolume * 0.9);
+    }
+    function updateAudioUI(){
+      icon.textContent = audioMuted || audioVolume <= 0.001 ? '🔇' : (audioVolume < 0.5 ? '🔉' : '🔊');
+      label.textContent = (audioMuted || audioVolume <= 0.001) ? 'Off' : 'On';
+      btnToggle.setAttribute('aria-pressed', String(!(audioMuted || audioVolume <= 0.001)));
+      applyVolumes();
+    }
+
+    btnToggle.addEventListener('click', ()=>{
+      audioMuted = !audioMuted;
+      localStorage.setItem(LS_MUTE, String(audioMuted));
+      updateAudioUI();
+      if(!audioMuted){ tryStartHum(); } else { hum.pause(); }
+    });
+
+    rngVol.addEventListener('input', ()=>{
+      audioVolume = parseFloat(rngVol.value) || 0;
+      localStorage.setItem(LS_VOL, String(audioVolume));
+      if(audioVolume <= 0.001){ audioMuted = true; localStorage.setItem(LS_MUTE,'true'); }
+      else if(audioMuted){ audioMuted = false; localStorage.setItem(LS_MUTE,'false'); }
+      updateAudioUI();
+      if(!audioMuted){ tryStartHum(); }
+    });
+
+    function tryStartHum(force=false){
+      if(audioMuted) return;
+      try{
+        // Autoplay politikası: kullanıcı etkileşimi yoksa play() reddedilebilir
+        if(force){
+          hum.play().catch(()=>{ /* kullanıcı tıklayana kadar bekler */ });
+        }else{
+          if(hum.paused) hum.play().catch(()=>{});
+        }
+      }catch{}
+    }
+
+    // İlk kullanıcı etkileşiminde hum’u başlat (ek güvenlik)
+    const _onceKick = ()=>{ tryStartHum(true); window.removeEventListener('pointerdown', _onceKick); };
+    window.addEventListener('pointerdown', _onceKick, { once: true });
+
+    function playPopupSfx(){
+      if(audioMuted) return;
+      try{
+        sfxPopup.currentTime = 0;
+        sfxPopup.play().catch(()=>{});
+      }catch{}
+    }
+    /* ===================== SES BİTİŞ ===================== */
   </script>
 </body>
 </html>

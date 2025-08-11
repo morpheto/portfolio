@@ -294,61 +294,52 @@
       document.getElementById('detailTag').textContent = p.tag || '';
       document.getElementById('detailDesc').textContent = p.desc || 'Açıklama gelecek...';
 
-// ---- Video (autoplay+loop; ses: p3,p4,p6,p8,p9 açık, diğerleri kapalı) ----
-const v = document.getElementById('detailVideo');
-const videoTitleEl = v.previousElementSibling; // "Video" başlığı
-v.innerHTML = '';
+      // ---- Video (autoplay+loop; ses: p3,p4,p6,p8,p9 açık, diğerleri kapalı; yoksa alanı gizle) ----
+      const v = document.getElementById('detailVideo');
+      const videoTitleEl = v.previousElementSibling; // "Video" başlığı
+      v.innerHTML = '';
+      v.style.display = '';
+      if (videoTitleEl) videoTitleEl.style.display = '';
 
-// varsayılan olarak görünür bırak
-v.style.display = '';
-if (videoTitleEl) videoTitleEl.style.display = '';
+      const SOUND_ON = new Set(['p3','p4','p6','p8','p9']);
 
-// Ses açık olacak projeler
-const SOUND_ON = new Set(['p3','p4','p6','p8','p9']);
+      if (p.media.video && p.media.video.trim() !== '') {
+        if (/\.(mp4|webm)$/i.test(p.media.video)) {
+          const vid = document.createElement('video');
+          vid.autoplay = true;
+          vid.loop = true;
+          vid.playsInline = true;
+          vid.src = p.media.video;
 
-if (p.media.video && p.media.video.trim() !== '') {
-  if (/\.(mp4|webm)$/i.test(p.media.video)) {
-    const vid = document.createElement('video');
-    vid.autoplay = true;
-    vid.loop = true;
-    vid.playsInline = true;
-    vid.src = p.media.video;
+          if (SOUND_ON.has(p.id)) {
+            vid.muted = false;
+            vid.volume = 1.0;
+            const tryPlay = () => vid.play().catch(()=>{});
+            vid.addEventListener('canplay', tryPlay, { once: true });
+            window.addEventListener('click', tryPlay, { once: true });
+          } else {
+            vid.muted = true;
+          }
+          v.appendChild(vid);
+        } else {
+          const sep = p.media.video.includes('?') ? '&' : '?';
+          const muteParam = SOUND_ON.has(p.id) ? 'mute=0' : 'mute=1';
+          const url = p.media.video + sep + `autoplay=1&${muteParam}&loop=1&playsinline=1`;
+          const iframe = document.createElement('iframe');
+          iframe.src = url;
+          iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+          v.appendChild(iframe);
+        }
+      } else {
+        if (videoTitleEl) videoTitleEl.style.display = 'none';
+        v.style.display = 'none';
+      }
 
-    if (SOUND_ON.has(p.id)) {
-      vid.muted = false;
-      vid.volume = 1.0;
-
-      // Tarayıcı sesli autoplay’i engellerse dene + ilk kullanıcı etkileşiminde tekrar dene
-      const tryPlay = () => vid.play().catch(()=>{});
-      vid.addEventListener('canplay', tryPlay, { once: true });
-      window.addEventListener('click', tryPlay, { once: true });
-    } else {
-      vid.muted = true;
-    }
-
-    v.appendChild(vid);
-  } else {
-    // YouTube/Vimeo vb.
-    const sep = p.media.video.includes('?') ? '&' : '?';
-    const muteParam = SOUND_ON.has(p.id) ? 'mute=0' : 'mute=1';
-    const url = p.media.video + sep + `autoplay=1&${muteParam}&loop=1&playsinline=1`;
-    const iframe = document.createElement('iframe');
-    iframe.src = url;
-    iframe.allow = 'autoplay; fullscreen; picture-in-picture';
-    v.appendChild(iframe);
-  }
-} else {
-  // Video yok (ör. p5): başlığı ve alanı tamamen gizle
-  if (videoTitleEl) videoTitleEl.style.display = 'none';
-  v.style.display = 'none';
-}
-} else {
-  v.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;opacity:.6">No video</div>';
-}
       // ---- GIFS (sınırsız + orientation + lightbox) ----
       const gifWrap = document.getElementById('detailGifs');
       const gifTitle = document.getElementById('gifTitle');
       gifWrap.innerHTML='';
+
       // ---- GALLERY (sınırsız + orientation + lightbox) ----
       const gal = document.getElementById('detailGallery');
       const galTitle = document.getElementById('galleryTitle');
@@ -357,7 +348,7 @@ if (p.media.video && p.media.video.trim() !== '') {
       const gifs = Array.isArray(p.media.gifs) ? p.media.gifs : [];
       const imgs = Array.isArray(p.media.images) ? p.media.images : [];
 
-      // Lightbox listesi: görsel sırası = önce GIF’ler sonra JPG’ler
+      // Lightbox listesi: önce GIF’ler sonra JPG’ler
       LB_ITEMS = [...gifs, ...imgs];
 
       if(gifs.length){
@@ -367,7 +358,7 @@ if (p.media.video && p.media.video.trim() !== '') {
           const img = new Image();
           img.onload = ()=>{ if(img.naturalHeight > img.naturalWidth) img.classList.add('portrait'); else img.classList.add('landscape'); };
           img.src = src; img.loading='lazy';
-          img.addEventListener('click', ()=> openLightbox(i)); // ilk kısımda
+          img.addEventListener('click', ()=> openLightbox(i));
           gifWrap.appendChild(img);
         });
       } else { gifTitle.style.display = 'none'; gifWrap.style.display = 'none'; }
@@ -379,7 +370,6 @@ if (p.media.video && p.media.video.trim() !== '') {
           const img = new Image();
           img.onload = ()=>{ if(img.naturalHeight > img.naturalWidth) img.classList.add('portrait'); else img.classList.add('landscape'); };
           img.src = src; img.loading='lazy';
-          // Lightbox indexinde GIF’lerin ardından geldiği için offset ekle
           img.addEventListener('click', ()=> openLightbox(gifs.length + i));
           gal.appendChild(img);
         });

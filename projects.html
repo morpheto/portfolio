@@ -30,7 +30,7 @@
     .navlinks a:hover{opacity:1}
     .navlinks a:hover:after{transform:scaleX(1)}
 
-    /* Hero (about ile aynı hiyerarşi) */
+    /* Hero */
     .hero{padding:56px 0 8px}
     .hero h1{font-size:clamp(30px,4.2vw,44px);margin:0 0 10px;line-height:1.1;font-weight:800}
     .hero .sub{font-size:clamp(20px,3.2vw,28px);margin:0 0 8px;color:var(--text)}
@@ -50,7 +50,7 @@
     .glare{pointer-events:none;position:absolute;inset:-1px;border-radius:inherit;overflow:hidden}
     .glare::before{content:"";position:absolute;left:var(--gx,50%);top:var(--gy,50%);width:90%;height:90%;
       background:radial-gradient(circle at center, rgba(255,255,255,.20), rgba(255,255,255,.06) 45%, rgba(255,255,255,0) 60%);
-      transform:translate(-50%,-50%) rotate(var(--grot,0deg));filter:blur(16px);opacity:.9;transition:opacity .32s ease}
+      transform:translate(-50%, -50%) rotate(var(--grot,0deg));filter:blur(16px);opacity:.9;transition:opacity .32s ease}
     .meta{display:flex;align-items:center;justify-content:space-between;padding:12px 14px}
     .title{font-weight:600}
     .tag{font-size:12px;color:#c8cdd8}
@@ -68,27 +68,36 @@
     .section-title{margin:18px 0 8px;font-size:16px;color:#cbd5e1;font-weight:600}
     .detail-video{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;aspect-ratio:16/9;background:#0f0f10}
     .detail-video iframe,.detail-video video{width:100%;height:100%;border:0;display:block}
+    .video-note{margin:8px 2px 0;color:#aeb7c6;font-size:13px;opacity:.9}
+
+    /* GIF grid & Gallery */
+    .gif-grid{display:grid;gap:12px;grid-template-columns:repeat(2,1fr)}
+    @media(min-width:920px){.gif-grid{grid-template-columns:repeat(4,1fr)}}
+    .gif-grid img{width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--border)}
+    .gallery{display:grid;gap:14px;margin-top:8px;grid-template-columns:repeat(1,minmax(0,1fr))}
+    @media(min-width:820px){.gallery{grid-template-columns:repeat(2,1fr)}}
+    .gallery img{width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--border)}
 
     footer{border-top:1px solid var(--border);margin-top:44px}
     footer .inner{padding:22px 0;color:#cbd5e1;font-size:14px;text-align:center}
 
-    /* Custom cursor (about/contact ile aynı) */
+    /* Custom cursor */
     body.custom-cursor{cursor:none}
     .cursor-dot{
       position:fixed;left:0;top:0;width:20px;height:20px;border-radius:50%;
-      pointer-events:none;transform:translate(-50%,-50%);
+      pointer-events:none;transform:translate(-50%, -50%);
       background:rgba(255,255,255,0.18);
       box-shadow:0 0 18px rgba(255,255,255,0.75), 0 0 48px rgba(255,255,255,0.35);
       mix-blend-mode:screen;backdrop-filter:blur(2px);z-index:1000;
     }
     .cursor-trail{
       position:fixed;left:0;top:0;width:8px;height:8px;border-radius:50%;
-      pointer-events:none;transform:translate(-50%,-50%) scale(1);
+      pointer-events:none;transform:translate(-50%, -50%) scale(1);
       background:rgba(255,255,255,0.2);z-index:999;opacity:.9;
       animation:trailFade .5s ease-out forwards;box-shadow:0 0 14px rgba(255,255,255,.65);
       will-change:transform,opacity;
     }
-    @keyframes trailFade{to{transform:translate(-50%,-50%) scale(0);opacity:0}}
+    @keyframes trailFade{to{transform:translate(-50%, -50%) scale(0);opacity:0}}
     a,button,[role="button"],.card{cursor:pointer}
     body.cursor-pointer .cursor-dot{width:26px;height:26px;background:rgba(255,255,255,0.12);box-shadow:0 0 24px rgba(255,255,255,0.9),0 0 60px rgba(255,255,255,0.45);outline:2px solid rgba(255,255,255,0.6);outline-offset:2px}
     @media(hover:none){body.custom-cursor{cursor:auto}.cursor-dot{display:none!important}}
@@ -124,7 +133,7 @@
         <div class="grid" id="grid">
           <a class="card" href="?p=p1">
             <div class="media">
-              <img src="media/p1_cover.jpg" alt="Audio Reactive + Hand Tracked Visualizer" loading="lazy" onerror="this.src='https://picsum.photos/seed/p1/1200/800'">
+              <img src="media/projects/project1/cover.jpg" alt="Audio Reactive + Hand Tracked Visualizer" loading="lazy" onerror="this.src='https://picsum.photos/seed/p1/1200/800'">
               <span class="badge">TouchDesigner</span>
               <div class="glare"></div>
             </div>
@@ -132,7 +141,7 @@
           </a>
           <a class="card" href="?p=p2">
             <div class="media">
-              <img src="media/p2_cover.jpg" alt="Odin Pendant Animation" loading="lazy" onerror="this.src='https://picsum.photos/seed/p2/1200/800'">
+              <img src="media/projects/project2/cover.jpg" alt="Odin Pendant Animation" loading="lazy" onerror="this.src='https://picsum.photos/seed/p2/1200/800'">
               <span class="badge">Animation</span>
               <div class="glare"></div>
             </div>
@@ -140,7 +149,7 @@
           </a>
           <a class="card" href="?p=p3">
             <div class="media">
-              <img src="media/p3_cover.jpg" alt="MediaPipe + Ableton + PointCloud" loading="lazy" onerror="this.src='https://picsum.photos/seed/p3/1200/800'">
+              <img src="media/projects/project3/cover.jpg" alt="MediaPipe + Ableton + PointCloud" loading="lazy" onerror="this.src='https://picsum.photos/seed/p3/1200/800'">
               <span class="badge">TouchDesigner</span>
               <div class="glare"></div>
             </div>
@@ -148,7 +157,7 @@
           </a>
           <a class="card" href="?p=p4">
             <div class="media">
-              <img src="media/p4_cover.jpg" alt="Nike Air Jordan CGI" loading="lazy" onerror="this.src='https://picsum.photos/seed/p4/1200/800'">
+              <img src="media/projects/project4/cover.jpg" alt="Nike Air Jordan CGI" loading="lazy" onerror="this.src='https://picsum.photos/seed/p4/1200/800'">
               <span class="badge">CGI</span>
               <div class="glare"></div>
             </div>
@@ -156,7 +165,7 @@
           </a>
           <a class="card" href="?p=p5">
             <div class="media">
-              <img src="media/p5_cover.jpg" alt="Bic Mini Lighter Spider Case" loading="lazy" onerror="this.src='https://picsum.photos/seed/p5/1200/800'">
+              <img src="media/projects/project5/cover.jpg" alt="Bic Mini Lighter Spider Case" loading="lazy" onerror="this.src='https://picsum.photos/seed/p5/1200/800'">
               <span class="badge">Design</span>
               <div class="glare"></div>
             </div>
@@ -164,7 +173,7 @@
           </a>
           <a class="card" href="?p=p6">
             <div class="media">
-              <img src="media/p6_cover.jpg" alt="Space Keycap Animation" loading="lazy" onerror="this.src='https://picsum.photos/seed/p6/1200/800'">
+              <img src="media/projects/project6/cover.jpg" alt="Space Keycap Animation" loading="lazy" onerror="this.src='https://picsum.photos/seed/p6/1200/800'">
               <span class="badge">Animation</span>
               <div class="glare"></div>
             </div>
@@ -172,7 +181,7 @@
           </a>
           <a class="card" href="?p=p7">
             <div class="media">
-              <img src="media/p7_cover.jpg" alt="Oxidized Silver Jewelry — Maverick" loading="lazy" onerror="this.src='https://picsum.photos/seed/p7/1200/800'">
+              <img src="media/projects/project7/cover.jpg" alt="Oxidized Silver Jewelry — Maverick" loading="lazy" onerror="this.src='https://picsum.photos/seed/p7/1200/800'">
               <span class="badge">LookDev</span>
               <div class="glare"></div>
             </div>
@@ -180,7 +189,7 @@
           </a>
           <a class="card" href="?p=p8">
             <div class="media">
-              <img src="media/p8_cover.jpg" alt="YouTube Channel Intro" loading="lazy" onerror="this.src='https://picsum.photos/seed/p8/1200/800'">
+              <img src="media/projects/project8/cover.jpg" alt="YouTube Channel Intro" loading="lazy" onerror="this.src='https://picsum.photos/seed/p8/1200/800'">
               <span class="badge">3D + Audio</span>
               <div class="glare"></div>
             </div>
@@ -188,7 +197,7 @@
           </a>
           <a class="card" href="?p=p9">
             <div class="media">
-              <img src="media/p9_cover.jpg" alt="AI Visualizer from Image" loading="lazy" onerror="this.src='https://picsum.photos/seed/p9/1200/800'">
+              <img src="media/projects/project9/cover.jpg" alt="AI Visualizer from Image" loading="lazy" onerror="this.src='https://picsum.photos/seed/p9/1200/800'">
               <span class="badge">AI</span>
               <div class="glare"></div>
             </div>
@@ -206,6 +215,7 @@
       <div class="detail-desc" id="detailDesc"></div>
       <div class="section-title">Video</div>
       <div class="detail-video" id="detailVideo" aria-label="Project video"></div>
+      <p class="video-note" id="detailVideoNote">Write your short video description here…</p>
       <div class="section-title">GIF Previews</div>
       <div class="gif-grid" id="detailGifs"></div>
       <div class="section-title">Image Gallery</div>
@@ -221,15 +231,68 @@
     document.getElementById('y').textContent = new Date().getFullYear();
 
     const PROJECTS = {
-      p1:{ title:'Audio Reactive + Hand Tracked Visualizer', tag:'Interactive · TouchDesigner', cover:'media/p1_cover.jpg', desc:'Real-time, audio-reactive visuals with hand tracking for gestural control. Built in TouchDesigner.', video:'media/p1_demo.mp4', gifs:['media/p1_g1.gif','media/p1_g2.gif'], images:['media/p1_img1.jpg','media/p1_img2.jpg'] },
-      p2:{ title:'Odin Pendant Animation', tag:'3D / Motion', cover:'media/p2_cover.jpg', desc:'Short product animation for an Odin pendant — modeling, lighting and cinematic shots.', video:'media/p2_demo.mp4', gifs:['media/p2_g1.gif'], images:['media/p2_img1.jpg','media/p2_img2.jpg'] },
-      p3:{ title:'MediaPipe + Ableton MIDI + PointCloud', tag:'Interactive · TouchDesigner', cover:'media/p3_cover.jpg', desc:'Gesture and face tracking via MediaPipe, music-driven controls via Ableton MIDI, and a dynamic point cloud visualizer.', video:'media/p3_demo.mp4', gifs:['media/p3_g1.gif'], images:['media/p3_img1.jpg','media/p3_img2.jpg'] },
-      p4:{ title:'Nike Air Jordan CGI', tag:'Product · CGI', cover:'media/p4_cover.jpg', desc:'Photoreal sneaker CGI with focus on materials, stitching and dramatic lighting.', video:'media/p4_demo.mp4', gifs:['media/p4_g1.gif'], images:['media/p4_img1.jpg','media/p4_img2.jpg'] },
-      p5:{ title:'Bic Mini Lighter Spider Case', tag:'Product Design', cover:'media/p5_cover.jpg', desc:'Accessory concept designed around the Bic Mini lighter — modeling, detailing and material exploration.', video:'media/p5_demo.mp4', gifs:['media/p5_g1.gif'], images:['media/p5_img1.jpg','media/p5_img2.jpg'] },
-      p6:{ title:'Space Keycap Animation', tag:'3D / Motion', cover:'media/p6_cover.jpg', desc:'Keycap animation with cosmic theme — macro cameras, subtle fx and typography accents.', video:'media/p6_demo.mp4', gifs:['media/p6_g1.gif'], images:['media/p6_img1.jpg','media/p6_img2.jpg'] },
-      p7:{ title:'Oxidized Silver Jewelry — Maverick', tag:'Materials · LookDev', cover:'media/p7_cover.jpg', desc:'Scene creation and material optimization for oxidized silver jewelry in Maverick Render.', video:'media/p7_demo.mp4', gifs:['media/p7_g1.gif'], images:['media/p7_img1.jpg','media/p7_img2.jpg'] },
-      p8:{ title:'YouTube Channel Intro', tag:'Motion · 3D + Audio', cover:'media/p8_cover.jpg', desc:'A short, punchy intro combining 3D visuals with audio design for branding.', video:'media/p8_demo.mp4', gifs:['media/p8_g1.gif'], images:['media/p8_img1.jpg','media/p8_img2.jpg'] },
-      p9:{ title:'AI Visualizer from Image', tag:'Concept · AI', cover:'media/p9_cover.jpg', desc:'Transforming a provided image into AI-augmented motion and visual textures.', video:'media/p9_demo.mp4', gifs:['media/p9_g1.gif'], images:['media/p9_img1.jpg','media/p9_img2.jpg'] }
+      p1:{ title:'Audio Reactive + Hand Tracked Visualizer', tag:'Interactive · TouchDesigner',
+          cover:'media/projects/project1/cover.jpg',
+          desc:'Write your description here…',
+          video:'media/projects/project1/video.mp4',
+          gifs:['media/projects/project1/gif-1.gif','media/projects/project1/gif-2.gif'],
+          images:['media/projects/project1/img-1.jpg','media/projects/project1/img-2.jpg','media/projects/project1/img-3.jpg'] },
+
+      p2:{ title:'Odin Pendant Animation', tag:'3D / Motion',
+          cover:'media/projects/project2/cover.jpg',
+          desc:'Write your description here…',
+          video:'media/projects/project2/video.mp4',
+          gifs:['media/projects/project2/gif-1.gif'],
+          images:['media/projects/project2/img-1.jpg','media/projects/project2/img-2.jpg','media/projects/project2/img-3.jpg'] },
+
+      p3:{ title:'MediaPipe + Ableton MIDI + PointCloud', tag:'Interactive · TouchDesigner',
+          cover:'media/projects/project3/cover.jpg',
+          desc:'Write your description here…',
+          video:'media/projects/project3/video.mp4',
+          gifs:['media/projects/project3/gif-1.gif','media/projects/project3/gif-2.gif'],
+          images:['media/projects/project3/img-1.jpg','media/projects/project3/img-2.jpg','media/projects/project3/img-3.jpg'] },
+
+      p4:{ title:'Nike Air Jordan CGI', tag:'Product · CGI',
+          cover:'media/projects/project4/cover.jpg',
+          desc:'Write your description here…',
+          video:'media/projects/project4/video.mp4',
+          gifs:['media/projects/project4/gif-1.gif'],
+          images:['media/projects/project4/img-1.jpg','media/projects/project4/img-2.jpg','media/projects/project4/img-3.jpg'] },
+
+      p5:{ title:'Bic Mini Lighter Spider Case', tag:'Product Design',
+          cover:'media/projects/project5/cover.jpg',
+          desc:'Write your description here…',
+          video:'media/projects/project5/video.mp4',
+          gifs:['media/projects/project5/gif-1.gif','media/projects/project5/gif-2.gif'],
+          images:['media/projects/project5/img-1.jpg','media/projects/project5/img-2.jpg','media/projects/project5/img-3.jpg'] },
+
+      p6:{ title:'Space Keycap Animation', tag:'3D / Motion',
+          cover:'media/projects/project6/cover.jpg',
+          desc:'Write your description here…',
+          video:'media/projects/project6/video.mp4',
+          gifs:['media/projects/project6/gif-1.gif','media/projects/project6/gif-2.gif'],
+          images:['media/projects/project6/img-1.jpg','media/projects/project6/img-2.jpg','media/projects/project6/img-3.jpg'] },
+
+      p7:{ title:'Oxidized Silver Jewelry — Maverick', tag:'Materials · LookDev',
+          cover:'media/projects/project7/cover.jpg',
+          desc:'Write your description here…',
+          video:'media/projects/project7/video.mp4',
+          gifs:['media/projects/project7/gif-1.gif'],
+          images:['media/projects/project7/img-1.jpg','media/projects/project7/img-2.jpg','media/projects/project7/img-3.jpg'] },
+
+      p8:{ title:'YouTube Channel Intro', tag:'Motion · 3D + Audio',
+          cover:'media/projects/project8/cover.jpg',
+          desc:'Write your description here…',
+          video:'media/projects/project8/video.mp4',
+          gifs:['media/projects/project8/gif-1.gif','media/projects/project8/gif-2.gif'],
+          images:['media/projects/project8/img-1.jpg','media/projects/project8/img-2.jpg','media/projects/project8/img-3.jpg'] },
+
+      p9:{ title:'AI Visualizer from Image', tag:'Concept · AI',
+          cover:'media/projects/project9/cover.jpg',
+          desc:'Write your description here…',
+          video:'media/projects/project9/video.mp4',
+          gifs:['media/projects/project9/gif-1.gif','media/projects/project9/gif-2.gif'],
+          images:['media/projects/project9/img-1.jpg','media/projects/project9/img-2.jpg','media/projects/project9/img-3.jpg'] }
     };
 
     const listEl = document.getElementById('list');
@@ -243,6 +306,7 @@
       document.getElementById('detailTitle').textContent = p.title;
       document.getElementById('detailTag').textContent = p.tag || '';
       document.getElementById('detailDesc').textContent = p.desc || '';
+      document.getElementById('detailVideoNote').textContent = 'Write your short video description here…';
 
       const v = document.getElementById('detailVideo'); v.innerHTML='';
       if(p.video){
@@ -268,7 +332,7 @@
       else { history.pushState({}, '', 'projects.html'); showList(); }
     }
 
-    // Deep-link (TEK kez)
+    // Deep-link (once)
     const initial = getSlugFromURL(); if(initial){ renderDetail(initial); }
 
     document.addEventListener('click',(e)=>{
@@ -312,7 +376,7 @@
       });
     }
 
-    // Custom cursor (about/contact ile birebir)
+    // Custom cursor
     (function(){
       const hover = window.matchMedia('(hover: hover)').matches;
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

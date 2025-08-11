@@ -569,8 +569,6 @@
     /* -------- Basit AI gemiler (kısaltılmış), player ile çarpışma/limit vb. aynı kalsın -------- */
 // makeSprite burada tekrar TANIMLANMAYACAK; yukarıdaki makeSprite'ı kullanıyoruz.
 function makeEmitter(){
-  ...
-}
       const flames=[...Array(24)].map(()=>makeSprite(flameMat));
       const smokes=[...Array(16)].map(()=>makeSprite(smokeMat));
       const fd=flames.map(()=>({life:0,max:0,vel:new THREE.Vector3()}));

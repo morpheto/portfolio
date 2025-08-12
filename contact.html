@@ -13,6 +13,7 @@
     :root{
       --bg:#0c0c0e; --panel:#121215; --text:#f6f7fb; --muted:#aeb4c0; --border:#1f2126;
       --radius:20px; --radius-sm:14px; --shadow:0 14px 40px rgba(0,0,0,.45);
+      --ok:#1db954; --err:#ff4d4f;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -20,7 +21,6 @@
     a{color:inherit;text-decoration:none}
     .container{max-width:1180px;margin:0 auto;padding:0 20px}
 
-    /* Header (updated navigation) */
     header{position:sticky;top:0;z-index:50;background:rgba(12,12,14,.6);backdrop-filter:saturate(160%) blur(10px);border-bottom:1px solid var(--border)}
     nav{display:flex;align-items:center;justify-content:space-between;height:64px}
     .brand{font-weight:800;letter-spacing:.4px; font-size:16px}
@@ -41,11 +41,13 @@
     input:focus,textarea:focus{outline:none;border-color:#2b2d33}
     button{justify-self:start;background:#15161a;border:1px solid #2a2c32;color:#eaeef7;padding:12px 16px;border-radius:14px;cursor:pointer}
     button:hover{background:#1b1d22}
+    .msg{font-size:14px;margin-top:8px;display:none}
+    .msg.ok{color:var(--ok)}
+    .msg.err{color:var(--err)}
 
     footer{border-top:1px solid var(--border);margin-top:44px}
     footer .inner{padding:22px 0;color:#cbd5e1;font-size:14px;text-align:center}
 
-    /* Custom cursor */
     body.custom-cursor { cursor: none; }
     .cursor-dot {
       position: fixed; left:0; top:0; width:20px; height:20px; border-radius:50%;
@@ -98,12 +100,22 @@
     <p class="lead">If you have a project in mind or any questions about my work, feel free to get in touch.</p>
 
     <section class="panel">
-      <form action="mailto:hello@orhunege.space" method="post" enctype="text/plain">
+      <!-- REPLACE action with your own Formspree endpoint -->
+      <form id="contactForm" action="https://formspree.io/f/XXXXXXXX" method="POST" novalidate>
         <input type="text" name="name" placeholder="Your Name / Company" required>
         <input type="email" name="email" placeholder="Your Email" required>
         <textarea name="message" placeholder="Your Message" required></textarea>
-        <button type="submit">Send via Email</button>
+
+        <!-- Optional subject to see emails nicely -->
+        <input type="hidden" name="_subject" value="New message from orhunege.space contact form" />
+
+        <!-- Honeypot (spam trap): keep hidden -->
+        <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
+
+        <button id="submitBtn" type="submit">Send</button>
+        <div id="formMsg" class="msg" role="status" aria-live="polite"></div>
       </form>
+
       <p style="margin-top:14px;color:#cbd5e1;font-size:14px">
         Or email directly: <a href="mailto:orhunegeeker96@gmail.com">orhunegeeker96@gmail.com</a>
       </p>
@@ -117,6 +129,7 @@
   <script>
     document.getElementById('y').textContent = new Date().getFullYear();
 
+    // Fancy cursor (unchanged)
     (function(){
       const hover = window.matchMedia('(hover: hover)').matches;
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -144,6 +157,61 @@
       document.addEventListener('pointerout',  ()=> document.body.classList.remove('cursor-pointer'), {passive:true});
       window.addEventListener('pointerdown', ()=>{ dot.style.transform='translate(-50%, -50%) scale(0.85)'; });
       window.addEventListener('pointerup',   ()=>{ dot.style.transform='translate(-50%, -50%) scale(1)'; });
+    })();
+
+    // ---- Form client-side submit (Formspree) ----
+    (function(){
+      const form = document.getElementById('contactForm');
+      const btn  = document.getElementById('submitBtn');
+      const msg  = document.getElementById('formMsg');
+
+      function showMsg(text, ok){
+        msg.textContent = text;
+        msg.className = 'msg ' + (ok ? 'ok' : 'err');
+        msg.style.display = 'block';
+      }
+
+      form.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+
+        // Simple required check
+        if(!form.reportValidity?.() && form.checkValidity){
+          if(!form.checkValidity()) return;
+        }
+
+        btn.disabled = true; btn.textContent = 'Sending…'; showMsg('', true);
+
+        try{
+          const data = Object.fromEntries(new FormData(form).entries());
+          // If honeypot filled, silently ignore
+          if (data._gotcha) { btn.disabled=false; btn.textContent='Send'; return; }
+
+          const res = await fetch(form.action, {
+            method: 'POST',
+            headers: { 'Accept': 'application/json' },
+            body: new FormData(form) // Formspree accepts FormData directly
+          });
+
+          if (res.ok) {
+            showMsg('Thanks! Your message has been sent.', true);
+            form.reset();
+          } else {
+            // Try to parse error
+            let errText = 'Something went wrong. Please try again later.';
+            try{
+              const j = await res.json();
+              if (j && j.errors && j.errors.length) {
+                errText = j.errors.map(e => e.message).join(', ');
+              }
+            }catch{}
+            showMsg(errText, false);
+          }
+        } catch (err){
+          showMsg('Network error. Please check your connection and try again.', false);
+        } finally{
+          btn.disabled = false; btn.textContent = 'Send';
+        }
+      });
     })();
   </script>
 </body>

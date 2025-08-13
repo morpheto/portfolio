@@ -194,14 +194,12 @@
       approach: new Audio('media/audio/approach.mp3'),
       lastApproachAt: 0
     };
-    // loop & base configs
     audio.bg.loop = true;
     audio.thrust.loop = true;
     audio.reverse.loop = true;
 
-    // fixed base levels
-    const THRUST_BASE = 0.25;   // İstediğin throttle seviyesi
-    const REVERSE_BASE = 0.50;  // aynı klasörden, aynı seviye
+    const THRUST_BASE = 0.25;
+    const REVERSE_BASE = 0.50;
 
     function applyMasterVolume(){
       const m = audio.enabled ? audio.master : 0;
@@ -210,13 +208,11 @@
       audio.thrust.volume = THRUST_BASE * m;
       audio.reverse.volume = REVERSE_BASE * m;
       audio.approach.volume = 0.85 * m;
-      // UI persist
       localStorage.setItem('audioVolume', String(audio.master));
       localStorage.setItem('audioEnabled', audio.enabled ? '1':'0');
     }
     applyMasterVolume();
 
-    // UI
     const btnToggle = document.getElementById('audioToggle');
     const rngVol = document.getElementById('audioVolume');
     btnToggle.setAttribute('aria-pressed', audio.enabled ? 'true':'false');
@@ -229,10 +225,8 @@
       btnToggle.textContent = audio.enabled ? '🔊' : '🔇';
       applyMasterVolume();
       if(!audio.enabled){
-        // pause SFX; bg çalıyor olabilir ama volume 0 olacağı için duyulmaz
         audio.thrust.pause(); audio.reverse.pause();
       } else {
-        // izin varsa bg’i sürdür
         if(audio.allowed) tryPlayBG();
       }
     });
@@ -245,17 +239,16 @@
     function tryPlayBG(){
       if(!audio.allowed) return;
       if(audio.enabled){
-        audio.bg.play().catch(()=>{ /* tarayıcı izin vermezse ilk etkileşimi bekleriz */ });
+        audio.bg.play().catch(()=>{});
       }
     }
 
-    // İlk izin: Start’a basınca kayıt
     function grantAudioAndStart(){
       audio.allowed = true;
       localStorage.setItem('audioAllowed','1');
       tryPlayBG();
     }
-    // Sayfa yenilense bile ilk kullanıcı etkileşimiyle başlat (tık/tuş/scroll)
+
     const oneShotResume = () => {
       if(audio.allowed){ tryPlayBG(); }
       window.removeEventListener('pointerdown', oneShotResume);
@@ -266,11 +259,9 @@
     window.addEventListener('keydown', oneShotResume, {once:true});
     window.addEventListener('wheel', oneShotResume, {once:true, passive:true});
 
-    // Quick View sırasında BG’yi kısmak için basit fade
-    let bgTargetMul = 1.0; // 1 normal, 0.5 yarım gibi
-    function setBGDimmed(dim){ bgTargetMul = dim ? 0.5 : 1.0; } // %50’ye çekeriz
+    let bgTargetMul = 1.0;
+    function setBGDimmed(dim){ bgTargetMul = dim ? 0.5 : 1.0; }
     function tickBG(dt){
-      // arkaplan için yumuşak geçiş
       const cur = audio.bg.volume;
       const desired = (0.5 * audio.master) * (audio.enabled ? 1:0) * bgTargetMul;
       const lerped = cur + (desired - cur) * Math.min(1, dt*6);
@@ -285,7 +276,7 @@
       ? '<b>Mobile</b> — This space tour shines on desktop! Try the Basic Portfolio for now.'
       : '<b>Desktop</b> — Mouse: turn · <b>W/S</b> forward/back · <b>A/D</b> yaw · Near planet: <b>E</b> view · In modal: <b>Q</b> close';
 
-    /* ---------- Projeler (kısaltılmış; değişmedi) ---------- */
+    /* ---------- Projeler (fallback) ---------- */
     const FALLBACK_PROJECTS = [
       {id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg',type:'moon',
        video:'media/project1/video.mp4', gifs:['media/project1/gif1.gif','media/project1/gif2.gif'], images:['media/project1/img1.jpg','media/project1/img2.jpg','media/project1/img3.jpg'], description:'Placeholder — explain the piece here.'},
@@ -516,13 +507,13 @@
       if(!controlsEnabled) return;
       if(e.code in keys) keys[e.code]=true;
 
-      if(e.code==='KeyW'){ // thrust start
+      if(e.code==='KeyW'){
         if(audio.enabled && audio.allowed){
           if(audio.reverse.currentTime>0 && !audio.reverse.paused) audio.reverse.pause();
           if(audio.thrust.paused) audio.thrust.play().catch(()=>{});
         }
       }
-      if(e.code==='KeyS'){ // reverse start
+      if(e.code==='KeyS'){
         if(audio.enabled && audio.allowed){
           if(audio.thrust.currentTime>0 && !audio.thrust.paused) audio.thrust.pause();
           if(audio.reverse.paused) audio.reverse.play().catch(()=>{});
@@ -534,24 +525,12 @@
       if(e.code in keys) keys[e.code]=false;
 
       if(e.code==='KeyW'){
-        // W bırakınca thrust beklemeye al
         if(!keys.KeyS && audio.thrust.currentTime>0) audio.thrust.pause();
       }
       if(e.code==='KeyS'){
-        // S bırakınca reverse beklemeye al
         if(!keys.KeyW && audio.reverse.currentTime>0) audio.reverse.pause();
       }
     });
-
-    let lastX=null,lastY=null,yawVel=0,pitchVel=0; 
-    const M_SENS_X=.0048, M_SENS_Y=.0042, YAW_D=.90, PITCH_D=.90, MAX_YAW=2.8;
-    addEventListener('mousemove',e=>{
-      if(!controlsEnabled||isTouch) return;
-      if(lastX===null){lastX=e.clientX;lastY=e.clientY;return;}
-      const dx=e.clientX-lastX,dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY;
-      yawVel += dx*M_SENS_X; pitchVel += -dy*M_SENS_Y;
-    }, {passive:true});
-    addEventListener('mouseleave',()=>{lastX=lastY=null;}); addEventListener('blur',()=>{lastX=lastY=null;});
 
     /* ---------- Movement + collisions ---------- */
     let velF=0,yaw=0,pitch=0,throttle=0,prevThrottle=0,turnKeyVel=0;
@@ -590,8 +569,8 @@
       if(!isTouch){ if(keys.KeyW)fwd+=1; if(keys.KeyS)fwd-=1; if(keys.KeyD)turnKey-=1; if(keys.KeyA)turnKey+=1; }
       inputFwd = fwd;
 
-      yawVel*=Math.pow(YAW_D,dt*60); pitchVel*=Math.pow(PITCH_D,dt*60); turnKeyVel=THREE.MathUtils.damp(turnKeyVel,turnKey*1.2,6,dt);
-      const yawRate=THREE.MathUtils.clamp((yawVel+turnKeyVel)*3.0,-MAX_YAW,MAX_YAW), pitchRate=THREE.MathUtils.clamp(pitchVel*3.0,-1.6,1.6);
+      yawVel*=Math.pow(0.90,dt*60); pitchVel*=Math.pow(0.90,dt*60); turnKeyVel=THREE.MathUtils.damp(turnKeyVel,turnKey*1.2,6,dt);
+      const yawRate=THREE.MathUtils.clamp((yawVel+turnKeyVel)*3.0,-2.8,2.8), pitchRate=THREE.MathUtils.clamp(pitchVel*3.0,-1.6,1.6);
       yaw+=yawRate*dt; pitch+=pitchRate*dt; pitch=clamp(pitch,-Math.PI/3,Math.PI/3);
 
       const ACC=26, MAX=26, DRAG_C=.985, DRAG_A=.96, DRAG_B=.90;
@@ -637,11 +616,10 @@
           vwGifs=document.getElementById('vwGifs'), vwImages=document.getElementById('vwImages'),
           vwDesc=document.getElementById('vwDesc');
 
-    // Ses açık olacak projeler
-    const SOUND_ON = new Set(['p3','p4','p6','p8','p9']);
+    const SOUND_ON = new Set(['p3','p4','p6','p8','p9']); // (artık kullanılmıyor ama dursun)
 
     let nearest=null, PROJECTS=[];
-    let hintActive = false; // pill aktif mi
+    let hintActive = false;
     function updateCardsAndHint(){
       const W=innerWidth,H=innerHeight; let best=null,dmin=Infinity;
       for(const {el,obj,pill} of cardsRef){
@@ -659,7 +637,6 @@
       const TH=28; const prevNearest = nearest;
       nearest=(best&&dmin<TH)?best:null;
 
-      // Pill görünürlüğü ve yaklaşma sesi
       const shouldBeActive = !!(nearest && controlsEnabled && !qv.classList.contains('show'));
       if(shouldBeActive){
         const ref=cardsRef.find(c=>c.obj===nearest);
@@ -668,10 +645,9 @@
           ref.pill.classList.add('show');
         }
       }
-      // state değişimi: pasif -> aktif anında approach sesi çal
       if(!hintActive && shouldBeActive){
         const now = performance.now();
-        if(now - audio.lastApproachAt > 900){ // küçük debounce
+        if(now - audio.lastApproachAt > 900){
           if(audio.enabled && audio.allowed){
             audio.approach.currentTime = 0;
             audio.approach.play().catch(()=>{});
@@ -689,7 +665,6 @@
       qvMedia.style.backgroundImage=`url('${p.cover||''}')`;
       qv.style.display='flex'; qv.classList.add('show'); qv.setAttribute('aria-hidden','false');
 
-      // quickview açılma sesi + bg kısmak
       if(audio.enabled && audio.allowed){
         audio.popup.currentTime = 0;
         audio.popup.play().catch(()=>{});
@@ -705,8 +680,8 @@
       });
       root.querySelectorAll('iframe').forEach(f=>{
         try {
-          f.contentWindow?.postMessage(JSON.stringify({event:'command', func:'stopVideo'}), '*');
-          f.contentWindow?.postMessage('{"method":"pause"}', '*');
+          f.contentWindow?.postMessage(JSON.stringify({event:'command', func:'stopVideo'}), '*'); // YouTube
+          f.contentWindow?.postMessage('{"method":"pause"}', '*'); // Vimeo
         } catch {}
       });
     }
@@ -716,7 +691,7 @@
       qv.classList.remove('show');
       qv.style.display='none';
       qv.setAttribute('aria-hidden','true');
-      setBGDimmed(false); // geri yükselt
+      setBGDimmed(false);
       controlsEnabled=true;
     }
     document.getElementById('qvExit').addEventListener('click',qvCloseFn);
@@ -725,94 +700,77 @@
       if(img.naturalHeight > img.naturalWidth){ img.classList.add('portrait'); }
     }
 
-  function openViewer(p){
-  qvCloseFn();
-  vwTitle.textContent = p.title;
-  vwTag.textContent   = p.tag || '';
-  vwDesc.textContent  = p.description || '';
-  vwVideo.innerHTML   = '';
-  vwGifs.innerHTML    = '';
-  vwImages.innerHTML  = '';
+    /* ---------- VIMEO PLAYER SADE GÖMME ---------- */
+    function openViewer(p){
+      qvCloseFn();
+      vwTitle.textContent = p.title;
+      vwTag.textContent   = p.tag || '';
+      vwDesc.textContent  = p.description || '';
+      vwVideo.innerHTML   = '';
+      vwGifs.innerHTML    = '';
+      vwImages.innerHTML  = '';
 
-  // --- Sadece Vimeo embed (muted+background: görünür ve autoplay garantili) ---
-  if (p.vimeo && p.vimeo.trim() !== '') {
-    vwVideo.style.display = '';
+      // Sadece Vimeo: p.vimeo bekleniyor
+      if (p.vimeo && p.vimeo.trim() !== '') {
+        vwVideo.style.display = '';
 
-    // https://vimeo.com/123456789  veya https://player.vimeo.com/video/123456789 destekli
-    const m = p.vimeo.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-    const vidId = m ? m[1] : null;
+        // vimeo.com/123456789 veya player.vimeo.com/video/123456789
+        const m = p.vimeo.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+        const vidId = m ? m[1] : null;
+        const src = vidId
+          ? `https://player.vimeo.com/video/${vidId}`
+          : p.vimeo.replace('vimeo.com/', 'player.vimeo.com/video/');
 
-    // Player URL (background mod: kontroller yok, autoplay için zorunlu olarak muted=1)
-    const base = vidId
-      ? `https://player.vimeo.com/video/${vidId}`
-      : p.vimeo.replace('vimeo.com/', 'player.vimeo.com/video/');
-    const sep  = base.includes('?') ? '&' : '?';
+        const iframe = document.createElement('iframe');
+        iframe.src = src;                     // autoplay, mute vs. YOK
+        iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+        iframe.setAttribute('allowfullscreen','');
+        iframe.style.width  = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = '0';
+        iframe.addEventListener('contextmenu', e=>e.preventDefault());
+        vwVideo.appendChild(iframe);
+      } else {
+        vwVideo.style.display = 'none';
+      }
 
-    // Not: background=1 olunca Vimeo sesi otomatik kapatır; görüntü kesin gelir.
-    const url = `${base}${sep}autoplay=1&muted=1&loop=1&background=1&autopause=0&playsinline=1&dnt=1`;
+      // GIF’ler
+      if (p.gifs && p.gifs.length){
+        vwGifs.style.display='grid';
+        p.gifs.slice(0,2).forEach(src=>{
+          const img=new Image();
+          img.onload=()=>{ if(img.naturalHeight > img.naturalWidth){ img.classList.add('portrait'); } };
+          img.src=src; img.loading='lazy';
+          img.draggable=false;
+          img.addEventListener('contextmenu',e=>e.preventDefault());
+          img.addEventListener('dragstart',e=>e.preventDefault());
+          vwGifs.appendChild(img);
+        });
+      } else {
+        vwGifs.style.display='none';
+      }
 
-    const iframe = document.createElement('iframe');
-    iframe.src = url;
-    iframe.allow = 'autoplay; fullscreen; picture-in-picture';
-    iframe.setAttribute('allowfullscreen','');
-    iframe.style.width  = '100%';
-    iframe.style.height = '100%';
-    iframe.style.border = '0';
+      // Görseller
+      if (p.images && p.images.length){
+        vwImages.style.display='grid';
+        p.images.slice(0,6).forEach(src=>{
+          const img=new Image();
+          img.onload=()=>{ if(img.naturalHeight > img.naturalWidth){ img.classList.add('portrait'); } };
+          img.src=src; img.loading='lazy';
+          img.draggable=false;
+          img.addEventListener('contextmenu',e=>e.preventDefault());
+          img.addEventListener('dragstart',e=>e.preventDefault());
+          vwImages.appendChild(img);
+        });
+      } else {
+        vwImages.style.display='none';
+      }
 
-    // İstenirse tıklanamaz yapabilirsin; görünürlüğü etkilemez:
-    // iframe.style.pointerEvents = 'none';
-
-    iframe.addEventListener('contextmenu', e => e.preventDefault());
-
-    // Bazı tarayıcılarda ilk kareyi hızlandırmak için play komutu gönder
-    iframe.onload = () => {
-      try {
-        iframe.contentWindow.postMessage({ method: 'play' }, '*');
-      } catch {}
-    };
-
-    vwVideo.appendChild(iframe);
-  } else {
-    vwVideo.style.display = 'none';
-  }
-
-  // --- GIF’ler ---
-  if (p.gifs && p.gifs.length){
-    vwGifs.style.display='grid';
-    p.gifs.slice(0,2).forEach(src=>{
-      const img=new Image();
-      img.onload=()=>{ if(img.naturalHeight > img.naturalWidth){ img.classList.add('portrait'); } };
-      img.src=src; img.loading='lazy';
-      img.draggable=false;
-      img.addEventListener('contextmenu',e=>e.preventDefault());
-      img.addEventListener('dragstart',e=>e.preventDefault());
-      vwGifs.appendChild(img);
-    });
-  } else {
-    vwGifs.style.display='none';
-  }
-
-  // --- Görseller ---
-  if (p.images && p.images.length){
-    vwImages.style.display='grid';
-    p.images.slice(0,6).forEach(src=>{
-      const img=new Image();
-      img.onload=()=>{ if(img.naturalHeight > img.naturalWidth){ img.classList.add('portrait'); } };
-      img.src=src; img.loading='lazy';
-      img.draggable=false;
-      img.addEventListener('contextmenu',e=>e.preventDefault());
-      img.addEventListener('dragstart',e=>e.preventDefault());
-      vwImages.appendChild(img);
-    });
-  } else {
-    vwImages.style.display='none';
-  }
-
-  viewer.style.display='flex';
-  viewer.classList.add('show');
-  viewer.setAttribute('aria-hidden','false');
-  controlsEnabled=false;
-}
+      viewer.style.display='flex';
+      viewer.classList.add('show');
+      viewer.setAttribute('aria-hidden','false');
+      controlsEnabled=false;
+    }
 
     function closeViewer(){
       stopAllMedia(viewer);
@@ -844,7 +802,7 @@
       if (t && (t.tagName==='IMG' || t.tagName==='VIDEO')) e.preventDefault();
     });
 
-    /* ---------- AI ships (değişmedi) ---------- */
+    /* ---------- AI ships ---------- */
     function makeEmitter(){
       const flames=[...Array(32)].map(()=>makeSprite(flameMat));
       const smokes=[...Array(20)].map(()=>makeSprite(smokeMat));
@@ -1023,7 +981,7 @@
         const R=THREE.MathUtils.randFloat(RMIN,RMAX), th=(i/PROJECTS.length)*Math.PI*2+Math.random()*0.6;
         POS.push([Math.cos(th)*R+THREE.MathUtils.randFloatSpread(20), THREE.MathUtils.randFloatSpread(18), Math.sin(th)*R+THREE.MathUtils.randFloatSpread(20)]);
       }
-      for(let i=POS.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [POS[i],POS[j]]=[POS[j],POS[i]];}
+      for(let i=POS.length-1;i>0;i>0){const j=Math.floor(Math.random()*(i+1)); [POS[i],POS[j]]=[POS[j],POS[i]];}
 
       PROJECTS.forEach((p,i)=>{
         const r=THREE.MathUtils.randFloat(9,16), m=makePlanet(r, p.type||'moon', i*9973+123);
@@ -1057,7 +1015,6 @@
       buildPlanetsFromProjects(PROJECTS);
       maybeAutoStart();
       loop();
-      // İlk izin varsa bg’yi dene
       tryPlayBG();
     })();
 

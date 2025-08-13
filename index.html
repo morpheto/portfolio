@@ -725,84 +725,87 @@
       if(img.naturalHeight > img.naturalWidth){ img.classList.add('portrait'); }
     }
 
-    function openViewer(p){
-      qvCloseFn();
-      vwTitle.textContent=p.title; vwTag.textContent=p.tag||''; vwDesc.textContent=p.description||'';
-      vwVideo.innerHTML=''; vwGifs.innerHTML=''; vwImages.innerHTML='';
+  function openViewer(p){
+  qvCloseFn();
+  vwTitle.textContent = p.title;
+  vwTag.textContent   = p.tag || '';
+  vwDesc.textContent  = p.description || '';
+  vwVideo.innerHTML   = '';
+  vwGifs.innerHTML    = '';
+  vwImages.innerHTML  = '';
 
-      if (p.video && p.video.trim() !== '') {
-        vwVideo.style.display = '';
-        if (/\.(mp4|webm)$/i.test(p.video)) {
-          const vid = document.createElement('video');
-          vid.autoplay = true; vid.loop = true; vid.playsInline = true; vid.preload = 'metadata';
-          vid.src = p.video;
-          vid.controls = false;
-          vid.setAttribute('controlsList','nodownload noplaybackrate noremoteplayback');
-          vid.setAttribute('disablePictureInPicture','');
-          vid.addEventListener('contextmenu', e=>e.preventDefault());
-          vid.addEventListener('dragstart', e=>e.preventDefault());
-          vid.addEventListener('pointerdown', e=>e.preventDefault());
+  // --- Sadece Vimeo embed ---
+  if (p.vimeo && p.vimeo.trim() !== '') {
+    vwVideo.style.display = '';
 
-          if (SOUND_ON.has(p.id)) {
-            vid.muted = false;
-            // p6 için özel ses seviyesi
-            vid.volume = (p.id === 'p6') ? 0.15 : 1.0;
+    // Vimeo ID'sini URL'den çek (hem vimeo.com/ID hem player.vimeo.com/video/ID destekli)
+    const m = p.vimeo.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    const vidId = m ? m[1] : null;
 
-            const tryPlay = () => vid.play().catch(()=>{});
-            vid.addEventListener('canplay', tryPlay, { once: true });
-            window.addEventListener('click', tryPlay, { once: true });
-          } else {
-            vid.muted = true;
-          }
-          vwVideo.appendChild(vid);
-        } else {
-          const sep = p.video.includes('?') ? '&' : '?';
-          const muteParam = SOUND_ON.has(p.id) ? 'mute=0' : 'mute=1';
-          const url = p.video + sep + `autoplay=1&${muteParam}&loop=1&playsinline=1`;
-          const iframe = document.createElement('iframe');
-          iframe.src = url;
-          iframe.allow = 'autoplay; fullscreen; picture-in-picture';
-          iframe.style.pointerEvents = 'none';
-          iframe.addEventListener('contextmenu', e=>e.preventDefault());
-          vwVideo.appendChild(iframe);
-        }
-      } else {
-        vwVideo.style.display = 'none';
-      }
+    // Ses (SOUND_ON’da yoksa muted=1). Vimeo’da fractional volume için API gerekir;
+    // burada yalnızca mute on/off kontrol ediyoruz.
+    const muted = SOUND_ON.has(p.id) ? 0 : 1;
 
-      if(p.gifs && p.gifs.length){
-        vwGifs.style.display='grid';
-        p.gifs.slice(0,2).forEach(src=>{
-          const img=new Image();
-          img.onload=()=>markPortrait(img);
-          img.src=src; img.loading='lazy';
-          img.draggable=false;
-          img.addEventListener('contextmenu',e=>e.preventDefault());
-          img.addEventListener('dragstart',e=>e.preventDefault());
-          vwGifs.appendChild(img);
-        });
-      } else {
-        vwGifs.style.display='none';
-      }
+    const base = vidId
+      ? `https://player.vimeo.com/video/${vidId}`
+      : p.vimeo.replace('vimeo.com/', 'player.vimeo.com/video/');
 
-      if(p.images && p.images.length){
-        vwImages.style.display='grid';
-        p.images.slice(0,6).forEach(src=>{
-          const img=new Image();
-          img.onload=()=>markPortrait(img);
-          img.src=src; img.loading='lazy';
-          img.draggable=false;
-          img.addEventListener('contextmenu',e=>e.preventDefault());
-          img.addEventListener('dragstart',e=>e.preventDefault());
-          vwImages.appendChild(img);
-        });
-      } else {
-        vwImages.style.display='none';
-      }
+    const sep = base.includes('?') ? '&' : '?';
+    const url = `${base}${sep}autoplay=1&muted=${muted}&loop=1&autopause=0&playsinline=1&dnt=1&title=0&byline=0&portrait=0`;
 
-      viewer.style.display='flex'; viewer.classList.add('show'); viewer.setAttribute('aria-hidden','false');
-      controlsEnabled=false;
-    }
+    const iframe = document.createElement('iframe');
+    iframe.src = url;
+    iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+    iframe.setAttribute('allowfullscreen','');
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = '0';
+    iframe.style.pointerEvents = 'none'; // tıklanamaz
+    iframe.addEventListener('contextmenu', e => e.preventDefault());
+
+    vwVideo.appendChild(iframe);
+  } else {
+    // vimeo linki yoksa video alanını gizle
+    vwVideo.style.display = 'none';
+  }
+
+  // --- GIF’ler ---
+  if (p.gifs && p.gifs.length){
+    vwGifs.style.display='grid';
+    p.gifs.slice(0,2).forEach(src=>{
+      const img=new Image();
+      img.onload=()=>{ if(img.naturalHeight > img.naturalWidth){ img.classList.add('portrait'); } };
+      img.src=src; img.loading='lazy';
+      img.draggable=false;
+      img.addEventListener('contextmenu',e=>e.preventDefault());
+      img.addEventListener('dragstart',e=>e.preventDefault());
+      vwGifs.appendChild(img);
+    });
+  } else {
+    vwGifs.style.display='none';
+  }
+
+  // --- Görseller ---
+  if (p.images && p.images.length){
+    vwImages.style.display='grid';
+    p.images.slice(0,6).forEach(src=>{
+      const img=new Image();
+      img.onload=()=>{ if(img.naturalHeight > img.naturalWidth){ img.classList.add('portrait'); } };
+      img.src=src; img.loading='lazy';
+      img.draggable=false;
+      img.addEventListener('contextmenu',e=>e.preventDefault());
+      img.addEventListener('dragstart',e=>e.preventDefault());
+      vwImages.appendChild(img);
+    });
+  } else {
+    vwImages.style.display='none';
+  }
+
+  viewer.style.display='flex';
+  viewer.classList.add('show');
+  viewer.setAttribute('aria-hidden','false');
+  controlsEnabled=false;
+}
 
     function closeViewer(){
       stopAllMedia(viewer);

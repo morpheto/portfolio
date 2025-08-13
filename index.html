@@ -185,7 +185,7 @@
     /* ---------- Audio ---------- */
     const audio = {
       allowed: localStorage.getItem('audioAllowed') === '1',
-      enabled: localStorage.getItem('audioEnabled') !== '0',
+      enabled: localStorage.getItem('audioEnabled') !== '0', // default true
       master: parseFloat(localStorage.getItem('audioVolume') || '0.7'),
       bg: new Audio('media/audio/space_hum.mp3'),
       popup: new Audio('media/audio/popup_open.wav'),
@@ -194,8 +194,14 @@
       approach: new Audio('media/audio/approach.mp3'),
       lastApproachAt: 0
     };
-    audio.bg.loop = true; audio.thrust.loop = true; audio.reverse.loop = true;
-    const THRUST_BASE = 0.25, REVERSE_BASE = 0.50;
+    // loop & base configs
+    audio.bg.loop = true;
+    audio.thrust.loop = true;
+    audio.reverse.loop = true;
+
+    // fixed base levels
+    const THRUST_BASE = 0.25;   // İstediğin throttle seviyesi
+    const REVERSE_BASE = 0.45;  // aynı klasörden, aynı seviye
 
     function applyMasterVolume(){
       const m = audio.enabled ? audio.master : 0;
@@ -204,11 +210,13 @@
       audio.thrust.volume = THRUST_BASE * m;
       audio.reverse.volume = REVERSE_BASE * m;
       audio.approach.volume = 0.85 * m;
+      // UI persist
       localStorage.setItem('audioVolume', String(audio.master));
       localStorage.setItem('audioEnabled', audio.enabled ? '1':'0');
     }
     applyMasterVolume();
 
+    // UI
     const btnToggle = document.getElementById('audioToggle');
     const rngVol = document.getElementById('audioVolume');
     btnToggle.setAttribute('aria-pressed', audio.enabled ? 'true':'false');
@@ -220,8 +228,13 @@
       btnToggle.setAttribute('aria-pressed', audio.enabled ? 'true':'false');
       btnToggle.textContent = audio.enabled ? '🔊' : '🔇';
       applyMasterVolume();
-      if(!audio.enabled){ audio.thrust.pause(); audio.reverse.pause(); }
-      else if(audio.allowed) tryPlayBG();
+      if(!audio.enabled){
+        // pause SFX; bg çalıyor olabilir ama volume 0 olacağı için duyulmaz
+        audio.thrust.pause(); audio.reverse.pause();
+      } else {
+        // izin varsa bg’i sürdür
+        if(audio.allowed) tryPlayBG();
+      }
     });
 
     rngVol.addEventListener('input', () => {
@@ -231,29 +244,33 @@
 
     function tryPlayBG(){
       if(!audio.allowed) return;
-      if(audio.enabled){ audio.bg.play().catch(()=>{}); }
+      if(audio.enabled){
+        audio.bg.play().catch(()=>{ /* tarayıcı izin vermezse ilk etkileşimi bekleriz */ });
+      }
     }
 
+    // İlk izin: Start’a basınca kayıt
     function grantAudioAndStart(){
       audio.allowed = true;
       localStorage.setItem('audioAllowed','1');
       tryPlayBG();
     }
-    // İlk kullanıcı etkileşimi gelince BG’yi dene (aynı handler’ı doğrudan kaldır)
+    // Sayfa yenilense bile ilk kullanıcı etkileşimiyle başlat (tık/tuş/scroll)
     const oneShotResume = () => {
-      if(audio.allowed) tryPlayBG();
+      if(audio.allowed){ tryPlayBG(); }
       window.removeEventListener('pointerdown', oneShotResume);
       window.removeEventListener('keydown', oneShotResume);
-      window.removeEventListener('wheel', oneShotResume);
+      window.removeEventListener('wheel', oneShotResume, {passive:true});
     };
     window.addEventListener('pointerdown', oneShotResume, {once:true});
     window.addEventListener('keydown', oneShotResume, {once:true});
     window.addEventListener('wheel', oneShotResume, {once:true, passive:true});
 
-    // Quick View sırasında BG kıs
-    let bgTargetMul = 1.0;
-    function setBGDimmed(dim){ bgTargetMul = dim ? 0.5 : 1.0; }
+    // Quick View sırasında BG’yi kısmak için basit fade
+    let bgTargetMul = 1.0; // 1 normal, 0.5 yarım gibi
+    function setBGDimmed(dim){ bgTargetMul = dim ? 0.5 : 1.0; } // %50’ye çekeriz
     function tickBG(dt){
+      // arkaplan için yumuşak geçiş
       const cur = audio.bg.volume;
       const desired = (0.5 * audio.master) * (audio.enabled ? 1:0) * bgTargetMul;
       const lerped = cur + (desired - cur) * Math.min(1, dt*6);
@@ -268,50 +285,26 @@
       ? '<b>Mobile</b> — This space tour shines on desktop! Try the Basic Portfolio for now.'
       : '<b>Desktop</b> — Mouse: turn · <b>W/S</b> forward/back · <b>A/D</b> yaw · Near planet: <b>E</b> view · In modal: <b>Q</b> close';
 
-    /* ---------- Projeler (FALLBACK: Vimeo ile) ---------- */
+    /* ---------- Projeler (kısaltılmış; değişmedi) ---------- */
     const FALLBACK_PROJECTS = [
-      { id:'p1', title:'Unfinished Flow', tag:'3D / Animation · Video Editing', type:'moon',
-        cover:'media/covers/p1.jpg', vimeo:'https://vimeo.com/1109722651',
-        gifs:['media/project1/gif1.gif','media/project1/gif2.gif','media/project1/gif3.gif','media/project1/gif4.gif','media/project1/gif5.gif','media/project1/gif6.gif'],
-        images:['media/project1/img1.jpg','media/project1/img2.jpg','media/project1/img3.jpg','media/project1/img4.jpg','media/project1/img5.jpg','media/project1/img6.jpg'],
-        description:'A partially completed 3D animated music video for a rap artist.' },
-      { id:'p2', title:'Odin Pendant Animation', tag:'3D / Motion', type:'rocky',
-        cover:'media/covers/p2.jpg', vimeo:'https://vimeo.com/1109722821',
-        gifs:['media/project2/gif1.gif','media/project2/gif2.gif'],
-        images:['media/project2/img1.jpg','media/project2/img2.jpg','media/project2/img3.jpg'],
-        description:'Norse-inspired pendant animation.' },
-      { id:'p3', title:'MediaPipe + Ableton + PointCloud', tag:'Interactive · TouchDesigner', type:'gas',
-        cover:'media/covers/p3.jpg', vimeo:'https://vimeo.com/1109723028',
-        gifs:['media/project3/gif1.gif','media/project3/gif2.gif'],
-        images:['media/project3/img1.jpg','media/project3/img2.jpg'],
-        description:'Hand‑tracked point cloud control.' },
-      { id:'p4', title:'Nike Air Jordan CGI', tag:'Product · CGI', type:'rocky',
-        cover:'media/covers/p4.jpg', vimeo:'https://vimeo.com/1109723088',
-        images:['media/project4/img1.jpg'],
-        description:'CGI product placement in architecture.' },
-      { id:'p5', title:'Bic Mini Lighter Spider Case', tag:'Product Design', type:'moon',
-        cover:'media/covers/p5.jpg',
-        images:['media/project5/img1.jpg','media/project5/img2.jpg','media/project5/img3.jpg','media/project5/img4.jpg','media/project5/img5.jpg','media/project5/img6.jpg'],
-        description:'Custom silver lighter case.' },
-      { id:'p6', title:'Space Keycap Animation', tag:'3D / Motion', type:'gas',
-        cover:'media/covers/p6.jpg', vimeo:'https://vimeo.com/1109723128',
-        gifs:['media/project6/gif1.gif','media/project6/gif2.gif'],
-        images:['media/project6/img1.jpg','media/project6/img2.jpg','media/project6/img3.jpg'],
-        description:'Custom spacebar keycap animation.' },
-      { id:'p7', title:'Oxidized Silver Jewelry — Maverick', tag:'Materials · LookDev', type:'rocky',
-        cover:'media/covers/p7.jpg', vimeo:'https://vimeo.com/1109723151',
-        images:['media/project7/img1.jpg','media/project7/img2.jpg','media/project7/img3.jpg','media/project7/img4.jpg','media/project7/img5.jpg'],
-        description:'Realistic oxidized silver material.' },
-      { id:'p8', title:'YouTube Channel Intro', tag:'Motion · 3D + Audio', type:'moon',
-        cover:'media/covers/p8.jpg', vimeo:'https://vimeo.com/1109723216',
-        gifs:['media/project8/gif1.gif','media/project8/gif2.gif'],
-        images:['media/project8/img1.jpg','media/project8/img2.jpg','media/project8/img3.jpg','media/project8/img4.jpg','media/project8/img5.jpg'],
-        description:'Intro for Punkart channel.' },
-      { id:'p9', title:'AI Visualizer from Image', tag:'Concept · AI', type:'gas',
-        cover:'media/covers/p9.jpg', vimeo:'https://vimeo.com/1109723274',
-        gifs:['media/project9/gif1.gif','media/project9/gif2.gif'],
-        images:['media/project9/img1.jpg','media/project9/img2.jpg','media/project9/img3.jpg','media/project9/img4.jpg','media/project9/img5.jpg','media/project9/img6.jpg'],
-        description:'AI‑driven visualizer.' }
+      {id:'p1',title:'Audio Reactive + Hand Tracked Visualizer',tag:'TouchDesigner',cover:'media/covers/p1.jpg',type:'moon',
+       video:'media/project1/video.mp4', gifs:['media/project1/gif1.gif','media/project1/gif2.gif'], images:['media/project1/img1.jpg','media/project1/img2.jpg','media/project1/img3.jpg'], description:'Placeholder — explain the piece here.'},
+      {id:'p2',title:'Odin Pendant Animation',tag:'3D Works',cover:'media/covers/p2.jpg',type:'rocky',
+       video:'media/project2/video.mp4', gifs:['media/project2/gif1.gif','media/project2/gif2.gif'], images:['media/project2/img1.jpg','media/project2/img2.jpg','media/project2/img3.jpg'], description:'Placeholder.'},
+      {id:'p3',title:'MediaPipe + Ableton + PointCloud',tag:'Interactive',cover:'media/covers/p3.jpg',type:'gas',
+       video:'media/project3/video.mp4', gifs:['media/project3/gif1.gif','media/project3/gif2.gif'], images:['media/project3/img1.jpg','media/project3/img2.jpg','media/project3/img3.jpg'], description:'Placeholder.'},
+      {id:'p4',title:'Nike Air Jordan CGI',tag:'CGI',cover:'media/covers/p4.jpg',type:'rocky',
+       video:'media/project4/video.mp4', gifs:['media/project4/gif1.gif','media/project4/gif2.gif'], images:['media/project4/img1.jpg','media/project4/img2.jpg','media/project4/img3.jpg'], description:'Placeholder.'},
+      {id:'p5',title:'Bic Mini Lighter Spider Case',tag:'Product CGI',cover:'media/covers/p5.jpg',type:'moon',
+       video:'media/project5/video.mp4', gifs:['media/project5/gif1.gif','media/project5/gif2.gif'], images:['media/project5/img1.jpg','media/project5/img2.jpg','media/project5/img3.jpg'], description:'Placeholder.'},
+      {id:'p6',title:'Space Keycap Animation',tag:'3D Works',cover:'media/covers/p6.jpg',type:'gas',
+       video:'media/project6/video.mp4', gifs:['media/project6/gif1.gif','media/project6/gif2.gif'], images:['media/project6/img1.jpg','media/project6/img2.jpg','media/project6/img3.jpg'], description:'Placeholder.'},
+      {id:'p7',title:'Oxidized Silver Jewelry — Maverick',tag:'LookDev',cover:'media/covers/p7.jpg',type:'rocky',
+       video:'media/project7/video.mp4', gifs:['media/project7/gif1.gif','media/project7/gif2.gif'], images:['media/project7/img1.jpg','media/project7/img2.jpg','media/project7/img3.jpg'], description:'Placeholder.'},
+      {id:'p8',title:'YouTube Channel Intro',tag:'Motion · Audio',cover:'media/covers/p8.jpg',type:'moon',
+       video:'media/project8/video.mp4', gifs:['media/project8/gif1.gif','media/project8/gif2.gif'], images:['media/project8/img1.jpg','media/project8/img2.jpg','media/project8/img3.jpg'], description:'Placeholder.'},
+      {id:'p9',title:'AI Visualizer from Image',tag:'AI Visuals',cover:'media/covers/p9.jpg',type:'gas',
+       video:'media/project9/video.mp4', gifs:['media/project9/gif1.gif','media/project9/gif2.gif'], images:['media/project9/img1.jpg','media/project9/img2.jpg','media/project9/img3.jpg'], description:'Placeholder.'}
     ];
 
     async function loadProjects(){
@@ -351,9 +344,9 @@
     scene.add(new THREE.HemisphereLight(0x89b4ff, 0x05060a, .55));
     const sun = new THREE.DirectionalLight(0xffffff,.85); sun.position.set(160,220,120); scene.add(sun);
 
-    /* ---------- Stars (performans için 2500→1200) ---------- */
+    /* ---------- Stars ---------- */
     (function(){
-      const g=new THREE.BufferGeometry(), N=1200, pos=new Float32Array(N*3);
+      const g=new THREE.BufferGeometry(), N=2500, pos=new Float32Array(N*3);
       for(let i=0;i<N;i++){const R=900+Math.random()*1400, th=Math.random()*Math.PI*2, u=Math.random()*2-1, s=Math.sqrt(1-u*u);
         pos[i*3]=R*s*Math.cos(th); pos[i*3+1]=R*u*0.7; pos[i*3+2]=R*s*Math.sin(th);} 
       g.setAttribute('position', new THREE.BufferAttribute(pos,3));
@@ -523,15 +516,15 @@
       if(!controlsEnabled) return;
       if(e.code in keys) keys[e.code]=true;
 
-      if(e.code==='KeyW'){
+      if(e.code==='KeyW'){ // thrust start
         if(audio.enabled && audio.allowed){
-          if(!audio.reverse.paused) audio.reverse.pause();
+          if(audio.reverse.currentTime>0 && !audio.reverse.paused) audio.reverse.pause();
           if(audio.thrust.paused) audio.thrust.play().catch(()=>{});
         }
       }
-      if(e.code==='KeyS'){
+      if(e.code==='KeyS'){ // reverse start
         if(audio.enabled && audio.allowed){
-          if(!audio.thrust.paused) audio.thrust.pause();
+          if(audio.thrust.currentTime>0 && !audio.thrust.paused) audio.thrust.pause();
           if(audio.reverse.paused) audio.reverse.play().catch(()=>{});
         }
       }
@@ -540,8 +533,14 @@
       if(!controlsEnabled) return;
       if(e.code in keys) keys[e.code]=false;
 
-      if(e.code==='KeyW'){ if(!keys.KeyS && audio.thrust.currentTime>0) audio.thrust.pause(); }
-      if(e.code==='KeyS'){ if(!keys.KeyW && audio.reverse.currentTime>0) audio.reverse.pause(); }
+      if(e.code==='KeyW'){
+        // W bırakınca thrust beklemeye al
+        if(!keys.KeyS && audio.thrust.currentTime>0) audio.thrust.pause();
+      }
+      if(e.code==='KeyS'){
+        // S bırakınca reverse beklemeye al
+        if(!keys.KeyW && audio.reverse.currentTime>0) audio.reverse.pause();
+      }
     });
 
     let lastX=null,lastY=null,yawVel=0,pitchVel=0; 
@@ -638,10 +637,11 @@
           vwGifs=document.getElementById('vwGifs'), vwImages=document.getElementById('vwImages'),
           vwDesc=document.getElementById('vwDesc');
 
+    // Ses açık olacak projeler
     const SOUND_ON = new Set(['p3','p4','p6','p8','p9']);
 
     let nearest=null, PROJECTS=[];
-    let hintActive = false;
+    let hintActive = false; // pill aktif mi
     function updateCardsAndHint(){
       const W=innerWidth,H=innerHeight; let best=null,dmin=Infinity;
       for(const {el,obj,pill} of cardsRef){
@@ -656,16 +656,22 @@
         if(pill){ pill.style.opacity=0; pill.classList.remove('show'); }
         const d=ship.position.distanceTo(obj.position); if(d<dmin){dmin=d; best=obj;}
       }
-      const TH=28; nearest=(best&&dmin<TH)?best:null;
+      const TH=28; const prevNearest = nearest;
+      nearest=(best&&dmin<TH)?best:null;
 
+      // Pill görünürlüğü ve yaklaşma sesi
       const shouldBeActive = !!(nearest && controlsEnabled && !qv.classList.contains('show'));
       if(shouldBeActive){
         const ref=cardsRef.find(c=>c.obj===nearest);
-        if(ref && ref.pill){ ref.pill.style.opacity = 0.98; ref.pill.classList.add('show'); }
+        if(ref && ref.pill){
+          ref.pill.style.opacity = 0.98;
+          ref.pill.classList.add('show');
+        }
       }
+      // state değişimi: pasif -> aktif anında approach sesi çal
       if(!hintActive && shouldBeActive){
         const now = performance.now();
-        if(now - audio.lastApproachAt > 900){
+        if(now - audio.lastApproachAt > 900){ // küçük debounce
           if(audio.enabled && audio.allowed){
             audio.approach.currentTime = 0;
             audio.approach.play().catch(()=>{});
@@ -683,6 +689,7 @@
       qvMedia.style.backgroundImage=`url('${p.cover||''}')`;
       qv.style.display='flex'; qv.classList.add('show'); qv.setAttribute('aria-hidden','false');
 
+      // quickview açılma sesi + bg kısmak
       if(audio.enabled && audio.allowed){
         audio.popup.currentTime = 0;
         audio.popup.play().catch(()=>{});
@@ -698,8 +705,8 @@
       });
       root.querySelectorAll('iframe').forEach(f=>{
         try {
-          f.contentWindow?.postMessage('{"method":"pause"}', '*'); // Vimeo
-          f.contentWindow?.postMessage(JSON.stringify({event:'command', func:'stopVideo'}), '*'); // YouTube
+          f.contentWindow?.postMessage(JSON.stringify({event:'command', func:'stopVideo'}), '*');
+          f.contentWindow?.postMessage('{"method":"pause"}', '*');
         } catch {}
       });
     }
@@ -709,7 +716,7 @@
       qv.classList.remove('show');
       qv.style.display='none';
       qv.setAttribute('aria-hidden','true');
-      setBGDimmed(false);
+      setBGDimmed(false); // geri yükselt
       controlsEnabled=true;
     }
     document.getElementById('qvExit').addEventListener('click',qvCloseFn);
@@ -718,53 +725,80 @@
       if(img.naturalHeight > img.naturalWidth){ img.classList.add('portrait'); }
     }
 
-    /* ---------- VIEWER: Sade Vimeo Player ---------- */
     function openViewer(p){
       qvCloseFn();
       vwTitle.textContent=p.title; vwTag.textContent=p.tag||''; vwDesc.textContent=p.description||'';
       vwVideo.innerHTML=''; vwGifs.innerHTML=''; vwImages.innerHTML='';
 
-      // SADE: Görünür Vimeo player (autoplay/background yok)
-      if (p.vimeo && p.vimeo.trim() !== '') {
+      if (p.video && p.video.trim() !== '') {
         vwVideo.style.display = '';
-        const m = p.vimeo.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-        const vidId = m ? m[1] : null;
-        const embed = vidId ? `https://player.vimeo.com/video/${vidId}` : p.vimeo.replace('vimeo.com/', 'player.vimeo.com/video/');
-        const iframe = document.createElement('iframe');
-        iframe.src = embed; // sadece player
-        iframe.allow = 'fullscreen; picture-in-picture';
-        iframe.setAttribute('allowfullscreen','');
-        iframe.style.width='100%'; iframe.style.height='100%'; iframe.style.border='0';
-        vwVideo.appendChild(iframe);
+        if (/\.(mp4|webm)$/i.test(p.video)) {
+          const vid = document.createElement('video');
+          vid.autoplay = true; vid.loop = true; vid.playsInline = true; vid.preload = 'metadata';
+          vid.src = p.video;
+          vid.controls = false;
+          vid.setAttribute('controlsList','nodownload noplaybackrate noremoteplayback');
+          vid.setAttribute('disablePictureInPicture','');
+          vid.addEventListener('contextmenu', e=>e.preventDefault());
+          vid.addEventListener('dragstart', e=>e.preventDefault());
+          vid.addEventListener('pointerdown', e=>e.preventDefault());
+
+          if (SOUND_ON.has(p.id)) {
+            vid.muted = false;
+            // p6 için özel ses seviyesi
+            vid.volume = (p.id === 'p6') ? 0.4 : 1.0;
+
+            const tryPlay = () => vid.play().catch(()=>{});
+            vid.addEventListener('canplay', tryPlay, { once: true });
+            window.addEventListener('click', tryPlay, { once: true });
+          } else {
+            vid.muted = true;
+          }
+          vwVideo.appendChild(vid);
+        } else {
+          const sep = p.video.includes('?') ? '&' : '?';
+          const muteParam = SOUND_ON.has(p.id) ? 'mute=0' : 'mute=1';
+          const url = p.video + sep + `autoplay=1&${muteParam}&loop=1&playsinline=1`;
+          const iframe = document.createElement('iframe');
+          iframe.src = url;
+          iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+          iframe.style.pointerEvents = 'none';
+          iframe.addEventListener('contextmenu', e=>e.preventDefault());
+          vwVideo.appendChild(iframe);
+        }
       } else {
-        vwVideo.style.display='none';
+        vwVideo.style.display = 'none';
       }
 
-      // GIF
       if(p.gifs && p.gifs.length){
         vwGifs.style.display='grid';
         p.gifs.slice(0,2).forEach(src=>{
           const img=new Image();
           img.onload=()=>markPortrait(img);
-          img.src=src; img.loading='lazy'; img.draggable=false;
+          img.src=src; img.loading='lazy';
+          img.draggable=false;
           img.addEventListener('contextmenu',e=>e.preventDefault());
           img.addEventListener('dragstart',e=>e.preventDefault());
           vwGifs.appendChild(img);
         });
-      } else { vwGifs.style.display='none'; }
+      } else {
+        vwGifs.style.display='none';
+      }
 
-      // Görseller
       if(p.images && p.images.length){
         vwImages.style.display='grid';
         p.images.slice(0,6).forEach(src=>{
           const img=new Image();
           img.onload=()=>markPortrait(img);
-          img.src=src; img.loading='lazy'; img.draggable=false;
+          img.src=src; img.loading='lazy';
+          img.draggable=false;
           img.addEventListener('contextmenu',e=>e.preventDefault());
           img.addEventListener('dragstart',e=>e.preventDefault());
           vwImages.appendChild(img);
         });
-      } else { vwImages.style.display='none'; }
+      } else {
+        vwImages.style.display='none';
+      }
 
       viewer.style.display='flex'; viewer.classList.add('show'); viewer.setAttribute('aria-hidden','false');
       controlsEnabled=false;
@@ -800,7 +834,7 @@
       if (t && (t.tagName==='IMG' || t.tagName==='VIDEO')) e.preventDefault();
     });
 
-    /* ---------- AI ships ---------- */
+    /* ---------- AI ships (değişmedi) ---------- */
     function makeEmitter(){
       const flames=[...Array(32)].map(()=>makeSprite(flameMat));
       const smokes=[...Array(20)].map(()=>makeSprite(smokeMat));
@@ -979,7 +1013,7 @@
         const R=THREE.MathUtils.randFloat(RMIN,RMAX), th=(i/PROJECTS.length)*Math.PI*2+Math.random()*0.6;
         POS.push([Math.cos(th)*R+THREE.MathUtils.randFloatSpread(20), THREE.MathUtils.randFloatSpread(18), Math.sin(th)*R+THREE.MathUtils.randFloatSpread(20)]);
       }
-      for(let i=POS.length-1;i>0;i++){const j=Math.floor(Math.random()*(i+1)); [POS[i],POS[j]]=[POS[j],POS[i]];}
+      for(let i=POS.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [POS[i],POS[j]]=[POS[j],POS[i]];}
 
       PROJECTS.forEach((p,i)=>{
         const r=THREE.MathUtils.randFloat(9,16), m=makePlanet(r, p.type||'moon', i*9973+123);
@@ -1013,6 +1047,7 @@
       buildPlanetsFromProjects(PROJECTS);
       maybeAutoStart();
       loop();
+      // İlk izin varsa bg’yi dene
       tryPlayBG();
     })();
 

@@ -64,7 +64,7 @@
     .detail-desc{color:#d1d6df;line-height:1.7;margin-top:10px}
     .section-title{margin:18px 0 8px;font-size:16px;color:#cbd5e1;font-weight:600}
     .detail-video{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;aspect-ratio:16/9;background:#0f0f10}
-    .detail-video iframe,.detail-video video{width:100%;height:100%;border:0;display:block}
+    .detail-video iframe,.detail-video video{width:100%;height:100%;border:0;display:block;pointer-events:auto}
 
     /* Görsel yön duyarlılığı */
     .gif-grid img,.gallery img{
@@ -87,17 +87,6 @@
     body.cursor-pointer .cursor-dot{width:26px;height:26px;background:rgba(255,255,255,0.12);box-shadow:0 0 24px rgba(255,255,255,0.9),0 0 60px rgba(255,255,255,0.45);outline:2px solid rgba(255,255,255,0.6);outline-offset:2px}
     @media(hover:none){body.custom-cursor{cursor:auto}.cursor-dot{display:none!important}}
     @media(prefers-reduced-motion:reduce){body.custom-cursor{cursor:auto}.cursor-dot,.cursor-trail{display:none!important}}
-
-    /* Video tıklanmasın */
-    .detail-video video, .detail-video iframe{ pointer-events:none; }
-
-    /* ---- Lightbox ---- */
-    .lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.78);backdrop-filter:blur(4px);z-index:90}
-    .lightbox.show{display:flex}
-    .lightbox-img{max-width:92vw;max-height:92vh;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:#0b0f1c}
-    .lb-btn{position:fixed;top:50%;transform:translateY(-50%);padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(20,24,34,.55);color:#fff;font-weight:700;cursor:pointer}
-    .lb-prev{left:20px}.lb-next{right:20px}
-    .lb-close{position:fixed;top:18px;right:18px;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(20,24,34,.55);cursor:pointer}
   </style>
 </head>
 <body>
@@ -294,40 +283,38 @@
       document.getElementById('detailTag').textContent = p.tag || '';
       document.getElementById('detailDesc').textContent = p.desc || 'Açıklama gelecek...';
 
-      // ---- Video (autoplay+loop; ses: p3,p4,p6,p8,p9 açık, diğerleri kapalı; yoksa alanı gizle) ----
+      // ---- Video (autoplay KAPALI, controls AÇIK; p6 volume=0.15; yoksa alanı gizle) ----
       const v = document.getElementById('detailVideo');
       const videoTitleEl = v.previousElementSibling; // "Video" başlığı
       v.innerHTML = '';
       v.style.display = '';
       if (videoTitleEl) videoTitleEl.style.display = '';
 
-      const SOUND_ON = new Set(['p3','p4','p6','p8','p9']);
-
       if (p.media.video && p.media.video.trim() !== '') {
         if (/\.(mp4|webm)$/i.test(p.media.video)) {
           const vid = document.createElement('video');
-          vid.autoplay = true;
-          vid.loop = true;
+          vid.autoplay = false;    // autoplay off
+          vid.loop = false;        // loop off
           vid.playsInline = true;
+          vid.controls = true;     // clickable & controls
+          vid.preload = 'metadata';
           vid.src = p.media.video;
+          vid.muted = false;       // kullanıcı play edince ses açık başlar
 
-          if (SOUND_ON.has(p.id)) {
-            vid.muted = false;
-            vid.volume = 1.0;
-            const tryPlay = () => vid.play().catch(()=>{});
-            vid.addEventListener('canplay', tryPlay, { once: true });
-            window.addEventListener('click', tryPlay, { once: true });
-          } else {
-            vid.muted = true;
-          }
+          // p6 için özel ses seviyesi
+          if (p.id === 'p6') vid.volume = 0.15;
+
+          // bazı tarayıcılar için güvenlik/koruma
+          vid.setAttribute('controlsList','nodownload noplaybackrate noremoteplayback');
+          vid.setAttribute('disablePictureInPicture','');
+          vid.addEventListener('contextmenu', e=>e.preventDefault());
           v.appendChild(vid);
         } else {
-          const sep = p.media.video.includes('?') ? '&' : '?';
-          const muteParam = SOUND_ON.has(p.id) ? 'mute=0' : 'mute=1';
-          const url = p.media.video + sep + `autoplay=1&${muteParam}&loop=1&playsinline=1`;
+          // Dış kaynak/iframe ise: autoplay parametresi eklemiyoruz, kullanıcı oynatsın
           const iframe = document.createElement('iframe');
-          iframe.src = url;
-          iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+          iframe.src = p.media.video; // hiç parametre eklemiyoruz
+          iframe.allow = 'fullscreen; picture-in-picture';
+          iframe.setAttribute('allowfullscreen','');
           v.appendChild(iframe);
         }
       } else {
@@ -413,6 +400,13 @@
       window.addEventListener('pointerdown', ()=>{ dot.style.transform='translate(-50%, -50%) scale(0.85)'; });
       window.addEventListener('pointerup',   ()=>{ dot.style.transform='translate(-50%, -50%) scale(1)'; });
     })();
+
+    // Popstate (geri ileri)
+    window.addEventListener('popstate', () => {
+      const slug = getSlugFromURL();
+      if (slug) renderDetail(slug);
+      else showList();
+    });
   </script>
 </body>
 </html>

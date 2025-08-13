@@ -1,74 +1,74 @@
 [
   {
-  "id": "p1",
-  "title": "Unfinished Flow",
-  "tag": "3D / Animation · Video Editing",
-  "type": "moon",
-  "cover": "media/covers/p1.jpg",
-  "video": "media/project1/video.mp4",
-  "gifs": [
-    "media/project1/gif1.gif",
-    "media/project1/gif2.gif",
-    "media/project1/gif3.gif",
-    "media/project1/gif4.gif",
-    "media/project1/gif5.gif",
-    "media/project1/gif6.gif"
-  ],
-  "images": [
-    "media/project1/img1.jpg",
-    "media/project1/img2.jpg",
-    "media/project1/img3.jpg",
-    "media/project1/img4.jpg",
-    "media/project1/img5.jpg",
-    "media/project1/img6.jpg"
-  ],
-  "description": "A partially completed 3D animated music video for a rap artist. Features full character modeling, partial animations, and multiple experimental test footages combining visual style exploration with editing.",
-  "tools": ["Blender", "Daz3D", "FaceGen", "Rokoko MoCap", "Adobe Premiere Pro"]
-},
+    "id": "p1",
+    "title": "Unfinished Flow",
+    "tag": "3D / Animation · Video Editing",
+    "type": "moon",
+    "cover": "media/covers/p1.jpg",
+    "vimeoId": "1109722651",
+    "gifs": [
+      "media/project1/gif1.gif",
+      "media/project1/gif2.gif",
+      "media/project1/gif3.gif",
+      "media/project1/gif4.gif",
+      "media/project1/gif5.gif",
+      "media/project1/gif6.gif"
+    ],
+    "images": [
+      "media/project1/img1.jpg",
+      "media/project1/img2.jpg",
+      "media/project1/img3.jpg",
+      "media/project1/img4.jpg",
+      "media/project1/img5.jpg",
+      "media/project1/img6.jpg"
+    ],
+    "description": "A partially completed 3D animated music video for a rap artist. Features full character modeling, partial animations, and multiple experimental test footages combining visual style exploration with editing.",
+    "tools": ["Blender", "Daz3D", "FaceGen", "Rokoko MoCap", "Adobe Premiere Pro"]
+  },
   {
-  "id": "p2",
-  "title": "Odin Pendant Animation",
-  "tag": "3D / Motion",
-  "type": "rocky",
-  "cover": "media/covers/p2.jpg",
-  "video": "media/project2/video.mp4",
-  "gifs": [
-    "media/project2/gif1.gif",
-    "media/project2/gif2.gif"
-  ],
-  "images": [
-    "media/project2/img1.jpg",
-    "media/project2/img2.jpg",
-    "media/project2/img3.jpg"
-  ],
-  "description": "A case study showcasing the design and animation of a Norse mythology-inspired pendant. Modeled in ZBrush, animated in Blender, and rendered in Maverick Render with detailed material work.",
-  "tools": ["ZBrush", "Blender", "Maverick Render"]
-},
-{
-  "id": "p3",
-  "title": "MediaPipe + Ableton + PointCloud",
-  "tag": "Interactive · TouchDesigner",
-  "type": "gas",
-  "cover": "media/covers/p3.jpg",
-  "video": "media/project3/video.mp4",
-  "gifs": [
-    "media/project3/gif1.gif",
-    "media/project3/gif2.gif"
-  ],
-  "images": [
-    "media/project3/img1.jpg",
-    "media/project3/img2.jpg"
-  ],
-  "description": "A TouchDesigner case study using the built-in MediaPipe plugin to control a 3D point cloud via hand gestures. The point cloud was generated from a personal drone scan of an abandoned house in Şile.",
-  "tools": ["TouchDesigner", "MediaPipe", "Ableton Live", "DJI Drone"]
-},
+    "id": "p2",
+    "title": "Odin Pendant Animation",
+    "tag": "3D / Motion",
+    "type": "rocky",
+    "cover": "media/covers/p2.jpg",
+    "vimeoId": "1109722821",
+    "gifs": [
+      "media/project2/gif1.gif",
+      "media/project2/gif2.gif"
+    ],
+    "images": [
+      "media/project2/img1.jpg",
+      "media/project2/img2.jpg",
+      "media/project2/img3.jpg"
+    ],
+    "description": "A case study showcasing the design and animation of a Norse mythology-inspired pendant. Modeled in ZBrush, animated in Blender, and rendered in Maverick Render with detailed material work.",
+    "tools": ["ZBrush", "Blender", "Maverick Render"]
+  },
+  {
+    "id": "p3",
+    "title": "MediaPipe + Ableton + PointCloud",
+    "tag": "Interactive · TouchDesigner",
+    "type": "gas",
+    "cover": "media/covers/p3.jpg",
+    "vimeoId": "1109723028",
+    "gifs": [
+      "media/project3/gif1.gif",
+      "media/project3/gif2.gif"
+    ],
+    "images": [
+      "media/project3/img1.jpg",
+      "media/project3/img2.jpg"
+    ],
+    "description": "A TouchDesigner case study using the built-in MediaPipe plugin to control a 3D point cloud via hand gestures. The point cloud was generated from a personal drone scan of an abandoned house in Şile.",
+    "tools": ["TouchDesigner", "MediaPipe", "Ableton Live", "DJI Drone"]
+  },
   {
     "id": "p4",
     "title": "Nike Air Jordan CGI",
     "tag": "Product · CGI",
     "type": "rocky",
     "cover": "media/covers/p4.jpg",
-    "video": "media/project4/video.mp4",
+    "vimeoId": "1109723088",
     "images": ["media/project4/img1.jpg"],
     "description": "A CGI placement of Nike Air Jordan sneakers onto an iconic building in Istanbul. The project focuses on integrating high-quality 3D assets seamlessly into real-world urban architecture.",
     "tools": ["Blender", "Maverick Render", "Adobe Photoshop"]
@@ -79,7 +79,14 @@
     "tag": "Product Design",
     "type": "moon",
     "cover": "media/covers/p5.jpg",
-    "images": ["media/project5/img1.jpg", "media/project5/img2.jpg", "media/project5/img3.jpg", "media/project5/img4.jpg", "media/project5/img5.jpg", "media/project5/img6.jpg"],
+    "images": [
+      "media/project5/img1.jpg",
+      "media/project5/img2.jpg",
+      "media/project5/img3.jpg",
+      "media/project5/img4.jpg",
+      "media/project5/img5.jpg",
+      "media/project5/img6.jpg"
+    ],
     "description": "A case study of a custom silver case for Bic mini lighters, designed for the Sarnion brand. Features a spider web motif with gemstone eyes. Produced, sold, and integrated into the product line.",
     "tools": ["ZBrush", "Maverick Render", "Silversmithing"]
   },
@@ -89,7 +96,7 @@
     "tag": "3D / Motion",
     "type": "gas",
     "cover": "media/covers/p6.jpg",
-    "video": "media/project6/video.mp4",
+    "vimeoId": "1109723128",
     "gifs": ["media/project6/gif1.gif", "media/project6/gif2.gif"],
     "images": ["media/project6/img1.jpg", "media/project6/img2.jpg", "media/project6/img3.jpg"],
     "description": "A 3D animation for a custom mechanical keyboard spacebar keycap. Modeled in ZBrush, animated in Blender, and rendered in Maverick Render with refined material detailing.",
@@ -101,8 +108,14 @@
     "tag": "Materials · LookDev",
     "type": "rocky",
     "cover": "media/covers/p7.jpg",
-    "video": "media/project7/video.mp4",
-    "images": ["media/project7/img1.jpg", "media/project7/img2.jpg", "media/project7/img3.jpg", "media/project7/img4.jpg", "media/project7/img5.jpg"],
+    "vimeoId": "1109723151",
+    "images": [
+      "media/project7/img1.jpg",
+      "media/project7/img2.jpg",
+      "media/project7/img3.jpg",
+      "media/project7/img4.jpg",
+      "media/project7/img5.jpg"
+    ],
     "description": "A look development case study in Maverick Render, focused on achieving a realistic oxidized silver material through multiple iterations and shader refinements.",
     "tools": ["Maverick Render", "Material Node Editing"]
   },
@@ -112,9 +125,18 @@
     "tag": "Motion · 3D + Audio",
     "type": "moon",
     "cover": "media/covers/p8.jpg",
-    "video": "media/project8/video.mp4",
-    "gifs": ["media/project8/gif1.gif", "media/project8/gif2.gif"],
-    "images": ["media/project8/img1.jpg", "media/project8/img2.jpg", "media/project8/img3.jpg", "media/project8/img4.jpg", "media/project8/img5.jpg"],
+    "vimeoId": "1109723216",
+    "gifs": [
+      "media/project8/gif1.gif",
+      "media/project8/gif2.gif"
+    ],
+    "images": [
+      "media/project8/img1.jpg",
+      "media/project8/img2.jpg",
+      "media/project8/img3.jpg",
+      "media/project8/img4.jpg",
+      "media/project8/img5.jpg"
+    ],
     "description": "A motion design case study for the Punkart YouTube channel, developed in collaboration with Barış Yardımcı. 3D models were created and animated in Blender, with a custom rain simulation added directly within the scene. Multiple concepts were explored before finalizing the visual direction.",
     "tools": ["Blender", "Adobe After Effects", "Adobe Premiere Pro"]
   },
@@ -124,9 +146,19 @@
     "tag": "Concept · AI",
     "type": "gas",
     "cover": "media/covers/p9.jpg",
-    "video": "media/project9/video.mp4",
-    "gifs": ["media/project9/gif1.gif", "media/project9/gif2.gif"],
-    "images": ["media/project9/img1.jpg", "media/project9/img2.jpg", "media/project9/img3.jpg", "media/project9/img4.jpg", "media/project9/img5.jpg", "media/project9/img6.jpg"],
+    "vimeoId": "1109723274",
+    "gifs": [
+      "media/project9/gif1.gif",
+      "media/project9/gif2.gif"
+    ],
+    "images": [
+      "media/project9/img1.jpg",
+      "media/project9/img2.jpg",
+      "media/project9/img3.jpg",
+      "media/project9/img4.jpg",
+      "media/project9/img5.jpg",
+      "media/project9/img6.jpg"
+    ],
     "description": "An AI-driven visualizer project for the Punkart YouTube channel's 'Buzz' track, created in collaboration with Barış Yardımcı. The workflow involved transforming a provided image into a dynamic, music-synced animation using AI generation, motion design, and custom editing.",
     "tools": ["Kling", "Higgsfield", "Adobe Photoshop", "Adobe Premiere Pro"]
   }

@@ -734,38 +734,45 @@
   vwGifs.innerHTML    = '';
   vwImages.innerHTML  = '';
 
-  // --- Sadece Vimeo embed ---
+  // --- Sadece Vimeo embed (muted+background: görünür ve autoplay garantili) ---
   if (p.vimeo && p.vimeo.trim() !== '') {
     vwVideo.style.display = '';
 
-    // Vimeo ID'sini URL'den çek (hem vimeo.com/ID hem player.vimeo.com/video/ID destekli)
+    // https://vimeo.com/123456789  veya https://player.vimeo.com/video/123456789 destekli
     const m = p.vimeo.match(/vimeo\.com\/(?:video\/)?(\d+)/);
     const vidId = m ? m[1] : null;
 
-    // Ses (SOUND_ON’da yoksa muted=1). Vimeo’da fractional volume için API gerekir;
-    // burada yalnızca mute on/off kontrol ediyoruz.
-    const muted = SOUND_ON.has(p.id) ? 0 : 1;
-
+    // Player URL (background mod: kontroller yok, autoplay için zorunlu olarak muted=1)
     const base = vidId
       ? `https://player.vimeo.com/video/${vidId}`
       : p.vimeo.replace('vimeo.com/', 'player.vimeo.com/video/');
+    const sep  = base.includes('?') ? '&' : '?';
 
-    const sep = base.includes('?') ? '&' : '?';
-    const url = `${base}${sep}autoplay=1&muted=${muted}&loop=1&autopause=0&playsinline=1&dnt=1&title=0&byline=0&portrait=0`;
+    // Not: background=1 olunca Vimeo sesi otomatik kapatır; görüntü kesin gelir.
+    const url = `${base}${sep}autoplay=1&muted=1&loop=1&background=1&autopause=0&playsinline=1&dnt=1`;
 
     const iframe = document.createElement('iframe');
     iframe.src = url;
     iframe.allow = 'autoplay; fullscreen; picture-in-picture';
     iframe.setAttribute('allowfullscreen','');
-    iframe.style.width = '100%';
+    iframe.style.width  = '100%';
     iframe.style.height = '100%';
     iframe.style.border = '0';
-    iframe.style.pointerEvents = 'none'; // tıklanamaz
+
+    // İstenirse tıklanamaz yapabilirsin; görünürlüğü etkilemez:
+    // iframe.style.pointerEvents = 'none';
+
     iframe.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Bazı tarayıcılarda ilk kareyi hızlandırmak için play komutu gönder
+    iframe.onload = () => {
+      try {
+        iframe.contentWindow.postMessage({ method: 'play' }, '*');
+      } catch {}
+    };
 
     vwVideo.appendChild(iframe);
   } else {
-    // vimeo linki yoksa video alanını gizle
     vwVideo.style.display = 'none';
   }
 

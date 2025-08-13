@@ -725,84 +725,94 @@
       if(img.naturalHeight > img.naturalWidth){ img.classList.add('portrait'); }
     }
 
-    function openViewer(p){
-      qvCloseFn();
-      vwTitle.textContent=p.title; vwTag.textContent=p.tag||''; vwDesc.textContent=p.description||'';
-      vwVideo.innerHTML=''; vwGifs.innerHTML=''; vwImages.innerHTML='';
+   function openViewer(p){
+  qvCloseFn();
+  vwTitle.textContent = p.title;
+  vwTag.textContent   = p.tag || '';
+  vwDesc.textContent  = p.description || '';
+  vwVideo.innerHTML   = '';
+  vwGifs.innerHTML    = '';
+  vwImages.innerHTML  = '';
 
-      if (p.video && p.video.trim() !== '') {
-        vwVideo.style.display = '';
-        if (/\.(mp4|webm)$/i.test(p.video)) {
-          const vid = document.createElement('video');
-          vid.autoplay = true; vid.loop = true; vid.playsInline = true; vid.preload = 'metadata';
-          vid.src = p.video;
-          vid.controls = false;
-          vid.setAttribute('controlsList','nodownload noplaybackrate noremoteplayback');
-          vid.setAttribute('disablePictureInPicture','');
-          vid.addEventListener('contextmenu', e=>e.preventDefault());
-          vid.addEventListener('dragstart', e=>e.preventDefault());
-          vid.addEventListener('pointerdown', e=>e.preventDefault());
+  // --- Video (autoplay yok, controls açık) ---
+  if (p.video && p.video.trim() !== '') {
+    if (/\.(mp4|webm)$/i.test(p.video)) {
+      vwVideo.style.display = '';
 
-          if (SOUND_ON.has(p.id)) {
-            vid.muted = false;
-            // p6 için özel ses seviyesi
-            vid.volume = (p.id === 'p6') ? 0.4 : 1.0;
+      const vid = document.createElement('video');
+      vid.autoplay   = false;              // AUTOPLAY KAPALI
+      vid.loop       = true;
+      vid.playsInline = true;
+      vid.preload    = 'metadata';
+      vid.src        = p.video;
 
-            const tryPlay = () => vid.play().catch(()=>{});
-            vid.addEventListener('canplay', tryPlay, { once: true });
-            window.addEventListener('click', tryPlay, { once: true });
-          } else {
-            vid.muted = true;
-          }
-          vwVideo.appendChild(vid);
-        } else {
-          const sep = p.video.includes('?') ? '&' : '?';
-          const muteParam = SOUND_ON.has(p.id) ? 'mute=0' : 'mute=1';
-          const url = p.video + sep + `autoplay=1&${muteParam}&loop=1&playsinline=1`;
-          const iframe = document.createElement('iframe');
-          iframe.src = url;
-          iframe.allow = 'autoplay; fullscreen; picture-in-picture';
-          iframe.style.pointerEvents = 'none';
-          iframe.addEventListener('contextmenu', e=>e.preventDefault());
-          vwVideo.appendChild(iframe);
-        }
+      // Tıklanabilir olsun
+      vid.controls = true;
+      vid.style.pointerEvents = 'auto';
+
+      // İstersen korumalar:
+      vid.setAttribute('controlsList','nodownload noplaybackrate noremoteplayback');
+      vid.setAttribute('disablePictureInPicture','');
+      vid.addEventListener('contextmenu', e=>e.preventDefault());
+      vid.addEventListener('dragstart',   e=>e.preventDefault());
+
+      // Ses ayarı
+      if (SOUND_ON.has(p.id)) {
+        vid.muted  = false;
+        vid.volume = (p.id === 'p6') ? 0.10 : 1.0; // p6 daha kısık
       } else {
-        vwVideo.style.display = 'none';
+        vid.muted = true;
       }
 
-      if(p.gifs && p.gifs.length){
-        vwGifs.style.display='grid';
-        p.gifs.slice(0,2).forEach(src=>{
-          const img=new Image();
-          img.onload=()=>markPortrait(img);
-          img.src=src; img.loading='lazy';
-          img.draggable=false;
-          img.addEventListener('contextmenu',e=>e.preventDefault());
-          img.addEventListener('dragstart',e=>e.preventDefault());
-          vwGifs.appendChild(img);
-        });
-      } else {
-        vwGifs.style.display='none';
-      }
+      // DİKKAT: autoplay tetikleyen tryPlay/click listener’ları kaldırıldı
 
-      if(p.images && p.images.length){
-        vwImages.style.display='grid';
-        p.images.slice(0,6).forEach(src=>{
-          const img=new Image();
-          img.onload=()=>markPortrait(img);
-          img.src=src; img.loading='lazy';
-          img.draggable=false;
-          img.addEventListener('contextmenu',e=>e.preventDefault());
-          img.addEventListener('dragstart',e=>e.preventDefault());
-          vwImages.appendChild(img);
-        });
-      } else {
-        vwImages.style.display='none';
-      }
-
-      viewer.style.display='flex'; viewer.classList.add('show'); viewer.setAttribute('aria-hidden','false');
-      controlsEnabled=false;
+      vwVideo.appendChild(vid);
+    } else {
+      // mp4/webm dışı bir şey gelirse video alanını gizle
+      vwVideo.style.display = 'none';
     }
+  } else {
+    vwVideo.style.display = 'none';
+  }
+
+  // --- GIF’ler ---
+  if (p.gifs && p.gifs.length){
+    vwGifs.style.display='grid';
+    p.gifs.slice(0,2).forEach(src=>{
+      const img=new Image();
+      img.onload=()=>{ if(img.naturalHeight > img.naturalWidth){ img.classList.add('portrait'); } };
+      img.src=src; img.loading='lazy';
+      img.draggable=false;
+      img.addEventListener('contextmenu',e=>e.preventDefault());
+      img.addEventListener('dragstart',e=>e.preventDefault());
+      vwGifs.appendChild(img);
+    });
+  } else {
+    vwGifs.style.display='none';
+  }
+
+  // --- Görseller ---
+  if (p.images && p.images.length){
+    vwImages.style.display='grid';
+    p.images.slice(0,6).forEach(src=>{
+      const img=new Image();
+      img.onload=()=>{ if(img.naturalHeight > img.naturalWidth){ img.classList.add('portrait'); } };
+      img.src=src; img.loading='lazy';
+      img.draggable=false;
+      img.addEventListener('contextmenu',e=>e.preventDefault());
+      img.addEventListener('dragstart',e=>e.preventDefault());
+      vwImages.appendChild(img);
+    });
+  } else {
+    vwImages.style.display='none';
+  }
+
+  // Viewer’ı göster
+  viewer.style.display='flex';
+  viewer.classList.add('show');
+  viewer.setAttribute('aria-hidden','false');
+  controlsEnabled=false;
+}
 
     function closeViewer(){
       stopAllMedia(viewer);

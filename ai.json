@@ -1,15 +1,227 @@
 [
   {
     "id": "ai1",
-    "title": "Neon Bloom",
+    "title": "AI Work 1",
     "brand": "Personal",
-    "project": "Style Exploration",
-    "purpose": "Exploring compositional balance in neon palettes",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
     "cover": "media/aiworks/ai1_cover.jpg",
-    "stages": [
-      {"img": "media/aiworks/ai1_stage1.jpg", "label": "1 — Prompt Sketch"},
-      {"img": "media/aiworks/ai1_stage2.jpg", "label": "2 — Variation"},
-      {"img": "media/aiworks/ai1_stage3.jpg", "label": "3 — Final"}
-    ]
+    "stages": []
+  },
+  {
+    "id": "ai2",
+    "title": "AI Work 2",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai2_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai3",
+    "title": "AI Work 3",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai3_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai4",
+    "title": "AI Work 4",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai4_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai5",
+    "title": "AI Work 5",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai5_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai6",
+    "title": "AI Work 6",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai6_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai7",
+    "title": "AI Work 7",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai7_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai8",
+    "title": "AI Work 8",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai8_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai9",
+    "title": "AI Work 9",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai9_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai10",
+    "title": "AI Work 10",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai10_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai11",
+    "title": "AI Work 11",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai11_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai12",
+    "title": "AI Work 12",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai12_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai13",
+    "title": "AI Work 13",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai13_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai14",
+    "title": "AI Work 14",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai14_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai15",
+    "title": "AI Work 15",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai15_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai16",
+    "title": "AI Work 16",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai16_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai17",
+    "title": "AI Work 17",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai17_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai18",
+    "title": "AI Work 18",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai18_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai19",
+    "title": "AI Work 19",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai19_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai20",
+    "title": "AI Work 20",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai20_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai21",
+    "title": "AI Work 21",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai21_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai22",
+    "title": "AI Work 22",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai22_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai23",
+    "title": "AI Work 23",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai23_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai24",
+    "title": "AI Work 24",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai24_cover.jpg",
+    "stages": []
+  },
+  {
+    "id": "ai25",
+    "title": "AI Work 25",
+    "brand": "Personal",
+    "project": "Exploration",
+    "purpose": "Generated visual study",
+    "cover": "media/aiworks/ai25_cover.jpg",
+    "stages": []
   }
 ]

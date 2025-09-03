@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Works — Floating Grid</title>
+<link rel="icon" type="image/png" href="media/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05060a; --text:#f6f7fb; --muted:#aeb4c0; --border:rgba(255,255,255,.12);
+    --card:#0c0f19; --shadow:0 18px 48px rgba(0,0,0,.5); --accent:#1e5eff;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, rgba(120,170,255,.06), var(--bg));
+       color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
+
+  header{position:fixed;inset:0 0 auto 0;z-index:20;background:rgba(5,6,10,.35);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+  .container{max-width:1180px;margin:0 auto;padding:0 20px}
+  nav{display:flex;align-items:center;justify-content:space-between;height:60px}
+  .brand{font-weight:800;letter-spacing:.4px;font-size:16px}
+  .navlinks{display:flex;gap:18px;font-size:14px}
+  .navlinks a{color:var(--text);opacity:.9;text-decoration:none}
+  .navlinks a:hover{opacity:1}
+
+  .space{position:fixed;inset:0;z-index:1;overflow:hidden}
+  .stars{position:absolute;inset:-10%;
+    background:
+      radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.7), transparent 60%),
+      radial-gradient(1.5px 1.5px at 70% 60%, rgba(255,255,255,.5), transparent 60%),
+      radial-gradient(1.2px 1.2px at 40% 80%, rgba(255,255,255,.55), transparent 60%),
+      radial-gradient(1.4px 1.4px at 85% 25%, rgba(255,255,255,.6), transparent 60%),
+      radial-gradient(1.2px 1.2px at 10% 75%, rgba(255,255,255,.55), transparent 60%),
+      radial-gradient(1.8px 1.8px at 55% 40%, rgba(255,255,255,.65), transparent 60%);
+    opacity:.55; filter: drop-shadow(0 0 2px rgba(140,180,255,.4)); }
+
+  /* Floating cards (smaller) */
+  .float{
+    position:absolute; width:220px; aspect-ratio:4/5; border:1px solid var(--border);
+    border-radius:16px; overflow:hidden; background:#0b0f16; box-shadow:var(--shadow);
+    transform:translate3d(0,0,0) rotate(var(--r,0deg)) scale(var(--s,1)); will-change:transform, filter;
+    cursor:grab; user-select:none;
+  }
+  .float:active{cursor:grabbing}
+  .float img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+  .float .step-badge{
+    position:absolute;left:8px;top:8px;font-size:11px;padding:6px 8px;border-radius:999px;
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px)}
+  .float:hover{outline:1px solid rgba(120,198,255,.35); filter:brightness(1.06) saturate(1.02)}
+  .float.is-animating{transition:transform .38s cubic-bezier(.2,.7,.2,1)}
+
+  /* Overlay viewer */
+  .overlay{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;
+           background:rgba(0,0,0,.62);backdrop-filter:blur(6px)}
+  .overlay.show{display:flex}
+  .viewer{max-width:min(1100px,92vw);max-height:90vh;display:grid;grid-template-rows:auto 1fr auto;gap:12px}
+  .viewer-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .viewer-top .counter{font-size:13px;color:#d3daea;opacity:.9}
+  .viewer-media{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:#0b0f18;
+                display:flex;align-items:center;justify-content:center;position:relative}
+  .viewer-media img{display:block;max-width:100%;max-height:70vh;object-fit:contain}
+  .viewer-step{position:absolute;left:12px;top:12px;font-weight:700;font-size:12px;
+               background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);
+               padding:6px 8px;border-radius:999px}
+  .viewer-caption{border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.04);padding:12px 14px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+  .pill{border:1px solid rgba(255,255,255,.16);padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.05);font-size:12px}
+  .title{font-weight:800;margin:0 0 6px}
+  .purpose{margin:0;color:#d6dbea;line-height:1.65}
+  .viewer-actions{display:flex;gap:8px}
+  .btn{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:#10172b;color:#fff;cursor:pointer}
+  .btn:hover{background:#16203a}
+  .ghost{opacity:.65}
+  .arrows{display:flex;gap:8px}
+
+  @media (prefers-reduced-motion: reduce){
+    .float{transition:none !important}
+    .float.is-animating{transition:none !important}
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="brand">ORHUN EGE EKER</div>
+        <div class="navlinks">
+          <a href="/">SPACE</a>
+          <a href="projects.html">PROJECTS</a>
+          <a href="ai.html">AI WORKS</a>
+          <a href="about.html">ABOUT</a>
+          <a href="contact.html">CONTACT</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="space" id="space">
+    <div class="stars"></div>
+  </main>
+
+  <!-- Viewer -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="viewer" role="dialog" aria-modal="true">
+      <div class="viewer-top">
+        <div class="counter" id="vCounter">Step 1 / 1</div>
+        <div class="arrows viewer-actions">
+          <button class="btn ghost" id="vPrev" type="button">← Prev</button>
+          <button class="btn" id="vNext" type="button">Next →</button>
+          <button class="btn" id="vClose" type="button">Close (Esc)</button>
+        </div>
+      </div>
+      <div class="viewer-media">
+        <div class="viewer-step" id="vBadge">1</div>
+        <img id="vImg" alt="">
+      </div>
+      <div class="viewer-caption">
+        <h3 class="title" id="vProject">Project</h3>
+        <div class="row">
+          <span class="pill" id="vBrand">Brand: —</span>
+          <span class="pill" id="vName">Project: —</span>
+          <span class="pill" id="vStepName">Phase: —</span>
+        </div>
+        <p class="purpose" id="vPurpose">Purpose goes here…</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ====== DATA (25 items placeholder) ======
+Her iş: {brand, project, purpose, steps:[{src,name,caption},...]}
+Kapak: son adım otomatik kullanılır.
+*/
+const ITEMS = Array.from({length:25}).map((_,i)=>({
+  brand: ['Aurora','Sarnion','Punkart','Nebula','Zephyr'][i%5] + ' Co.',
+  project: 'AI Concept #' + String(i+1).padStart(2,'0'),
+  purpose: 'Exploratory frames to define look & feel for the concept.',
+  steps: [
+    { src:`media/ai/work_${(i+1).toString().padStart(2,'0')}_01.jpg`, name:'Concept', caption:'First pass ideation frame.' },
+    { src:`media/ai/work_${(i+1).toString().padStart(2,'0')}_02.jpg`, name:'Refine', caption:'Refined composition and lighting.' },
+    { src:`media/ai/work_${(i+1).toString().padStart(2,'0')}_03.jpg`, name:'Final', caption:'Final render/frame for presentation.' }
+  ]
+}));
+
+/* ====== FLOATING FIELD ====== */
+const space = document.getElementById('space');
+const HEADER_H = 60;      // header height
+const MARGIN = 8;         // inner margin
+const CARD_W = 220;
+const CARD_H = Math.round(CARD_W * 5/4);
+const floats = [];        // {el,x,y,vx,vy,r,vr,s,item,isDragging,lastPX,lastPY,clickTest}
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const W = () => innerWidth;
+const H = () => innerHeight;
+const bounds = () => ({
+  minX: MARGIN,
+  minY: HEADER_H + MARGIN,
+  maxX: Math.max(MARGIN, W() - CARD_W - MARGIN),
+  maxY: Math.max(HEADER_H+MARGIN, H() - CARD_H - MARGIN)
+});
+const rand=(a,b)=>a+Math.random()*(b-a), sign=()=>Math.random()<.5?-1:1;
+
+function spawn(item, idx){
+  const steps = Array.isArray(item.steps) ? item.steps : [];
+  const cover = steps.length ? steps[steps.length-1].src : '';
+  if(!cover) return;
+
+  const el = document.createElement('a');
+  el.className='float';
+  el.href = '#';
+  el.dataset.idx = String(idx);
+  el.innerHTML = `
+    <img loading="lazy" src="${cover}" alt="${item.project}">
+    <span class="step-badge">Final</span>
+  `;
+  space.appendChild(el);
+
+  const z = Math.random(); // depth 0..1
+  const s = 0.75 + (1-z)*0.5;
+  const r = rand(-6,6);
+  const b = bounds();
+  const x = rand(b.minX, b.maxX);
+  const y = rand(b.minY, b.maxY);
+  const vx = sign()*rand(18,36)*(1 - z*0.7); // px/s
+  const vy = sign()*rand(14,28)*(1 - z*0.7);
+  const vr = sign()*rand(8,18)*(1 - z);      // deg/s
+
+  el.style.setProperty('--r', r+'deg');
+  el.style.setProperty('--s', s.toFixed(3));
+
+  const state = { el, x, y, vx, vy, r, vr, s, item,
+    isDragging:false, lastPX:0, lastPY:0, clickTest:0, wasMoved:false, animating:false
+  };
+
+  // Drag
+  el.addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    state.isDragging = true;
+    state.wasMoved = false;
+    state.clickTest = 0;
+    el.setPointerCapture(e.pointerId);
+    state.lastPX = e.clientX;
+    state.lastPY = e.clientY;
+  });
+  el.addEventListener('pointermove', e=>{
+    if(!state.isDragging) return;
+    const dx = e.clientX - state.lastPX;
+    const dy = e.clientY - state.lastPY;
+    state.lastPX = e.clientX; state.lastPY = e.clientY;
+    state.x += dx; state.y += dy;
+    clampInBounds(state);
+    state.vx = dx * 60;  // inertia
+    state.vy = dy * 60;
+    state.clickTest += Math.abs(dx)+Math.abs(dy);
+    if(state.clickTest > 6) state.wasMoved = true;
+    // immediate apply
+    applyTransform(state);
+  });
+  el.addEventListener('pointerup', e=>{
+    if(!state.isDragging) return;
+    state.isDragging = false;
+    el.releasePointerCapture(e.pointerId);
+    // Click (no move): center animate then open
+    if(!state.wasMoved){
+      centerAnimateThenOpen(state);
+    }
+  });
+
+  floats.push(state);
+}
+
+ITEMS.forEach(spawn);
+
+/* keep inside viewport */
+function clampInBounds(f){
+  const b = bounds();
+  if(f.x < b.minX){ f.x = b.minX; f.vx = Math.abs(f.vx); }
+  if(f.x > b.maxX){ f.x = b.maxX; f.vx = -Math.abs(f.vx); }
+  if(f.y < b.minY){ f.y = b.minY; f.vy = Math.abs(f.vy); }
+  if(f.y > b.maxY){ f.y = b.maxY; f.vy = -Math.abs(f.vy); }
+}
+
+function applyTransform(f){
+  f.el.style.transform = `translate3d(${f.x.toFixed(1)}px, ${f.y.toFixed(1)}px, 0) rotate(${f.r.toFixed(2)}deg) scale(${f.s})`;
+  f.el.style.filter = `brightness(1)`;
+}
+
+/* animate to center on click, then open viewer */
+function centerAnimateThenOpen(f){
+  if(f.animating) return;
+  f.animating = true;
+  f.el.classList.add('is-animating');
+
+  const targetX = Math.round((W() - CARD_W)/2);
+  const targetY = Math.round((H() - CARD_H)/2);
+  f.x = targetX; f.y = targetY; f.r = 0; // snap by CSS transition
+  applyTransform(f);
+
+  // After transition end, open viewer
+  const onEnd = ()=>{
+    f.el.removeEventListener('transitionend', onEnd);
+    f.el.classList.remove('is-animating');
+    f.animating = false;
+    openViewer(f.item, 0);
+  };
+  f.el.addEventListener('transitionend', onEnd, { once:true });
+
+  // safety timeout (if transitionend not fires)
+  setTimeout(()=>{ if(f.animating){ f.el.dispatchEvent(new Event('transitionend')); } }, 450);
+}
+
+/* ====== VIEWER (MULTI-STEP) ====== */
+const overlay   = document.getElementById('overlay');
+const vImg      = document.getElementById('vImg');
+const vCounter  = document.getElementById('vCounter');
+const vBadge    = document.getElementById('vBadge');
+const vBrand    = document.getElementById('vBrand');
+const vName     = document.getElementById('vName');
+const vStepName = document.getElementById('vStepName');
+const vProject  = document.getElementById('vProject');
+const vPurpose  = document.getElementById('vPurpose');
+const vPrev     = document.getElementById('vPrev');
+const vNext     = document.getElementById('vNext');
+const vClose    = document.getElementById('vClose');
+
+let CUR = null;
+function openViewer(item, i=0){
+  const steps = item.steps || [];
+  const N = steps.length || 1;
+
+  function render(){
+    const step = steps[i] || { src: steps[N-1]?.src || '', name:'Final', caption:item.purpose||'' };
+    vImg.src = step.src;
+    vProject.textContent = item.project || 'Project';
+    vBrand.textContent   = 'Brand: ' + (item.brand || '—');
+    vName.textContent    = 'Project: ' + (item.project || '—');
+    vStepName.textContent= 'Phase: ' + (step.name || `Step ${i+1}`);
+    vPurpose.textContent = step.caption || item.purpose || '';
+    vCounter.textContent = `Step ${Math.min(i+1,N)} / ${N}`;
+    vBadge.textContent   = (i+1);
+
+    vPrev.classList.toggle('ghost', i<=0);
+    vNext.classList.toggle('ghost', i>=N-1);
+  }
+
+  CUR = { item, i, render };
+  overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false');
+  render();
+}
+function closeViewer(){
+  overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true');
+  vImg.src=''; CUR=null;
+}
+vClose.addEventListener('click', closeViewer);
+overlay.addEventListener('click', e=>{ if(e.target===overlay) closeViewer(); });
+vPrev.addEventListener('click', ()=>{ if(!CUR) return; if(CUR.i>0){ CUR.i--; CUR.render(); } });
+vNext.addEventListener('click', ()=>{ if(!CUR) return; const N=(CUR.item.steps||[]).length; if(CUR.i<N-1){ CUR.i++; CUR.render(); } });
+window.addEventListener('keydown', e=>{
+  if(!overlay.classList.contains('show')) return;
+  if(e.key==='Escape') closeViewer();
+  else if(e.key==='ArrowLeft') vPrev.click();
+  else if(e.key==='ArrowRight') vNext.click();
+});
+
+/* ====== DRIFT LOOP (with bounce, clamped) ====== */
+let last = performance.now();
+function tick(now){
+  const dt = Math.min(0.033, (now-last)/1000); last=now;
+  if(!reduced){
+    const b = bounds();
+    for(const f of floats){
+      if(f.isDragging || f.animating) continue;
+      f.x += f.vx*dt;
+      f.y += f.vy*dt;
+      f.r += f.vr*dt;
+
+      // bounce at edges (stay visible)
+      if(f.x <= b.minX){ f.x=b.minX; f.vx = Math.abs(f.vx); }
+      if(f.x >= b.maxX){ f.x=b.maxX; f.vx = -Math.abs(f.vx); }
+      if(f.y <= b.minY){ f.y=b.minY; f.vy = Math.abs(f.vy); }
+      if(f.y >= b.maxY){ f.y=b.maxY; f.vy = -Math.abs(f.vy); }
+
+      f.el.style.transform = `translate3d(${f.x.toFixed(1)}px, ${f.y.toFixed(1)}px, 0) rotate(${f.r.toFixed(2)}deg) scale(${f.s})`;
+    }
+  }
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+/* seed initial positions (inside bounds) */
+(function seed(){
+  const b = bounds();
+  floats.forEach(f=>{
+    f.x = rand(b.minX, b.maxX);
+    f.y = rand(b.minY, b.maxY);
+    applyTransform(f);
+  });
+})();
+
+/* Keep inside on resize */
+addEventListener('resize', ()=>{
+  const b = bounds();
+  floats.forEach(f=>{
+    if(f.x < b.minX) f.x = b.minX;
+    if(f.x > b.maxX) f.x = b.maxX;
+    if(f.y < b.minY) f.y = b.minY;
+    if(f.y > b.maxY) f.y = b.maxY;
+    applyTransform(f);
+  });
+});
+</script>
+</body>
+</html>

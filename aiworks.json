@@ -431,8 +431,23 @@
       "media/ai/a24/img10.jpg"
     ]
   },
-  {
-    "id": "a25",
-    "title": "AI Work 25",
-    "brand": "Sarnion AI",
-   
+  ,
+{
+  "id": "a25",
+  "title": "AI Work 25",
+  "brand": "Sarnion AI",
+  "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+  "images": [
+    "media/ai/a25/img1.jpg",
+    "media/ai/a25/img2.jpg",
+    "media/ai/a25/img3.jpg",
+    "media/ai/a25/img4.jpg",
+    "media/ai/a25/img5.jpg",
+    "media/ai/a25/img6.jpg",
+    "media/ai/a25/img7.jpg",
+    "media/ai/a25/img8.jpg",
+    "media/ai/a25/img9.jpg",
+    "media/ai/a25/img10.jpg"
+  ]
+}
+]

@@ -1,376 +1,340 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>AI Works — Floating Grid</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Works — Orhun Ege Eker</title>
 <link rel="icon" type="image/png" href="media/favicon.png">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#05060a; --text:#f6f7fb; --muted:#aeb4c0; --border:rgba(255,255,255,.12);
-    --card:#0c0f19; --shadow:0 18px 48px rgba(0,0,0,.5); --accent:#1e5eff;
+    --bg:#07090f; --text:#f6f7fb; --muted:#cbd5e1; --border:#1b1f2a; --accent:#3a7bff;
+    --card-w: 160px; --card-h: 120px; --card-r: 14px;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, rgba(120,170,255,.06), var(--bg));
+  body{margin:0;background:radial-gradient(1200px 800px at 50% -10%, rgba(50,90,170,0.12), transparent 60%) , var(--bg);
        color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
 
-  header{position:fixed;inset:0 0 auto 0;z-index:20;background:rgba(5,6,10,.35);
-    backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
-  .container{max-width:1180px;margin:0 auto;padding:0 20px}
-  nav{display:flex;align-items:center;justify-content:space-between;height:60px}
-  .brand{font-weight:800;letter-spacing:.4px;font-size:16px}
-  .navlinks{display:flex;gap:18px;font-size:14px}
-  .navlinks a{color:var(--text);opacity:.9;text-decoration:none}
-  .navlinks a:hover{opacity:1}
-
-  .space{position:fixed;inset:0;z-index:1;overflow:hidden}
-  .stars{position:absolute;inset:-10%;
-    background:
-      radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.7), transparent 60%),
-      radial-gradient(1.5px 1.5px at 70% 60%, rgba(255,255,255,.5), transparent 60%),
-      radial-gradient(1.2px 1.2px at 40% 80%, rgba(255,255,255,.55), transparent 60%),
-      radial-gradient(1.4px 1.4px at 85% 25%, rgba(255,255,255,.6), transparent 60%),
-      radial-gradient(1.2px 1.2px at 10% 75%, rgba(255,255,255,.55), transparent 60%),
-      radial-gradient(1.8px 1.8px at 55% 40%, rgba(255,255,255,.65), transparent 60%);
-    opacity:.55; filter: drop-shadow(0 0 2px rgba(140,180,255,.4)); }
-
-  /* Floating cards (smaller) */
-  .float{
-    position:absolute; width:220px; aspect-ratio:4/5; border:1px solid var(--border);
-    border-radius:16px; overflow:hidden; background:#0b0f16; box-shadow:var(--shadow);
-    transform:translate3d(0,0,0) rotate(var(--r,0deg)) scale(var(--s,1)); will-change:transform, filter;
-    cursor:grab; user-select:none;
+  /* floating area */
+  .stage{position:fixed;inset:0;overflow:hidden}
+  .card{
+    position:absolute;width:var(--card-w);height:var(--card-h);border-radius:var(--card-r);
+    border:1px solid rgba(255,255,255,.12);background:#0c1120;overflow:hidden;
+    box-shadow:0 12px 30px rgba(0,0,0,.45);cursor:grab; user-select:none;
+    transition:box-shadow .2s ease, transform .2s ease;
   }
-  .float:active{cursor:grabbing}
-  .float img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
-  .float .step-badge{
-    position:absolute;left:8px;top:8px;font-size:11px;padding:6px 8px;border-radius:999px;
-    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px)}
-  .float:hover{outline:1px solid rgba(120,198,255,.35); filter:brightness(1.06) saturate(1.02)}
-  .float.is-animating{transition:transform .38s cubic-bezier(.2,.7,.2,1)}
+  .card:active{cursor:grabbing}
+  .thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .card .meta{
+    position:absolute;left:8px;right:8px;bottom:8px;
+    font-size:11px;color:#e8eefc;text-shadow:0 1px 2px rgba(0,0,0,.65);
+    background:linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,12,.55) 48%, rgba(0,0,12,.85) 100%);
+    padding:24px 8px 6px;border-radius:10px;
+  }
+  .meta .brand{opacity:.9}
+  .meta .title{font-weight:800}
 
-  /* Overlay viewer */
-  .overlay{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;
-           background:rgba(0,0,0,.62);backdrop-filter:blur(6px)}
+  /* gentle float */
+  @keyframes drift {
+    0%   { transform: translate(0,0) rotate(0deg); }
+    50%  { transform: translate(0px, -4px) rotate(0.6deg); }
+    100% { transform: translate(0,0) rotate(0deg); }
+  }
+  .card.float{ animation: drift 6s ease-in-out infinite; }
+
+  /* HUD */
+  .hud{
+    position:fixed;left:12px;right:12px;top:10px;z-index:10;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 14px;border:1px solid rgba(255,255,255,.12);
+    border-radius:14px;background:rgba(10,12,22,.55);backdrop-filter:blur(8px);
+  }
+  .brand{font-weight:800;letter-spacing:.2px}
+  .nav{display:flex;gap:14px;font-size:14px}
+  .nav a{color:var(--text);text-decoration:none;opacity:.9}
+  .nav a:hover{opacity:1}
+
+  /* overlay viewer */
+  .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:20;
+           background:rgba(0,0,0,.55);backdrop-filter:blur(6px)}
   .overlay.show{display:flex}
-  .viewer{max-width:min(1100px,92vw);max-height:90vh;display:grid;grid-template-rows:auto 1fr auto;gap:12px}
-  .viewer-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .viewer-top .counter{font-size:13px;color:#d3daea;opacity:.9}
-  .viewer-media{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:#0b0f18;
-                display:flex;align-items:center;justify-content:center;position:relative}
-  .viewer-media img{display:block;max-width:100%;max-height:70vh;object-fit:contain}
-  .viewer-step{position:absolute;left:12px;top:12px;font-weight:700;font-size:12px;
-               background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);
-               padding:6px 8px;border-radius:999px}
-  .viewer-caption{border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.04);padding:12px 14px}
-  .row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px}
-  .pill{border:1px solid rgba(255,255,255,.16);padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.05);font-size:12px}
-  .title{font-weight:800;margin:0 0 6px}
-  .purpose{margin:0;color:#d6dbea;line-height:1.65}
-  .viewer-actions{display:flex;gap:8px}
-  .btn{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:#10172b;color:#fff;cursor:pointer}
-  .btn:hover{background:#16203a}
-  .ghost{opacity:.65}
-  .arrows{display:flex;gap:8px}
+  .viewer{
+    width:min(1080px,94vw);max-height:92vh;border:1px solid rgba(255,255,255,.16);
+    border-radius:16px;background:#0b0f1c;box-shadow:0 24px 70px rgba(0,0,0,.6);overflow:hidden;
+  }
+  .viewer-media{aspect-ratio:16/10;background:#0e1433;display:flex;align-items:center;justify-content:center}
+  .viewer-media img{max-width:100%;max-height:70vh;display:block}
+  .viewer-body{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .info{min-width:0}
+  .t{font-weight:800}
+  .b{font-size:12px;color:#cfd6e3}
+  .p{margin-top:6px;color:#d7deea;line-height:1.6;font-size:14px}
+  .ctrls{display:flex;align-items:center;gap:8px}
+  .btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:#10172b;color:#fff;font-size:14px;cursor:pointer}
+  .btn.primary{background:var(--accent);border-color:#2b66ff}
+  .counter{font-size:12px;color:#cbd5e1;opacity:.9}
 
-  @media (prefers-reduced-motion: reduce){
-    .float{transition:none !important}
-    .float.is-animating{transition:none !important}
+  /* clamp helper highlight (debug off by default) */
+  .edge { outline: 0px solid red; }
+
+  @media (max-width: 640px){
+    :root{ --card-w: 130px; --card-h: 98px; }
   }
 </style>
 </head>
 <body>
-  <header>
-    <div class="container">
-      <nav>
-        <div class="brand">ORHUN EGE EKER</div>
-        <div class="navlinks">
-          <a href="/">SPACE</a>
-          <a href="projects.html">PROJECTS</a>
-          <a href="ai.html">AI WORKS</a>
-          <a href="about.html">ABOUT</a>
-          <a href="contact.html">CONTACT</a>
-        </div>
-      </nav>
+  <div class="hud">
+    <div class="brand">ORHUN EGE EKER — AI WORKS</div>
+    <div class="nav">
+      <a href="/">SPACE</a>
+      <a href="projects.html">PROJECTS</a>
+      <a href="about.html">ABOUT</a>
+      <a href="contact.html">CONTACT</a>
     </div>
-  </header>
+  </div>
 
-  <main class="space" id="space">
-    <div class="stars"></div>
-  </main>
+  <div class="stage" id="stage"></div>
 
-  <!-- Viewer -->
+  <!-- overlay viewer -->
   <div class="overlay" id="overlay" aria-hidden="true">
     <div class="viewer" role="dialog" aria-modal="true">
-      <div class="viewer-top">
-        <div class="counter" id="vCounter">Step 1 / 1</div>
-        <div class="arrows viewer-actions">
-          <button class="btn ghost" id="vPrev" type="button">← Prev</button>
-          <button class="btn" id="vNext" type="button">Next →</button>
-          <button class="btn" id="vClose" type="button">Close (Esc)</button>
+      <div class="viewer-media"><img id="vwImg" alt=""></div>
+      <div class="viewer-body">
+        <div class="info">
+          <div class="t" id="vwTitle">Title</div>
+          <div class="b" id="vwBrand">Brand</div>
+          <div class="p" id="vwPurpose">Purpose text</div>
         </div>
-      </div>
-      <div class="viewer-media">
-        <div class="viewer-step" id="vBadge">1</div>
-        <img id="vImg" alt="">
-      </div>
-      <div class="viewer-caption">
-        <h3 class="title" id="vProject">Project</h3>
-        <div class="row">
-          <span class="pill" id="vBrand">Brand: —</span>
-          <span class="pill" id="vName">Project: —</span>
-          <span class="pill" id="vStepName">Phase: —</span>
+        <div class="ctrls">
+          <span class="counter" id="vwCount">1/1</span>
+          <button class="btn" id="btnPrev" type="button">← Prev</button>
+          <button class="btn" id="btnNext" type="button">Next →</button>
+          <button class="btn" id="btnClose" type="button">Close (Esc)</button>
         </div>
-        <p class="purpose" id="vPurpose">Purpose goes here…</p>
       </div>
     </div>
   </div>
 
 <script>
-/* ====== DATA (25 items placeholder) ======
-Her iş: {brand, project, purpose, steps:[{src,name,caption},...]}
-Kapak: son adım otomatik kullanılır.
-*/
-const ITEMS = Array.from({length:25}).map((_,i)=>({
-  brand: ['Aurora','Sarnion','Punkart','Nebula','Zephyr'][i%5] + ' Co.',
-  project: 'AI Concept #' + String(i+1).padStart(2,'0'),
-  purpose: 'Exploratory frames to define look & feel for the concept.',
-  steps: [
-    { src:`media/ai/work_${(i+1).toString().padStart(2,'0')}_01.jpg`, name:'Concept', caption:'First pass ideation frame.' },
-    { src:`media/ai/work_${(i+1).toString().padStart(2,'0')}_02.jpg`, name:'Refine', caption:'Refined composition and lighting.' },
-    { src:`media/ai/work_${(i+1).toString().padStart(2,'0')}_03.jpg`, name:'Final', caption:'Final render/frame for presentation.' }
-  ]
-}));
+(async function(){
+  const stage = document.getElementById('stage');
+  const W = ()=>stage.clientWidth, H = ()=>stage.clientHeight;
 
-/* ====== FLOATING FIELD ====== */
-const space = document.getElementById('space');
-const HEADER_H = 60;      // header height
-const MARGIN = 8;         // inner margin
-const CARD_W = 220;
-const CARD_H = Math.round(CARD_W * 5/4);
-const floats = [];        // {el,x,y,vx,vy,r,vr,s,item,isDragging,lastPX,lastPY,clickTest}
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-const W = () => innerWidth;
-const H = () => innerHeight;
-const bounds = () => ({
-  minX: MARGIN,
-  minY: HEADER_H + MARGIN,
-  maxX: Math.max(MARGIN, W() - CARD_W - MARGIN),
-  maxY: Math.max(HEADER_H+MARGIN, H() - CARD_H - MARGIN)
-});
-const rand=(a,b)=>a+Math.random()*(b-a), sign=()=>Math.random()<.5?-1:1;
-
-function spawn(item, idx){
-  const steps = Array.isArray(item.steps) ? item.steps : [];
-  const cover = steps.length ? steps[steps.length-1].src : '';
-  if(!cover) return;
-
-  const el = document.createElement('a');
-  el.className='float';
-  el.href = '#';
-  el.dataset.idx = String(idx);
-  el.innerHTML = `
-    <img loading="lazy" src="${cover}" alt="${item.project}">
-    <span class="step-badge">Final</span>
-  `;
-  space.appendChild(el);
-
-  const z = Math.random(); // depth 0..1
-  const s = 0.75 + (1-z)*0.5;
-  const r = rand(-6,6);
-  const b = bounds();
-  const x = rand(b.minX, b.maxX);
-  const y = rand(b.minY, b.maxY);
-  const vx = sign()*rand(18,36)*(1 - z*0.7); // px/s
-  const vy = sign()*rand(14,28)*(1 - z*0.7);
-  const vr = sign()*rand(8,18)*(1 - z);      // deg/s
-
-  el.style.setProperty('--r', r+'deg');
-  el.style.setProperty('--s', s.toFixed(3));
-
-  const state = { el, x, y, vx, vy, r, vr, s, item,
-    isDragging:false, lastPX:0, lastPY:0, clickTest:0, wasMoved:false, animating:false
-  };
-
-  // Drag
-  el.addEventListener('pointerdown', e=>{
-    e.preventDefault();
-    state.isDragging = true;
-    state.wasMoved = false;
-    state.clickTest = 0;
-    el.setPointerCapture(e.pointerId);
-    state.lastPX = e.clientX;
-    state.lastPY = e.clientY;
-  });
-  el.addEventListener('pointermove', e=>{
-    if(!state.isDragging) return;
-    const dx = e.clientX - state.lastPX;
-    const dy = e.clientY - state.lastPY;
-    state.lastPX = e.clientX; state.lastPY = e.clientY;
-    state.x += dx; state.y += dy;
-    clampInBounds(state);
-    state.vx = dx * 60;  // inertia
-    state.vy = dy * 60;
-    state.clickTest += Math.abs(dx)+Math.abs(dy);
-    if(state.clickTest > 6) state.wasMoved = true;
-    // immediate apply
-    applyTransform(state);
-  });
-  el.addEventListener('pointerup', e=>{
-    if(!state.isDragging) return;
-    state.isDragging = false;
-    el.releasePointerCapture(e.pointerId);
-    // Click (no move): center animate then open
-    if(!state.wasMoved){
-      centerAnimateThenOpen(state);
-    }
-  });
-
-  floats.push(state);
-}
-
-ITEMS.forEach(spawn);
-
-/* keep inside viewport */
-function clampInBounds(f){
-  const b = bounds();
-  if(f.x < b.minX){ f.x = b.minX; f.vx = Math.abs(f.vx); }
-  if(f.x > b.maxX){ f.x = b.maxX; f.vx = -Math.abs(f.vx); }
-  if(f.y < b.minY){ f.y = b.minY; f.vy = Math.abs(f.vy); }
-  if(f.y > b.maxY){ f.y = b.maxY; f.vy = -Math.abs(f.vy); }
-}
-
-function applyTransform(f){
-  f.el.style.transform = `translate3d(${f.x.toFixed(1)}px, ${f.y.toFixed(1)}px, 0) rotate(${f.r.toFixed(2)}deg) scale(${f.s})`;
-  f.el.style.filter = `brightness(1)`;
-}
-
-/* animate to center on click, then open viewer */
-function centerAnimateThenOpen(f){
-  if(f.animating) return;
-  f.animating = true;
-  f.el.classList.add('is-animating');
-
-  const targetX = Math.round((W() - CARD_W)/2);
-  const targetY = Math.round((H() - CARD_H)/2);
-  f.x = targetX; f.y = targetY; f.r = 0; // snap by CSS transition
-  applyTransform(f);
-
-  // After transition end, open viewer
-  const onEnd = ()=>{
-    f.el.removeEventListener('transitionend', onEnd);
-    f.el.classList.remove('is-animating');
-    f.animating = false;
-    openViewer(f.item, 0);
-  };
-  f.el.addEventListener('transitionend', onEnd, { once:true });
-
-  // safety timeout (if transitionend not fires)
-  setTimeout(()=>{ if(f.animating){ f.el.dispatchEvent(new Event('transitionend')); } }, 450);
-}
-
-/* ====== VIEWER (MULTI-STEP) ====== */
-const overlay   = document.getElementById('overlay');
-const vImg      = document.getElementById('vImg');
-const vCounter  = document.getElementById('vCounter');
-const vBadge    = document.getElementById('vBadge');
-const vBrand    = document.getElementById('vBrand');
-const vName     = document.getElementById('vName');
-const vStepName = document.getElementById('vStepName');
-const vProject  = document.getElementById('vProject');
-const vPurpose  = document.getElementById('vPurpose');
-const vPrev     = document.getElementById('vPrev');
-const vNext     = document.getElementById('vNext');
-const vClose    = document.getElementById('vClose');
-
-let CUR = null;
-function openViewer(item, i=0){
-  const steps = item.steps || [];
-  const N = steps.length || 1;
-
-  function render(){
-    const step = steps[i] || { src: steps[N-1]?.src || '', name:'Final', caption:item.purpose||'' };
-    vImg.src = step.src;
-    vProject.textContent = item.project || 'Project';
-    vBrand.textContent   = 'Brand: ' + (item.brand || '—');
-    vName.textContent    = 'Project: ' + (item.project || '—');
-    vStepName.textContent= 'Phase: ' + (step.name || `Step ${i+1}`);
-    vPurpose.textContent = step.caption || item.purpose || '';
-    vCounter.textContent = `Step ${Math.min(i+1,N)} / ${N}`;
-    vBadge.textContent   = (i+1);
-
-    vPrev.classList.toggle('ghost', i<=0);
-    vNext.classList.toggle('ghost', i>=N-1);
+  // Load data
+  let items = [];
+  try{
+    const res = await fetch('aiworks.json?cb='+Date.now(), {cache:'no-store'});
+    items = await res.json();
+  }catch(e){
+    console.error('aiworks.json yüklenemedi', e);
+    items = [];
   }
 
-  CUR = { item, i, render };
-  overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false');
-  render();
-}
-function closeViewer(){
-  overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true');
-  vImg.src=''; CUR=null;
-}
-vClose.addEventListener('click', closeViewer);
-overlay.addEventListener('click', e=>{ if(e.target===overlay) closeViewer(); });
-vPrev.addEventListener('click', ()=>{ if(!CUR) return; if(CUR.i>0){ CUR.i--; CUR.render(); } });
-vNext.addEventListener('click', ()=>{ if(!CUR) return; const N=(CUR.item.steps||[]).length; if(CUR.i<N-1){ CUR.i++; CUR.render(); } });
-window.addEventListener('keydown', e=>{
-  if(!overlay.classList.contains('show')) return;
-  if(e.key==='Escape') closeViewer();
-  else if(e.key==='ArrowLeft') vPrev.click();
-  else if(e.key==='ArrowRight') vNext.click();
-});
+  // Build 25 (ya da kaç varsa) floating cards
+  const cards = [];
+  const maxCards = Math.min(25, items.length);
 
-/* ====== DRIFT LOOP (with bounce, clamped) ====== */
-let last = performance.now();
-function tick(now){
-  const dt = Math.min(0.033, (now-last)/1000); last=now;
-  if(!reduced){
-    const b = bounds();
-    for(const f of floats){
-      if(f.isDragging || f.animating) continue;
-      f.x += f.vx*dt;
-      f.y += f.vy*dt;
-      f.r += f.vr*dt;
-
-      // bounce at edges (stay visible)
-      if(f.x <= b.minX){ f.x=b.minX; f.vx = Math.abs(f.vx); }
-      if(f.x >= b.maxX){ f.x=b.maxX; f.vx = -Math.abs(f.vx); }
-      if(f.y <= b.minY){ f.y=b.minY; f.vy = Math.abs(f.vy); }
-      if(f.y >= b.maxY){ f.y=b.maxY; f.vy = -Math.abs(f.vy); }
-
-      f.el.style.transform = `translate3d(${f.x.toFixed(1)}px, ${f.y.toFixed(1)}px, 0) rotate(${f.r.toFixed(2)}deg) scale(${f.s})`;
-    }
+  // helper: clamp position so card stays fully visible
+  function clampIntoBounds(x, y, w, h){
+    const nx = Math.max(6, Math.min(x, W()-w-6));
+    const ny = Math.max(60, Math.min(y, H()-h-6)); // üstte HUD var
+    return [nx, ny];
   }
-  requestAnimationFrame(tick);
-}
-requestAnimationFrame(tick);
 
-/* seed initial positions (inside bounds) */
-(function seed(){
-  const b = bounds();
-  floats.forEach(f=>{
-    f.x = rand(b.minX, b.maxX);
-    f.y = rand(b.minY, b.maxY);
-    applyTransform(f);
+  // Create card for each item
+  for(let i=0;i<maxCards;i++){
+    const it = items[i];
+    const card = document.createElement('div');
+    card.className = 'card float';
+    card.dataset.index = i;
+
+    const img = new Image();
+    const coverSrc = (it.cover && it.cover.trim()) || (Array.isArray(it.images) ? it.images[0] : '');
+    img.src = coverSrc || '';
+    img.alt = it.title || ('AI Work ' + (i+1));
+    img.className = 'thumb';
+
+    // cover hata verirse kartı hiç eklemiyoruz
+    let coverOk = false;
+    await new Promise(resolve=>{
+      img.onload = ()=>{ coverOk = true; resolve(); };
+      img.onerror = ()=>{ coverOk = false; resolve(); };
+    });
+    if(!coverOk) continue;
+
+    card.appendChild(img);
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.innerHTML = `<div class="title">${it.title||''}</div><div class="brand">${it.brand||''}</div>`;
+    card.appendChild(meta);
+
+    // random pos (clamped), small random rotation offset applied by drift anim
+    const cw = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-w'));
+    const ch = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-h'));
+    let x = Math.random()*(W()-cw-24)+12, y = Math.random()*(H()-ch-80)+70;
+    ;[x,y] = clampIntoBounds(x,y,cw,ch);
+    card.style.left = x+'px';
+    card.style.top = y+'px';
+
+    // gentle random drifting via transform translate (CSS handles micro drift),
+    // we also add a very slow JS wander inside bounds
+    const drift = { vx: (Math.random()*2-1)*0.12, vy:(Math.random()*2-1)*0.10 };
+
+    // drag
+    let dragging=false, ox=0, oy=0, sx=0, sy=0;
+    card.addEventListener('pointerdown', (e)=>{
+      dragging = true;
+      card.classList.remove('float'); // anim devre dışı
+      card.setPointerCapture(e.pointerId);
+      sx = e.clientX; sy = e.clientY;
+      ox = parseFloat(card.style.left)||0;
+      oy = parseFloat(card.style.top)||0;
+      e.preventDefault();
+    });
+    card.addEventListener('pointermove', (e)=>{
+      if(!dragging) return;
+      const nx = ox + (e.clientX - sx);
+      const ny = oy + (e.clientY - sy);
+      const [cx, cy] = clampIntoBounds(nx, ny, cw, ch);
+      card.style.left = cx+'px';
+      card.style.top  = cy+'px';
+    });
+    card.addEventListener('pointerup', (e)=>{
+      dragging = false;
+      // kenarda kalırsa hızını sıfırla ve tekrar float ver
+      drift.vx = 0; drift.vy = 0;
+      card.classList.add('float');
+      try{ card.releasePointerCapture(e.pointerId); }catch{}
+    });
+
+    // click -> open viewer
+    card.addEventListener('click', (e)=>{
+      if(dragging) return; // drag bitişinde tetikleme
+      openViewer(i, card);
+    });
+
+    // keep inside bounds while drifting
+    function tickCard(){
+      if(dragging) return;
+      let cx = parseFloat(card.style.left)||0;
+      let cy = parseFloat(card.style.top)||0;
+      cx += drift.vx;
+      cy += drift.vy;
+
+      const [nx, ny] = clampIntoBounds(cx, cy, cw, ch);
+      // eğer clamp olduysa hızları kes
+      if(nx!==cx) drift.vx = 0;
+      if(ny!==cy) drift.vy = 0;
+
+      card.style.left = nx+'px';
+      card.style.top  = ny+'px';
+    }
+    cards.push({el:card, tick:tickCard});
+    stage.appendChild(card);
+  }
+
+  // master loop (very light)
+  function loop(){
+    cards.forEach(c=>c.tick());
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  /* ====== Overlay Viewer ====== */
+  const overlay = document.getElementById('overlay');
+  const vwImg = document.getElementById('vwImg');
+  const vwTitle = document.getElementById('vwTitle');
+  const vwBrand = document.getElementById('vwBrand');
+  const vwPurpose = document.getElementById('vwPurpose');
+  const vwCount = document.getElementById('vwCount');
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+  const btnClose = document.getElementById('btnClose');
+
+  let curIdx = 0;     // which item
+  let curImgIdx = 0;  // which image within item
+  let curImages = []; // filtered existing
+
+  function preloadFilter(list){
+    // sadece yüklenenleri döndür (sıra korunur)
+    return Promise.all(list.map(src => new Promise(resolve=>{
+      const im = new Image();
+      im.onload = ()=>resolve(src);
+      im.onerror = ()=>resolve(null);
+      im.src = src;
+    }))).then(arr => arr.filter(Boolean));
+  }
+
+  async function openViewer(index, cardEl){
+    curIdx = index;
+    const it = items[curIdx];
+
+    // Görselleri filtrele (var olanlar)
+    const imgs = Array.isArray(it.images) ? it.images : [];
+    curImages = await preloadFilter(imgs);
+
+    // hiç görsel yoksa kapat
+    if(!curImages.length){ return; }
+
+    curImgIdx = 0;
+    renderViewer();
+
+    // küçük anim: karttan overlay’e geçiş hissi
+    overlay.style.opacity = '0';
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden','false');
+    requestAnimationFrame(()=>{ overlay.style.transition='opacity .18s ease'; overlay.style.opacity='1'; });
+  }
+
+  function closeViewer(){
+    overlay.style.opacity = '0';
+    setTimeout(()=>{
+      overlay.classList.remove('show');
+      overlay.setAttribute('aria-hidden','true');
+      overlay.style.transition='';
+      overlay.style.opacity='';
+    }, 180);
+  }
+
+  function renderViewer(){
+    const it = items[curIdx];
+    vwTitle.textContent = it.title || '';
+    vwBrand.textContent = it.brand || '';
+    vwPurpose.textContent = it.purpose || '';
+    vwImg.src = curImages[curImgIdx];
+    vwCount.textContent = `${curImgIdx+1}/${curImages.length}`;
+    // buton durumları
+    btnPrev.disabled = (curImages.length<=1);
+    btnNext.disabled = (curImages.length<=1);
+  }
+
+  function nextImg(){ if(curImages.length>1){ curImgIdx = (curImgIdx+1)%curImages.length; renderViewer(); } }
+  function prevImg(){ if(curImages.length>1){ curImgIdx = (curImgIdx-1+curImages.length)%curImages.length; renderViewer(); } }
+
+  btnNext.addEventListener('click', nextImg);
+  btnPrev.addEventListener('click', prevImg);
+  btnClose.addEventListener('click', closeViewer);
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeViewer(); });
+  window.addEventListener('keydown', (e)=>{
+    if(!overlay.classList.contains('show')) return;
+    if(e.key==='Escape') closeViewer();
+    else if(e.key==='ArrowRight') nextImg();
+    else if(e.key==='ArrowLeft') prevImg();
+  });
+
+  // Re-clamp on resize
+  addEventListener('resize', ()=>{
+    const cw = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-w'));
+    const ch = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-h'));
+    cards.forEach(({el})=>{
+      let x=parseFloat(el.style.left)||0, y=parseFloat(el.style.top)||0;
+      const [nx, ny] = clampIntoBounds(x,y,cw,ch);
+      el.style.left = nx+'px'; el.style.top = ny+'px';
+    });
   });
 })();
-
-/* Keep inside on resize */
-addEventListener('resize', ()=>{
-  const b = bounds();
-  floats.forEach(f=>{
-    if(f.x < b.minX) f.x = b.minX;
-    if(f.x > b.maxX) f.x = b.maxX;
-    if(f.y < b.minY) f.y = b.minY;
-    if(f.y > b.maxY) f.y = b.maxY;
-    applyTransform(f);
-  });
-});
 </script>
 </body>
 </html>

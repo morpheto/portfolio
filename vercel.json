@@ -5,7 +5,9 @@
     { "src": "projects.html", "use": "@vercel/static" },
     { "src": "about.html", "use": "@vercel/static" },
     { "src": "contact.html", "use": "@vercel/static" },
+    { "src": "ai.html", "use": "@vercel/static" },
     { "src": "projects.json", "use": "@vercel/static" },
+    { "src": "aiworks.json", "use": "@vercel/static" },
     { "src": "media/**", "use": "@vercel/static" }
   ],
   "cleanUrls": true,
@@ -14,7 +16,9 @@
     { "source": "/space", "destination": "/index.html" },
     { "source": "/about", "destination": "/about.html" },
     { "source": "/contact", "destination": "/contact.html" },
-    { "source": "/projects.json", "destination": "/projects.json" }
+    { "source": "/ai", "destination": "/ai.html" },
+    { "source": "/projects.json", "destination": "/projects.json" },
+    { "source": "/aiworks.json", "destination": "/aiworks.json" }
   ],
   "redirects": [
     { "source": "/index.html", "destination": "/", "permanent": true }
@@ -27,7 +31,13 @@
       ]
     },
     {
-      "source": "/(.*)\\.(jpg|jpeg|png|gif|webp|mp4|webm)$",
+      "source": "/aiworks.json",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=60, s-maxage=60" }
+      ]
+    },
+    {
+      "source": "/(.*)\\.(jpg|jpeg|png|gif|webp|mp4|webm|svg)$",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]

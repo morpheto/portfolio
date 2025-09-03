@@ -1,227 +1,438 @@
 [
   {
-    "id": "ai1",
+    "id": "a1",
     "title": "AI Work 1",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai1_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a1/img1.jpg",
+      "media/ai/a1/img2.jpg",
+      "media/ai/a1/img3.jpg",
+      "media/ai/a1/img4.jpg",
+      "media/ai/a1/img5.jpg",
+      "media/ai/a1/img6.jpg",
+      "media/ai/a1/img7.jpg",
+      "media/ai/a1/img8.jpg",
+      "media/ai/a1/img9.jpg",
+      "media/ai/a1/img10.jpg"
+    ]
   },
   {
-    "id": "ai2",
+    "id": "a2",
     "title": "AI Work 2",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai2_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a2/img1.jpg",
+      "media/ai/a2/img2.jpg",
+      "media/ai/a2/img3.jpg",
+      "media/ai/a2/img4.jpg",
+      "media/ai/a2/img5.jpg",
+      "media/ai/a2/img6.jpg",
+      "media/ai/a2/img7.jpg",
+      "media/ai/a2/img8.jpg",
+      "media/ai/a2/img9.jpg",
+      "media/ai/a2/img10.jpg"
+    ]
   },
   {
-    "id": "ai3",
+    "id": "a3",
     "title": "AI Work 3",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai3_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a3/img1.jpg",
+      "media/ai/a3/img2.jpg",
+      "media/ai/a3/img3.jpg",
+      "media/ai/a3/img4.jpg",
+      "media/ai/a3/img5.jpg",
+      "media/ai/a3/img6.jpg",
+      "media/ai/a3/img7.jpg",
+      "media/ai/a3/img8.jpg",
+      "media/ai/a3/img9.jpg",
+      "media/ai/a3/img10.jpg"
+    ]
   },
   {
-    "id": "ai4",
+    "id": "a4",
     "title": "AI Work 4",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai4_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a4/img1.jpg",
+      "media/ai/a4/img2.jpg",
+      "media/ai/a4/img3.jpg",
+      "media/ai/a4/img4.jpg",
+      "media/ai/a4/img5.jpg",
+      "media/ai/a4/img6.jpg",
+      "media/ai/a4/img7.jpg",
+      "media/ai/a4/img8.jpg",
+      "media/ai/a4/img9.jpg",
+      "media/ai/a4/img10.jpg"
+    ]
   },
   {
-    "id": "ai5",
+    "id": "a5",
     "title": "AI Work 5",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai5_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a5/img1.jpg",
+      "media/ai/a5/img2.jpg",
+      "media/ai/a5/img3.jpg",
+      "media/ai/a5/img4.jpg",
+      "media/ai/a5/img5.jpg",
+      "media/ai/a5/img6.jpg",
+      "media/ai/a5/img7.jpg",
+      "media/ai/a5/img8.jpg",
+      "media/ai/a5/img9.jpg",
+      "media/ai/a5/img10.jpg"
+    ]
   },
   {
-    "id": "ai6",
+    "id": "a6",
     "title": "AI Work 6",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai6_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a6/img1.jpg",
+      "media/ai/a6/img2.jpg",
+      "media/ai/a6/img3.jpg",
+      "media/ai/a6/img4.jpg",
+      "media/ai/a6/img5.jpg",
+      "media/ai/a6/img6.jpg",
+      "media/ai/a6/img7.jpg",
+      "media/ai/a6/img8.jpg",
+      "media/ai/a6/img9.jpg",
+      "media/ai/a6/img10.jpg"
+    ]
   },
   {
-    "id": "ai7",
+    "id": "a7",
     "title": "AI Work 7",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai7_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a7/img1.jpg",
+      "media/ai/a7/img2.jpg",
+      "media/ai/a7/img3.jpg",
+      "media/ai/a7/img4.jpg",
+      "media/ai/a7/img5.jpg",
+      "media/ai/a7/img6.jpg",
+      "media/ai/a7/img7.jpg",
+      "media/ai/a7/img8.jpg",
+      "media/ai/a7/img9.jpg",
+      "media/ai/a7/img10.jpg"
+    ]
   },
   {
-    "id": "ai8",
+    "id": "a8",
     "title": "AI Work 8",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai8_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a8/img1.jpg",
+      "media/ai/a8/img2.jpg",
+      "media/ai/a8/img3.jpg",
+      "media/ai/a8/img4.jpg",
+      "media/ai/a8/img5.jpg",
+      "media/ai/a8/img6.jpg",
+      "media/ai/a8/img7.jpg",
+      "media/ai/a8/img8.jpg",
+      "media/ai/a8/img9.jpg",
+      "media/ai/a8/img10.jpg"
+    ]
   },
   {
-    "id": "ai9",
+    "id": "a9",
     "title": "AI Work 9",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai9_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a9/img1.jpg",
+      "media/ai/a9/img2.jpg",
+      "media/ai/a9/img3.jpg",
+      "media/ai/a9/img4.jpg",
+      "media/ai/a9/img5.jpg",
+      "media/ai/a9/img6.jpg",
+      "media/ai/a9/img7.jpg",
+      "media/ai/a9/img8.jpg",
+      "media/ai/a9/img9.jpg",
+      "media/ai/a9/img10.jpg"
+    ]
   },
   {
-    "id": "ai10",
+    "id": "a10",
     "title": "AI Work 10",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai10_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a10/img1.jpg",
+      "media/ai/a10/img2.jpg",
+      "media/ai/a10/img3.jpg",
+      "media/ai/a10/img4.jpg",
+      "media/ai/a10/img5.jpg",
+      "media/ai/a10/img6.jpg",
+      "media/ai/a10/img7.jpg",
+      "media/ai/a10/img8.jpg",
+      "media/ai/a10/img9.jpg",
+      "media/ai/a10/img10.jpg"
+    ]
   },
   {
-    "id": "ai11",
+    "id": "a11",
     "title": "AI Work 11",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai11_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a11/img1.jpg",
+      "media/ai/a11/img2.jpg",
+      "media/ai/a11/img3.jpg",
+      "media/ai/a11/img4.jpg",
+      "media/ai/a11/img5.jpg",
+      "media/ai/a11/img6.jpg",
+      "media/ai/a11/img7.jpg",
+      "media/ai/a11/img8.jpg",
+      "media/ai/a11/img9.jpg",
+      "media/ai/a11/img10.jpg"
+    ]
   },
   {
-    "id": "ai12",
+    "id": "a12",
     "title": "AI Work 12",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai12_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a12/img1.jpg",
+      "media/ai/a12/img2.jpg",
+      "media/ai/a12/img3.jpg",
+      "media/ai/a12/img4.jpg",
+      "media/ai/a12/img5.jpg",
+      "media/ai/a12/img6.jpg",
+      "media/ai/a12/img7.jpg",
+      "media/ai/a12/img8.jpg",
+      "media/ai/a12/img9.jpg",
+      "media/ai/a12/img10.jpg"
+    ]
   },
   {
-    "id": "ai13",
+    "id": "a13",
     "title": "AI Work 13",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai13_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a13/img1.jpg",
+      "media/ai/a13/img2.jpg",
+      "media/ai/a13/img3.jpg",
+      "media/ai/a13/img4.jpg",
+      "media/ai/a13/img5.jpg",
+      "media/ai/a13/img6.jpg",
+      "media/ai/a13/img7.jpg",
+      "media/ai/a13/img8.jpg",
+      "media/ai/a13/img9.jpg",
+      "media/ai/a13/img10.jpg"
+    ]
   },
   {
-    "id": "ai14",
+    "id": "a14",
     "title": "AI Work 14",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai14_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a14/img1.jpg",
+      "media/ai/a14/img2.jpg",
+      "media/ai/a14/img3.jpg",
+      "media/ai/a14/img4.jpg",
+      "media/ai/a14/img5.jpg",
+      "media/ai/a14/img6.jpg",
+      "media/ai/a14/img7.jpg",
+      "media/ai/a14/img8.jpg",
+      "media/ai/a14/img9.jpg",
+      "media/ai/a14/img10.jpg"
+    ]
   },
   {
-    "id": "ai15",
+    "id": "a15",
     "title": "AI Work 15",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai15_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a15/img1.jpg",
+      "media/ai/a15/img2.jpg",
+      "media/ai/a15/img3.jpg",
+      "media/ai/a15/img4.jpg",
+      "media/ai/a15/img5.jpg",
+      "media/ai/a15/img6.jpg",
+      "media/ai/a15/img7.jpg",
+      "media/ai/a15/img8.jpg",
+      "media/ai/a15/img9.jpg",
+      "media/ai/a15/img10.jpg"
+    ]
   },
   {
-    "id": "ai16",
+    "id": "a16",
     "title": "AI Work 16",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai16_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a16/img1.jpg",
+      "media/ai/a16/img2.jpg",
+      "media/ai/a16/img3.jpg",
+      "media/ai/a16/img4.jpg",
+      "media/ai/a16/img5.jpg",
+      "media/ai/a16/img6.jpg",
+      "media/ai/a16/img7.jpg",
+      "media/ai/a16/img8.jpg",
+      "media/ai/a16/img9.jpg",
+      "media/ai/a16/img10.jpg"
+    ]
   },
   {
-    "id": "ai17",
+    "id": "a17",
     "title": "AI Work 17",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai17_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a17/img1.jpg",
+      "media/ai/a17/img2.jpg",
+      "media/ai/a17/img3.jpg",
+      "media/ai/a17/img4.jpg",
+      "media/ai/a17/img5.jpg",
+      "media/ai/a17/img6.jpg",
+      "media/ai/a17/img7.jpg",
+      "media/ai/a17/img8.jpg",
+      "media/ai/a17/img9.jpg",
+      "media/ai/a17/img10.jpg"
+    ]
   },
   {
-    "id": "ai18",
+    "id": "a18",
     "title": "AI Work 18",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai18_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a18/img1.jpg",
+      "media/ai/a18/img2.jpg",
+      "media/ai/a18/img3.jpg",
+      "media/ai/a18/img4.jpg",
+      "media/ai/a18/img5.jpg",
+      "media/ai/a18/img6.jpg",
+      "media/ai/a18/img7.jpg",
+      "media/ai/a18/img8.jpg",
+      "media/ai/a18/img9.jpg",
+      "media/ai/a18/img10.jpg"
+    ]
   },
   {
-    "id": "ai19",
+    "id": "a19",
     "title": "AI Work 19",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai19_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a19/img1.jpg",
+      "media/ai/a19/img2.jpg",
+      "media/ai/a19/img3.jpg",
+      "media/ai/a19/img4.jpg",
+      "media/ai/a19/img5.jpg",
+      "media/ai/a19/img6.jpg",
+      "media/ai/a19/img7.jpg",
+      "media/ai/a19/img8.jpg",
+      "media/ai/a19/img9.jpg",
+      "media/ai/a19/img10.jpg"
+    ]
   },
   {
-    "id": "ai20",
+    "id": "a20",
     "title": "AI Work 20",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai20_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a20/img1.jpg",
+      "media/ai/a20/img2.jpg",
+      "media/ai/a20/img3.jpg",
+      "media/ai/a20/img4.jpg",
+      "media/ai/a20/img5.jpg",
+      "media/ai/a20/img6.jpg",
+      "media/ai/a20/img7.jpg",
+      "media/ai/a20/img8.jpg",
+      "media/ai/a20/img9.jpg",
+      "media/ai/a20/img10.jpg"
+    ]
   },
   {
-    "id": "ai21",
+    "id": "a21",
     "title": "AI Work 21",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai21_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a21/img1.jpg",
+      "media/ai/a21/img2.jpg",
+      "media/ai/a21/img3.jpg",
+      "media/ai/a21/img4.jpg",
+      "media/ai/a21/img5.jpg",
+      "media/ai/a21/img6.jpg",
+      "media/ai/a21/img7.jpg",
+      "media/ai/a21/img8.jpg",
+      "media/ai/a21/img9.jpg",
+      "media/ai/a21/img10.jpg"
+    ]
   },
   {
-    "id": "ai22",
+    "id": "a22",
     "title": "AI Work 22",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai22_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a22/img1.jpg",
+      "media/ai/a22/img2.jpg",
+      "media/ai/a22/img3.jpg",
+      "media/ai/a22/img4.jpg",
+      "media/ai/a22/img5.jpg",
+      "media/ai/a22/img6.jpg",
+      "media/ai/a22/img7.jpg",
+      "media/ai/a22/img8.jpg",
+      "media/ai/a22/img9.jpg",
+      "media/ai/a22/img10.jpg"
+    ]
   },
   {
-    "id": "ai23",
+    "id": "a23",
     "title": "AI Work 23",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai23_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a23/img1.jpg",
+      "media/ai/a23/img2.jpg",
+      "media/ai/a23/img3.jpg",
+      "media/ai/a23/img4.jpg",
+      "media/ai/a23/img5.jpg",
+      "media/ai/a23/img6.jpg",
+      "media/ai/a23/img7.jpg",
+      "media/ai/a23/img8.jpg",
+      "media/ai/a23/img9.jpg",
+      "media/ai/a23/img10.jpg"
+    ]
   },
   {
-    "id": "ai24",
+    "id": "a24",
     "title": "AI Work 24",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai24_cover.jpg",
-    "stages": []
+    "brand": "Sarnion AI",
+    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "images": [
+      "media/ai/a24/img1.jpg",
+      "media/ai/a24/img2.jpg",
+      "media/ai/a24/img3.jpg",
+      "media/ai/a24/img4.jpg",
+      "media/ai/a24/img5.jpg",
+      "media/ai/a24/img6.jpg",
+      "media/ai/a24/img7.jpg",
+      "media/ai/a24/img8.jpg",
+      "media/ai/a24/img9.jpg",
+      "media/ai/a24/img10.jpg"
+    ]
   },
   {
-    "id": "ai25",
+    "id": "a25",
     "title": "AI Work 25",
-    "brand": "Personal",
-    "project": "Exploration",
-    "purpose": "Generated visual study",
-    "cover": "media/aiworks/ai25_cover.jpg",
-    "stages": []
-  }
-]
+    "brand": "Sarnion AI",
+   

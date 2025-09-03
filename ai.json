@@ -1,0 +1,15 @@
+[
+  {
+    "id": "ai1",
+    "title": "Neon Bloom",
+    "brand": "Personal",
+    "project": "Style Exploration",
+    "purpose": "Exploring compositional balance in neon palettes",
+    "cover": "media/aiworks/ai1_cover.jpg",
+    "stages": [
+      {"img": "media/aiworks/ai1_stage1.jpg", "label": "1 — Prompt Sketch"},
+      {"img": "media/aiworks/ai1_stage2.jpg", "label": "2 — Variation"},
+      {"img": "media/aiworks/ai1_stage3.jpg", "label": "3 — Final"}
+    ]
+  }
+]

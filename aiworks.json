@@ -4,6 +4,7 @@
     "title": "AI Work 1",
     "brand": "Sarnion AI",
     "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "cover": "media/ai/a1/img1.jpg",
     "images": [
       "media/ai/a1/img1.jpg",
       "media/ai/a1/img2.jpg",
@@ -21,7 +22,8 @@
     "id": "a2",
     "title": "AI Work 2",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Concept art generated via diffusion and iterative prompt refinement.",
+    "cover": "media/ai/a2/img1.jpg",
     "images": [
       "media/ai/a2/img1.jpg",
       "media/ai/a2/img2.jpg",
@@ -39,7 +41,8 @@
     "id": "a3",
     "title": "AI Work 3",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Stylized character explorations with emphasis on shape language.",
+    "cover": "media/ai/a3/img1.jpg",
     "images": [
       "media/ai/a3/img1.jpg",
       "media/ai/a3/img2.jpg",
@@ -57,7 +60,8 @@
     "id": "a4",
     "title": "AI Work 4",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Material/texture ideation for metallic and organic surfaces.",
+    "cover": "media/ai/a4/img1.jpg",
     "images": [
       "media/ai/a4/img1.jpg",
       "media/ai/a4/img2.jpg",
@@ -75,7 +79,8 @@
     "id": "a5",
     "title": "AI Work 5",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Brand visuals exploration for futuristic product lines.",
+    "cover": "media/ai/a5/img1.jpg",
     "images": [
       "media/ai/a5/img1.jpg",
       "media/ai/a5/img2.jpg",
@@ -93,7 +98,8 @@
     "id": "a6",
     "title": "AI Work 6",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Portrait style studies across multiple diffusion checkpoints.",
+    "cover": "media/ai/a6/img1.jpg",
     "images": [
       "media/ai/a6/img1.jpg",
       "media/ai/a6/img2.jpg",
@@ -111,7 +117,8 @@
     "id": "a7",
     "title": "AI Work 7",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Surreal architecture and spatial mood boards.",
+    "cover": "media/ai/a7/img1.jpg",
     "images": [
       "media/ai/a7/img1.jpg",
       "media/ai/a7/img2.jpg",
@@ -129,7 +136,8 @@
     "id": "a8",
     "title": "AI Work 8",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Cinematic frames for motion design explorations.",
+    "cover": "media/ai/a8/img1.jpg",
     "images": [
       "media/ai/a8/img1.jpg",
       "media/ai/a8/img2.jpg",
@@ -147,7 +155,8 @@
     "id": "a9",
     "title": "AI Work 9",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Type + image compositions generated via mixed pipelines.",
+    "cover": "media/ai/a9/img1.jpg",
     "images": [
       "media/ai/a9/img1.jpg",
       "media/ai/a9/img2.jpg",
@@ -165,7 +174,8 @@
     "id": "a10",
     "title": "AI Work 10",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Lighting and color palette experimentation for product shots.",
+    "cover": "media/ai/a10/img1.jpg",
     "images": [
       "media/ai/a10/img1.jpg",
       "media/ai/a10/img2.jpg",
@@ -183,7 +193,8 @@
     "id": "a11",
     "title": "AI Work 11",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Fashion silhouettes and fabric behavior ideation.",
+    "cover": "media/ai/a11/img1.jpg",
     "images": [
       "media/ai/a11/img1.jpg",
       "media/ai/a11/img2.jpg",
@@ -201,7 +212,8 @@
     "id": "a12",
     "title": "AI Work 12",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Abstract forms for music visualizers and stage design.",
+    "cover": "media/ai/a12/img1.jpg",
     "images": [
       "media/ai/a12/img1.jpg",
       "media/ai/a12/img2.jpg",
@@ -219,7 +231,8 @@
     "id": "a13",
     "title": "AI Work 13",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Brand mascots and playful illustration trials.",
+    "cover": "media/ai/a13/img1.jpg",
     "images": [
       "media/ai/a13/img1.jpg",
       "media/ai/a13/img2.jpg",
@@ -237,7 +250,8 @@
     "id": "a14",
     "title": "AI Work 14",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Moody environments for narrative concept frames.",
+    "cover": "media/ai/a14/img1.jpg",
     "images": [
       "media/ai/a14/img1.jpg",
       "media/ai/a14/img2.jpg",
@@ -255,7 +269,8 @@
     "id": "a15",
     "title": "AI Work 15",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Experimental composites mixing photo and render styles.",
+    "cover": "media/ai/a15/img1.jpg",
     "images": [
       "media/ai/a15/img1.jpg",
       "media/ai/a15/img2.jpg",
@@ -273,7 +288,8 @@
     "id": "a16",
     "title": "AI Work 16",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Logo motifs and typographic texture generations.",
+    "cover": "media/ai/a16/img1.jpg",
     "images": [
       "media/ai/a16/img1.jpg",
       "media/ai/a16/img2.jpg",
@@ -291,7 +307,8 @@
     "id": "a17",
     "title": "AI Work 17",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Concepts for oxidized metals and patina variations.",
+    "cover": "media/ai/a17/img1.jpg",
     "images": [
       "media/ai/a17/img1.jpg",
       "media/ai/a17/img2.jpg",
@@ -309,7 +326,8 @@
     "id": "a18",
     "title": "AI Work 18",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Color grading trials for neon/glow-heavy compositions.",
+    "cover": "media/ai/a18/img1.jpg",
     "images": [
       "media/ai/a18/img1.jpg",
       "media/ai/a18/img2.jpg",
@@ -327,7 +345,8 @@
     "id": "a19",
     "title": "AI Work 19",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Crystal/volumetric material explorations for lookdev.",
+    "cover": "media/ai/a19/img1.jpg",
     "images": [
       "media/ai/a19/img1.jpg",
       "media/ai/a19/img2.jpg",
@@ -345,7 +364,8 @@
     "id": "a20",
     "title": "AI Work 20",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Scene layout and framing variations for product shots.",
+    "cover": "media/ai/a20/img1.jpg",
     "images": [
       "media/ai/a20/img1.jpg",
       "media/ai/a20/img2.jpg",
@@ -363,7 +383,8 @@
     "id": "a21",
     "title": "AI Work 21",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Anatomy and gesture studies in stylized forms.",
+    "cover": "media/ai/a21/img1.jpg",
     "images": [
       "media/ai/a21/img1.jpg",
       "media/ai/a21/img2.jpg",
@@ -381,7 +402,8 @@
     "id": "a22",
     "title": "AI Work 22",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "UI overlays and HUD-style generative assets.",
+    "cover": "media/ai/a22/img1.jpg",
     "images": [
       "media/ai/a22/img1.jpg",
       "media/ai/a22/img2.jpg",
@@ -399,7 +421,8 @@
     "id": "a23",
     "title": "AI Work 23",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Logo mark expansions and hybrid vector-texture ideas.",
+    "cover": "media/ai/a23/img1.jpg",
     "images": [
       "media/ai/a23/img1.jpg",
       "media/ai/a23/img2.jpg",
@@ -417,7 +440,8 @@
     "id": "a24",
     "title": "AI Work 24",
     "brand": "Sarnion AI",
-    "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
+    "purpose": "Packaging graphics with generative texture banks.",
+    "cover": "media/ai/a24/img1.jpg",
     "images": [
       "media/ai/a24/img1.jpg",
       "media/ai/a24/img2.jpg",
@@ -431,23 +455,23 @@
       "media/ai/a24/img10.jpg"
     ]
   },
-  ,
-{
-  "id": "a25",
-  "title": "AI Work 25",
-  "brand": "Sarnion AI",
-  "purpose": "Exploration of AI-driven aesthetics and generative creativity.",
-  "images": [
-    "media/ai/a25/img1.jpg",
-    "media/ai/a25/img2.jpg",
-    "media/ai/a25/img3.jpg",
-    "media/ai/a25/img4.jpg",
-    "media/ai/a25/img5.jpg",
-    "media/ai/a25/img6.jpg",
-    "media/ai/a25/img7.jpg",
-    "media/ai/a25/img8.jpg",
-    "media/ai/a25/img9.jpg",
-    "media/ai/a25/img10.jpg"
-  ]
-}
+  {
+    "id": "a25",
+    "title": "AI Work 25",
+    "brand": "Sarnion AI",
+    "purpose": "Visual motifs for music-driven motion sequences.",
+    "cover": "media/ai/a25/img1.jpg",
+    "images": [
+      "media/ai/a25/img1.jpg",
+      "media/ai/a25/img2.jpg",
+      "media/ai/a25/img3.jpg",
+      "media/ai/a25/img4.jpg",
+      "media/ai/a25/img5.jpg",
+      "media/ai/a25/img6.jpg",
+      "media/ai/a25/img7.jpg",
+      "media/ai/a25/img8.jpg",
+      "media/ai/a25/img9.jpg",
+      "media/ai/a25/img10.jpg"
+    ]
+  }
 ]
